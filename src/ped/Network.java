@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sta;
+package ped;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,19 +19,7 @@ public class Network
     private Node[] nodes;
     private Link[] links;
     private Zone[] zones;
-    
-    public Network(String name)
-    {
-        try
-        {
-            readNetwork(new File("data/"+name+"/net.txt"));
-            readTrips(new File("data/"+name+"/trips.txt"));
-        }
-        catch(IOException ex)
-        {
-            ex.printStackTrace(System.err);
-        }
-    }
+
     
     
     public Network(Node[] nodes, Link[] links)
@@ -56,8 +44,7 @@ public class Network
     {
         return zones;
     }
-    
-    
+
     
     
     public void readNetwork(File netFile) throws IOException
@@ -239,61 +226,60 @@ public class Network
     }
     
     
-    
-    public void dijkstras(Node r)
-    {
-        /* **********
-        Exercise 6(b)
-        ********** */
+    // public void dijkstras(Node r)
+    // {
+    //     /* **********
+    //     Exercise 6(b)
+    //     ********** */
         
-        for(Node n : nodes)
-        {
-            n.cost = Integer.MAX_VALUE;
-            n.predecessor = null;
-        }
+    //     for(Node n : nodes)
+    //     {
+    //         n.cost = Integer.MAX_VALUE;
+    //         n.predecessor = null;
+    //     }
         
-        r.cost = 0;
+    //     r.cost = 0;
         
-        HashSet<Node> Q = new HashSet<>();
-        Q.add(r);
+    //     HashSet<Node> Q = new HashSet<>();
+    //     Q.add(r);
         
-        /* **********
-        Exercise 6(c)
-        ********** */
+    //     /* **********
+    //     Exercise 6(c)
+    //     ********** */
         
-        while(!Q.isEmpty())
-        {
-            Node u = null;
-            double mincost = Double.MAX_VALUE;
+    //     while(!Q.isEmpty())
+    //     {
+    //         Node u = null;
+    //         double mincost = Double.MAX_VALUE;
             
-            for(Node n : Q)
-            {
-                if(n.cost < mincost)
-                {
-                    mincost = n.cost;
-                    u = n;
-                }
-            }
+    //         for(Node n : Q)
+    //         {
+    //             if(n.cost < mincost)
+    //             {
+    //                 mincost = n.cost;
+    //                 u = n;
+    //             }
+    //         }
             
-            Q.remove(u);
+    //         Q.remove(u);
             
-            for(Link l : u.getOutgoing())
-            {
-                Node v = l.getEnd();
+    //         for(Link l : u.getOutgoing())
+    //         {
+    //             Node v = l.getEnd();
                 
-                if(u.cost + l.getTravelTime() < v.cost)
-                {
-                    v.cost = u.cost + l.getTravelTime();
-                    v.predecessor = u;
+    //             if(u.cost + l.getTravelTime() < v.cost)
+    //             {
+    //                 v.cost = u.cost + l.getTravelTime();
+    //                 v.predecessor = u;
                     
-                    if(v.isThruNode())
-                    {
-                        Q.add(v);
-                    }
-                }
-            }
-        }
-    }
+    //                 if(v.isThruNode())
+    //                 {
+    //                     Q.add(v);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     
     
     /* **********
@@ -337,22 +323,22 @@ public class Network
     }
     
     
-    public double getSPTT()
-    {
-        double output = 0;
+    // public double getSPTT()
+    // {
+    //     double output = 0;
         
-        for(Zone r : zones)
-        {
-            dijkstras(r);
+    //     for(Zone r : zones)
+    //     {
+    //         dijkstras(r);
             
-            for(Zone s : zones)
-            {
-                output += r.getDemand(s) * s.cost;
-            }
-        }
+    //         for(Zone s : zones)
+    //         {
+    //             output += r.getDemand(s) * s.cost;
+    //         }
+    //     }
         
-        return output;
-    }
+    //     return output;
+    // }
     
     public double getTotalTrips()
     {
@@ -366,20 +352,13 @@ public class Network
         return output;
     }
 
-    public double getAEC()
-    {
-        return (getTSTT() - getSPTT()) / getTotalTrips();
-    }
+    // public double getAEC()
+    // {
+    //     return (getTSTT() - getSPTT()) / getTotalTrips();
+    // }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
     /* **********
     Exercise 8(a)
     ********** */
@@ -401,44 +380,44 @@ public class Network
     }
     
     
-    /* **********
-    Exercise 8(c)
-    ********** */
-    public void calculateAON()
-    {
-        for(Zone r : zones)
-        {
-            dijkstras(r);
+    // /* **********
+    // Exercise 8(c)
+    // ********** */
+    // public void calculateAON()
+    // {
+    //     for(Zone r : zones)
+    //     {
+    //         dijkstras(r);
             
-            for(Zone s : zones)
-            {
-                Path pi_star = trace(r, s);
+    //         for(Zone s : zones)
+    //         {
+    //             Path pi_star = trace(r, s);
                 
-                pi_star.addHstar(r.getDemand(s));
-            }
-        }
-    }
+    //             pi_star.addHstar(r.getDemand(s));
+    //         }
+    //     }
+    // }
     
     
     /* **********
     Exercise 8(d)
     ********** */
-    public void msa(int max_iteration)
-    {
-        System.out.println("Iteration\tAEC");
+    // public void msa(int max_iteration)
+    // {
+    //     System.out.println("Iteration\tAEC");
         
         
-        for(int iteration = 1; iteration <= max_iteration; iteration++)
-        {
-            calculateAON();
+    //     for(int iteration = 1; iteration <= max_iteration; iteration++)
+    //     {
+    //         calculateAON();
             
-            double lambda = calculateStepsize(iteration);
+    //         double lambda = calculateStepsize(iteration);
             
-            calculateNewX(lambda);
+    //         calculateNewX(lambda);
             
-            System.out.println(iteration+"\t"+getAEC());
-        }
-    }
+    //         System.out.println(iteration+"\t"+getAEC());
+    //     }
+    // }
     
     
     

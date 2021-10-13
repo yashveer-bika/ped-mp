@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package sta;
+package ped;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Node
     
     private int id;
     
-    private boolean thruNode;
+    // private boolean thruNode;
     
     
     public Node(int id)
@@ -40,10 +40,10 @@ public class Node
     
     
     
-    public boolean isThruNode()
-    {
-        return true;
-    }
+    // public boolean isThruNode()
+    // {
+    //     return true;
+    // }
     
     
     public int hashCode()
