@@ -15,21 +15,19 @@ public class Link
     // the flow on this link
     private double x;
     
-    // parameters for travel time calculation. t_ff is the free flow time, C is the capacity, alpha and beta are the calibration parameters in the BPR function
+    // parameters for travel time calculation. t_ff is the free flow time, C is the capacity
     private double t_ff, C, alpha, beta;
     
     // the start and end nodes of this link. Links are directed.
     private Node start, end;
     
     // construct this Link with the given parameters
-    public Link(Node start, Node end, double t_ff, double C, double alpha, double beta)
+    public Link(Node start, Node end, double t_ff, double C)
     {
         this.start = start;
         this.end = end;
         this.t_ff = t_ff;
         this.C = C;
-        this.alpha = alpha;
-        this.beta = beta;
         
         if(start != null)
         {
@@ -105,7 +103,7 @@ public class Link
     ********** */
     public String toString()
     {
-        return "("+start.getId()+", "+end.getId()+")";
+        return "("+start.getId()+", "+end.getId()+", "+getFlow()+")";
     }
     
     

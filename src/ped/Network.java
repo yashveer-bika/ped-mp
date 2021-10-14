@@ -7,6 +7,7 @@ package ped;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -45,8 +46,13 @@ public class Network
         return zones;
     }
 
-    
-    
+
+    public String showFlow() {
+        return "Network{" +
+                "links=" + Arrays.toString(links) +
+                '}';
+    }
+
     public void readNetwork(File netFile) throws IOException
     {
         /* **********
@@ -136,7 +142,7 @@ public class Network
             
             filein.nextLine();
             
-            links[i] = new Link(start, end, t_ff, C, alpha, beta);
+            links[i] = new Link(start, end, t_ff, C);
             
         }
         
