@@ -1,0 +1,4 @@
+1) Make a simple one-way intersecting a one-way, with 2 crosswalks
+2) hand-code some basic flow
+3) build ped-MP control on the simple one-way X one-way
+4) then, .... add turning, 2-way roads, more crosswalks, etc.
