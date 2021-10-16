@@ -11,7 +11,12 @@ import java.util.List;
 /**
  *
  * @author micha
+ * TODO: consider adding a "addIncoming", "getIncoming" functionality
  */
+
+
+
+
 public class Node 
 {
     
@@ -72,7 +77,9 @@ public class Node
     {
         return outgoing;
     }
-    
+
+    // TODO: get incoming links
+
     public void addOutgoingLink(Link l)
     {
         outgoing.add(l);

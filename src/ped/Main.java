@@ -31,18 +31,18 @@ public class Main
         Node right = new Node(5);
 
         // entry link
-        Link A = new Link(top, middle, 20, 100);
-        Link B = new Link(bottom, middle, 20, 40);
-        Link C = new Link(left, middle, 40, 200);
-        Link[] entry_links = {A, B, C};
+        Link B = new Link(top, middle, 20, 100);
+        // Link B = new Link(bottom, middle, 20, 40);
+        Link A = new Link(left, middle, 40, 200);
+        Link[] entry_links = {A, B};
 
         // exit links
-        Link D = new Link(middle, top, 20, 100);
-        Link E = new Link(middle, right, 40, 200);
-        Link F = new Link(middle, bottom, 20, 40);
+        // Link D = new Link(middle, top, 20, 100);
+        Link C = new Link(middle, right, 40, 200);
+        Link D = new Link(middle, bottom, 20, 40);
 
         Node[] nodes = {middle, top, bottom, left, right};
-        Link[] links = {A, B, C, D, E, F};
+        Link[] links = {A, B, C, D};
         Network University_10th_Ave = new Network(nodes, links);
 
         /*
