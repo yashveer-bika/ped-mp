@@ -7,9 +7,7 @@ package ped;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  *
@@ -22,15 +20,52 @@ public class Network
     private Zone[] zones;
 
     
-    
+
     public Network(Node[] nodes, Link[] links)
     {
         this.nodes = nodes;
         this.links = links;
         this.zones = zones;
+
+        // initialize signals for each node
+        for (Node node : this.nodes) {
+            for (Link incoming_link : node.getIncoming()) {
+                for (Link outgoing_link : node.getOutgoing()) {
+                    // Link[] pair = {incoming_link, outgoing_link};
+                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
+                    node.signals.put(pair, 0);
+                     // System.out.println( node.signals.get(pair) );
+                }
+            }
+        }
+
+
+
     }
-    
-    
+
+    public void printSignal() {
+        for (Node node : this.nodes) {
+            for (Link incoming_link : node.getIncoming()) {
+                for (Link outgoing_link : node.getOutgoing()) {
+                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
+                    // node.signals.put(pair, 0);
+                    System.out.println( node.signals.get(pair) );
+                }
+            }
+        }
+    }
+
+    public void setSignal(Link incoming, Link outgoing, int new_signal) {
+        if (incoming.getEnd().getId() == outgoing.getStart().getId()) {
+            Node node = incoming.getEnd();
+            String key = incoming.toString() + "::" + outgoing.toString();
+            node.signals.put(key, new_signal);
+        } else {
+            // TODO: throw error
+        }
+
+    }
+
     public Link[] getLinks()
     {
         return links;

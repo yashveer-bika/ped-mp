@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package ped;
+import java.util.HashMap;
 
 /**
  *
@@ -13,32 +14,56 @@ public class Link
 {
     
     // the flow on this link
-    private double x;
+    private double cur_queue_length;
     
-    // parameters for travel time calculation. t_ff is the free flow time, C is the capacity
-    private double t_ff, C, alpha, beta;
+    // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
+    private double max_flow, C, alpha, beta;
     
     // the start and end nodes of this link. Links are directed.
     private Node start, end;
     
     // construct this Link with the given parameters
-    public Link(Node start, Node end, double t_ff, double C)
+    public Link(Node start, Node end, double max_flow, double C)
     {
         this.start = start;
         this.end = end;
-        this.t_ff = t_ff;
+        this.max_flow = max_flow;
         this.C = C;
         
         if(start != null)
         {
             start.addOutgoingLink(this);
         }
+        if(end != null)
+        {
+            end.addIncomingLink(this);
+        }
     }
-    
+
+    public HashMap<String, Integer> getSignals() {
+        HashMap<String, Integer> all_signals = end.getSignals();
+        HashMap<String, Integer> desired_signals = new HashMap<String, Integer>();
+
+        // filter out the signals that come from this.start
+        for (String key: all_signals.keySet()) {
+            // parse key into start and end
+            String[] arrOfStr = key.split("::"); // keys' incoming and outgoing are separated by ::
+            if (arrOfStr[0].equals(this.toString())) {
+                desired_signals.put(key, all_signals.get(key));
+            }
+            // System.out.println("Signal's start link: " + arrOfStr[0]);
+            // System.out.println("This link:           " + this.toString());
+            // for (String a: arrOfStr)
+            //     System.out.println(a);
+        }
+
+        return desired_signals; // TODO: edit return
+    }
+
     // updates the flow on this link
-    public void setFlow(double x)
+    public void setFlow(double cur_queue_length)
     {
-        this.x = x;
+        this.cur_queue_length = cur_queue_length;
     }
     
     /* **********
@@ -49,7 +74,7 @@ public class Link
         // fill this in
         double t_ij = 0;
         
-        t_ij = t_ff * (1 + alpha * Math.pow(x/C, beta)); 
+        t_ij = max_flow * (1 + alpha * Math.pow(cur_queue_length/C, beta));
         
         return t_ij;
     }
@@ -67,7 +92,7 @@ public class Link
     
     public double getFlow()
     {
-        return x;
+        return cur_queue_length;
     }
     
     
@@ -103,7 +128,7 @@ public class Link
     ********** */
     public String toString()
     {
-        return "("+start.getId()+", "+end.getId()+", "+getFlow()+")";
+        return "("+start.getId()+", "+end.getId()+")";
     }
     
     
@@ -122,7 +147,7 @@ public class Link
     ********** */
     public void calculateNewX(double stepsize)
     {
-        x = (1 - stepsize) * x + stepsize * xstar;
+        cur_queue_length = (1 - stepsize) * cur_queue_length + stepsize * xstar;
         xstar = 0;
     }
 }

@@ -6,6 +6,7 @@
 package ped;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,7 +27,13 @@ public class Node
     ********** */
     
     private int id;
-    
+    private ArrayList<Link> incoming;
+    private ArrayList<Link> outgoing;
+    protected double cost;
+    protected Node predecessor;
+    public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
+
+
     // private boolean thruNode;
     
     
@@ -34,8 +41,14 @@ public class Node
     {
         this.id = id;
         outgoing = new ArrayList<>();
+        incoming = new ArrayList<>();
+        signals = new HashMap<>();
     }
-    
+
+    public HashMap<String, Integer> getSignals() {
+        return signals;
+    }
+
     public int getId()
     {
         return id;
@@ -71,23 +84,28 @@ public class Node
     Exercise 3(d)
     ********** */
     
-    private ArrayList<Link> outgoing;
-    
+
     public ArrayList<Link> getOutgoing()
     {
         return outgoing;
     }
 
-    // TODO: get incoming links
+    public ArrayList<Link> getIncoming()
+    {
+        return incoming;
+    }
 
     public void addOutgoingLink(Link l)
     {
         outgoing.add(l);
     }
-    
-    
-    
-    
-    protected double cost;
-    protected Node predecessor;
+
+    public void addIncomingLink(Link l)
+    {
+        incoming.add(l);
+    }
+
+
+
+
 }
