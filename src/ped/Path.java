@@ -13,18 +13,6 @@ import java.util.ArrayList;
  */
 public class Path extends ArrayList<Link>
 {
-    public double getTravelTime()
-    {
-        double output = 0;
-        
-        for(Link l : this)
-        {
-            output += l.getTravelTime();
-        }
-        
-        return output;
-    }
-    
     public boolean isConnected()
     {
         for(int i = 0; i < size()-1; i++)

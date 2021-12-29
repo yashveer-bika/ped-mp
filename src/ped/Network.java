@@ -7,7 +7,17 @@ package ped;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+// import java.util.*;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+
+
+
+// TODO: USE Set<...> instead of ...[]
 
 /**
  *
@@ -15,17 +25,34 @@ import java.util.*;
  */
 public class Network 
 {
+    private VehNode[] vehicleNodes;
+    private PedNode[] pedestrianNodes;
     private Node[] nodes;
     private Link[] links;
     private Zone[] zones;
+    public HashMap<String, Integer> allSignals; // Integer 1 = green, Integer 0 = red
+    public double T = 0;
+    public static double timeStep = 15;
+    // public Set<VehNode> vehNodes = new HashSet<VehNode>();
+    // public Set<PedNode> pedNodes = new HashSet<>();
+    public List<Intersection> intersections = new ArrayList<>();
+    // public Set<PedTurnNode> pedTurnNodes = new HashSet<>(); // Q: what's the point of this??
+    public PedNode[][] pedNodeGrid;
+    public VehNode[][] vehNodeGrid;
 
-    
+    public Network() {
+
+    }
 
     public Network(Node[] nodes, Link[] links)
     {
         this.nodes = nodes;
         this.links = links;
         this.zones = zones;
+
+        this.pedNodeGrid = new PedNode[][]{{}, {}};
+        this.vehNodeGrid = new VehNode[][]{{}, {}};
+
 
         // initialize signals for each node
         for (Node node : this.nodes) {
@@ -42,6 +69,7 @@ public class Network
 
 
     }
+
 
     public void printSignal() {
         for (Node node : this.nodes) {
@@ -81,6 +109,9 @@ public class Network
         return zones;
     }
 
+    public HashMap<String, Integer> getAllSignals() {
+        return allSignals;
+    }
 
     public String showFlow() {
         return "Network{" +
@@ -171,13 +202,12 @@ public class Network
             Node end = nodes[filein.nextInt()-1];
             double C = filein.nextDouble();
             filein.nextDouble();
-            double t_ff = filein.nextDouble();
             double alpha = filein.nextDouble();
             double beta = filein.nextDouble();
             
             filein.nextLine();
             
-            links[i] = new Link(start, end, t_ff, C);
+            links[i] = new Link(start, end, C);
             
         }
         
@@ -265,204 +295,5 @@ public class Network
         
         return null;
     }
-    
-    
-    // public void dijkstras(Node r)
-    // {
-    //     /* **********
-    //     Exercise 6(b)
-    //     ********** */
-        
-    //     for(Node n : nodes)
-    //     {
-    //         n.cost = Integer.MAX_VALUE;
-    //         n.predecessor = null;
-    //     }
-        
-    //     r.cost = 0;
-        
-    //     HashSet<Node> Q = new HashSet<>();
-    //     Q.add(r);
-        
-    //     /* **********
-    //     Exercise 6(c)
-    //     ********** */
-        
-    //     while(!Q.isEmpty())
-    //     {
-    //         Node u = null;
-    //         double mincost = Double.MAX_VALUE;
-            
-    //         for(Node n : Q)
-    //         {
-    //             if(n.cost < mincost)
-    //             {
-    //                 mincost = n.cost;
-    //                 u = n;
-    //             }
-    //         }
-            
-    //         Q.remove(u);
-            
-    //         for(Link l : u.getOutgoing())
-    //         {
-    //             Node v = l.getEnd();
-                
-    //             if(u.cost + l.getTravelTime() < v.cost)
-    //             {
-    //                 v.cost = u.cost + l.getTravelTime();
-    //                 v.predecessor = u;
-                    
-    //                 if(v.isThruNode())
-    //                 {
-    //                     Q.add(v);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
-    
-    
-    /* **********
-    Exercise 6(d)
-    ********** */
-    
-    public Path trace(Node r, Node s)
-    {
-        Node curr = s;
-        
-        Path output = new Path();
-        
-        while(curr != r && curr != null)
-        {
-            Link ij = findLink(curr.predecessor, curr);
-            
-            if(ij != null)
-            {
-                output.add(0, ij);
-            }
-            curr = curr.predecessor;
-        }
-        
-        return output;
-    }
-    
-    
-    /* **********
-    Exercise 7
-    ********** */
-    public double getTSTT()
-    {
-        double output = 0;
-        
-        for(Link l : links)
-        {
-            output += l.getFlow() * l.getTravelTime();
-        }
-        
-        return output;
-    }
-    
-    
-    // public double getSPTT()
-    // {
-    //     double output = 0;
-        
-    //     for(Zone r : zones)
-    //     {
-    //         dijkstras(r);
-            
-    //         for(Zone s : zones)
-    //         {
-    //             output += r.getDemand(s) * s.cost;
-    //         }
-    //     }
-        
-    //     return output;
-    // }
-    
-    public double getTotalTrips()
-    {
-        double output = 0;
-        
-        for(Zone r : zones)
-        {
-            output += r.getProductions();
-        }
-        
-        return output;
-    }
 
-    // public double getAEC()
-    // {
-    //     return (getTSTT() - getSPTT()) / getTotalTrips();
-    // }
-    
-
-
-    /* **********
-    Exercise 8(a)
-    ********** */
-    public double calculateStepsize(int iteration)
-    {
-        return 1.0/iteration;
-    }
-    
-    
-    /* **********
-    Exercise 8(b)
-    ********** */
-    public void calculateNewX(double stepsize)
-    {
-        for(Link l : links)
-        {
-            l.calculateNewX(stepsize);
-        }
-    }
-    
-    
-    // /* **********
-    // Exercise 8(c)
-    // ********** */
-    // public void calculateAON()
-    // {
-    //     for(Zone r : zones)
-    //     {
-    //         dijkstras(r);
-            
-    //         for(Zone s : zones)
-    //         {
-    //             Path pi_star = trace(r, s);
-                
-    //             pi_star.addHstar(r.getDemand(s));
-    //         }
-    //     }
-    // }
-    
-    
-    /* **********
-    Exercise 8(d)
-    ********** */
-    // public void msa(int max_iteration)
-    // {
-    //     System.out.println("Iteration\tAEC");
-        
-        
-    //     for(int iteration = 1; iteration <= max_iteration; iteration++)
-    //     {
-    //         calculateAON();
-            
-    //         double lambda = calculateStepsize(iteration);
-            
-    //         calculateNewX(lambda);
-            
-    //         System.out.println(iteration+"\t"+getAEC());
-    //     }
-    // }
-    
-    
-    
-    
-    
-    
 }

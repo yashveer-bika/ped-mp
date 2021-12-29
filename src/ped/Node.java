@@ -12,7 +12,6 @@ import java.util.List;
 /**
  *
  * @author micha
- * TODO: consider adding a "addIncoming", "getIncoming" functionality
  */
 
 
@@ -25,18 +24,22 @@ public class Node
     /* **********
     Exercise 3(b)
     ********** */
-    
-    private int id;
+    static int cur_id = 0;
+    protected int rowPosition;
+    protected int colPosition;
+    protected int id;
+
     private ArrayList<Link> incoming;
     private ArrayList<Link> outgoing;
-    protected double cost;
-    protected Node predecessor;
     public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
 
     // private boolean thruNode;
-    
-    
+
+    public Node() {
+
+    }
+
     public Node(int id)
     {
         this.id = id;
@@ -45,8 +48,24 @@ public class Node
         signals = new HashMap<>();
     }
 
+    public Node(int row, int col, int id)
+    {
+        this.rowPosition = row;
+        this.colPosition = col;
+        this.id = id;
+    }
+
     public HashMap<String, Integer> getSignals() {
         return signals;
+    }
+
+    public void setSignal(Link in, Link out, int new_phase) {
+        String key = in + "::" + out;
+        signals.put(key, new_phase);
+    }
+
+    public void setSignal(String key, int new_phase) {
+        signals.put(key, new_phase);
     }
 
     public int getId()

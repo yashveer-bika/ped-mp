@@ -19,41 +19,155 @@ public class Main
 {
     public static void main(String[] args)
     {
-        System.out.println("Hello world");
-
-        // TODO: create a single intersection representation
-        // Have 8 links, 1 in 1 out from each side of the intersection
-
-        Node middle = new Node(1);
-        Node top = new Node(2);
-        Node bottom = new Node(3);
-        Node left = new Node(4);
-        Node right = new Node(5);
+        Intersection middle = new Intersection(1);
+        VehNode top = new VehNode(2);
+        VehNode bottom = new VehNode(3);
+        VehNode left = new VehNode(4);
+        VehNode right = new VehNode(5);
 
         // entry link
-        Link B = new Link(top, middle, 20, 100);
-        // Link B = new Link(bottom, middle, 20, 40);
-        Link A = new Link(left, middle, 40, 200);
+        VehLink B = new VehLink(top, middle, 200, true);
+        VehLink A = new VehLink(left, middle, 200, true);
         Link[] entry_links = {A, B};
 
         // exit links
-        // Link D = new Link(middle, top, 20, 100);
-        Link C = new Link(middle, right, 40, 200);
-        Link D = new Link(middle, bottom, 20, 40);
+        VehLink C = new VehLink(middle, right, 200);
+        VehLink D = new VehLink(middle, bottom, 200);
 
         Node[] nodes = {middle, top, bottom, left, right};
         Link[] links = {A, B, C, D};
 
+        PedNode ped_1 = new PedNode(6);
+        PedNode ped_2 = new PedNode(7);
+        PedNode ped_3 = new PedNode(8);
+        Intersection ped_4 = new Intersection(9);
+        Intersection ped_5 = new Intersection(10);
+        PedNode ped_6 = new PedNode(11);
+
+        // entry links
+        PedLink ped_1_to_4 = new PedLink(ped_1, ped_4, 200, true);
+        PedLink ped_3_to_4 = new PedLink(ped_3, ped_4, 200, true);
+        PedLink ped_2_to_5 = new PedLink(ped_2, ped_5, 200, true);
+        PedLink ped_6_to_5 = new PedLink(ped_6, ped_5, 200, true);
+
+        PedLink[] ped_entry_links = {ped_1_to_4, ped_3_to_4, ped_2_to_5, ped_6_to_5 };
+
+        // crosswalks
+        PedLink ped_4_to_5 = new PedLink(ped_4, ped_5, 200);
+        PedLink ped_5_to_4 = new PedLink(ped_5, ped_4, 200);
+
+        // exit links
+        PedLink ped_4_to_1 = new PedLink(ped_4, ped_1, 200);
+        PedLink ped_4_to_3 = new PedLink(ped_4, ped_3, 200);
+        PedLink ped_5_to_2 = new PedLink(ped_5, ped_2, 200);
+        PedLink ped_5_to_6 = new PedLink(ped_5, ped_6, 200);
+
+        Link[] pedLinks = {ped_1_to_4, ped_3_to_4, ped_2_to_5, ped_6_to_5, ped_4_to_5, ped_5_to_4, ped_4_to_1, ped_4_to_3, ped_5_to_2, ped_5_to_6};
+        Node[] pedNodes = {ped_1, ped_2, ped_3, ped_4, ped_5, ped_6};
+
+
+
+        // TODO: make square vehicle node grid
+
+        // TODO: make square pedestrian node grid
+        PedNode[][] pedNodeGrid = {{}, {}};
+
+
         Network University_10th_Ave = new Network(nodes, links);
 
-        // get signals outgoing from each link
+        Network University_10th_Ave_ped = new Network(pedNodes, pedLinks);
+
+        // TODO: make engine network (has everything)
+
+        // TODO: make intersections using the nodes and links
+
+        Intersection mainIntersection = new Intersection(0, 0, 1, University_10th_Ave);
+
+
+        /*
         for (Link link : University_10th_Ave.getLinks()) {
-            link.getSignals();
+            link.setQueueLength(100);
         }
 
-        // NEXT: adjust flow accordingly
+        for (Link link : University_10th_Ave_ped.getLinks()) {
+            link.setQueueLength(100);
+        }
+        */
 
 
+
+
+        // NOTE: CAR MOVEMENT
+
+        /*
+        // turn all signals on
+        for (Link link : University_10th_Ave.getLinks()) {
+            for (String key : link.getSignals().keySet() ) {
+                // set signal
+                link.setSignal(key, 1);
+            }
+        }
+        System.out.println("(1)");
+        // print out queue lengths
+        for (Link link : University_10th_Ave.getLinks()) {
+            System.out.println(link.getQueueLength());
+        }
+
+        // MOVE 5 CARS IF SIGNAL IS ON, FOR EACH SIGNAL
+        for (Link linkA : University_10th_Ave.getLinks()) {
+            for (Link linkB : linkA.getOutgoing()) {
+                String key = linkA + "::" + linkB;
+                // if the signal from link to out is on
+                if (linkA.getSignals().get(key) == 1) {
+                    linkA.moveCars(linkB, 5);
+                }
+            }
+        }
+        System.out.println("(2)");
+        // print out queue lengths
+        for (Link link : University_10th_Ave.getLinks()) {
+            System.out.println(link.getQueueLength());
+        }
+
+        */
+
+        /* NOTE: PEDESTRIAN MOVEMENT */
+
+        /*
+        // turn all signals on
+        for (Link link : University_10th_Ave_ped.getLinks()) {
+            for (String key : link.getSignals().keySet() ) {
+                // set signal
+                link.setSignal(key, 1);
+            }
+        }
+        System.out.println("(1)");
+        // print out queue lengths
+        for (Link link : University_10th_Ave_ped.getLinks()) {
+            System.out.println(link.getQueueLength());
+        }
+
+        // MOVE 5 CARS IF SIGNAL IS ON, FOR EACH SIGNAL
+        for (Link linkA : University_10th_Ave_ped.getLinks()) {
+            for (Link linkB : linkA.getOutgoing()) {
+                String key = linkA + "::" + linkB;
+                // if the signal from link to out is on
+                if (linkA.getSignals().get(key) == 1) {
+                    linkA.moveCars(linkB, 5);
+                }
+            }
+        }
+        System.out.println("\n(2)");
+        // print out queue lengths
+        for (Link link : University_10th_Ave_ped.getLinks()) {
+            System.out.println(link.getQueueLength());
+        }
+        */
+
+
+        //        for (Link link : University_10th_Ave.getLinks()) {
+//            System.out.println(link.getSignals());
+//        }
 
         // University_10th_Ave.printSignal();
         // University_10th_Ave.setSignal(A, C, 1);

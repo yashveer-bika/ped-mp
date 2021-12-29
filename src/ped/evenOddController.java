@@ -1,12 +1,12 @@
 package ped;
 
-public class pedMPcontroller {
+public class evenOddController {
     // variables
     Network network;
     int time;
 
 
-    public pedMPcontroller(Network network) {
+    public evenOddController(Network network) {
         this.network = network;
         this.time = 0;
     }
@@ -16,7 +16,7 @@ public class pedMPcontroller {
         while (time < timeSteps) {
 
             // set signals for every node based on the state of the network
-
+            setSignals();
 
 
             time += 1;
@@ -25,6 +25,7 @@ public class pedMPcontroller {
 
     // Define the control
     public void setSignals() {
+
         return;
     }
 

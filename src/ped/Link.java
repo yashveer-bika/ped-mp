@@ -4,7 +4,9 @@
  * and open the template in the editor.
  */
 package ped;
+import java.util.ArrayList;
 import java.util.HashMap;
+
 
 /**
  *
@@ -12,24 +14,47 @@ import java.util.HashMap;
  */
 public class Link 
 {
-    
-    // the flow on this link
+    // Says whether or not the link is part of the current phase
+    // i.e, is traffic allowed to move out of here?
+    private boolean activated;
+
+    private boolean entry = false;
     private double cur_queue_length;
     
     // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
-    private double max_flow, C, alpha, beta;
+    private double C;
     
     // the start and end nodes of this link. Links are directed.
     private Node start, end;
-    
+
+    public Link() {
+
+    }
+
     // construct this Link with the given parameters
-    public Link(Node start, Node end, double max_flow, double C)
+    public Link(Node start, Node end, double C, boolean entry)
     {
         this.start = start;
         this.end = end;
-        this.max_flow = max_flow;
         this.C = C;
+        this.entry = entry;
         
+        if(start != null)
+        {
+            start.addOutgoingLink(this);
+        }
+        if(end != null)
+        {
+            end.addIncomingLink(this);
+        }
+    }
+
+    public Link(Node start, Node end, double C)
+    {
+        this.start = start;
+        this.end = end;
+        this.C = C;
+
         if(start != null)
         {
             start.addOutgoingLink(this);
@@ -60,24 +85,41 @@ public class Link
         return desired_signals; // TODO: edit return
     }
 
+    public void setSignal(Link in, Link out, int new_phase) {
+        end.setSignal(in, out, new_phase);
+    }
+
+    public void setSignal(String key, int new_phase) {
+        end.setSignal(key, new_phase);
+    }
+
+    public ArrayList<Link> getOutgoing() {
+        return end.getOutgoing();
+    }
+
+    // move num_cars from this to end_link
+    public void moveCars(Link end_link, double num_cars) {
+        if (num_cars > this.cur_queue_length) {
+            return; // TODO: throw an error for moving more cars than I have
+        } else {
+            this.setQueueLength(this.cur_queue_length - num_cars);
+            end_link.setQueueLength(end_link.cur_queue_length + num_cars);
+        }
+    }
+
     // updates the flow on this link
-    public void setFlow(double cur_queue_length)
+    public void setQueueLength(double cur_queue_length)
     {
+        if (cur_queue_length > C) {
+            throw new IllegalArgumentException("Input is too large, must be less than capacity");
+        }
+
         this.cur_queue_length = cur_queue_length;
     }
     
     /* **********
     Exercise 1
     ********** */
-    public double getTravelTime()
-    {
-        // fill this in
-        double t_ij = 0;
-        
-        t_ij = max_flow * (1 + alpha * Math.pow(cur_queue_length/C, beta));
-        
-        return t_ij;
-    }
     
     
     
@@ -90,7 +132,7 @@ public class Link
         return C;
     }
     
-    public double getFlow()
+    public double getQueueLength()
     {
         return cur_queue_length;
     }
@@ -128,7 +170,18 @@ public class Link
     ********** */
     public String toString()
     {
-        return "("+start.getId()+", "+end.getId()+")";
+        if (start == null && end == null) {
+            return "("+"null"+", "+"null"+")";
+        }
+        else if (start == null && end != null) {
+            return "("+"null"+", "+end.getId()+")";
+        }
+        else if (start != null && end == null) {
+            return "("+start.getId()+", "+"null"+")";
+        }
+        else {
+            return "("+start.getId()+", "+end.getId()+")";
+        }
     }
     
     
