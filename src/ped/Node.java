@@ -55,6 +55,16 @@ public class Node
         this.id = id;
     }
 
+    public int getRowPosition() {
+        return rowPosition;
+    }
+
+    public int getColPosition() {
+        return colPosition;
+    }
+
+
+
     public HashMap<String, Integer> getSignals() {
         return signals;
     }
@@ -68,10 +78,13 @@ public class Node
         signals.put(key, new_phase);
     }
 
+
     public int getId()
     {
         return id;
     }
+
+
     
     
     
@@ -82,19 +95,15 @@ public class Node
     //     return true;
     // }
     
-    
-    public int hashCode()
-    {
-        return getId();
-    }
+
     
     /* **********
     Exercise 3(c)
     ********** */
-    public String toString()
-    {
-        return ""+getId();
-    }
+    // public String toString()
+    // {
+    //     return ""+getId();
+    // }
     
     
     

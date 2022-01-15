@@ -11,42 +11,14 @@ import java.util.ArrayList;
  *
  * @author micha
  */
-public class Path extends ArrayList<Link>
-{
-    public boolean isConnected()
-    {
-        for(int i = 0; i < size()-1; i++)
-        {
-            if(get(i).getEnd() != get(i+1).getStart())
-            {
+public class Path extends ArrayList<Link> {
+    public boolean isConnected() {
+        for (int i = 0; i < size() - 1; i++) {
+            if (get(i).getDestinationNode() != get(i + 1).getStart()) {
                 return false;
             }
         }
-        
+
         return true;
-    }
-    
-    /* **********
-    Exercise 6(a)
-    ********** */
-    public Node getSource()
-    {
-        return get(0).getStart();
-    }
-    
-    public Node getDest()
-    {
-        return get(size()-1).getEnd();
-    }
-    
-    /* **********
-    Exercise 8(a)
-    ********** */
-    public void addHstar(double h)
-    {
-        for(Link l : this)
-        {
-            l.addXstar(h);
-        }
     }
 }

@@ -6,10 +6,7 @@
 
 package ped;
 
-import java.util.ArrayList;
-import java.util.HashMap; // import the HashMap class
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -19,70 +16,144 @@ public class Main
 {
     public static void main(String[] args)
     {
-        Intersection middle = new Intersection(1);
-        VehNode top = new VehNode(2);
-        VehNode bottom = new VehNode(3);
-        VehNode left = new VehNode(4);
-        VehNode right = new VehNode(5);
+        VehIntersection middle = new VehIntersection(0);
+        VehNode top = new VehNode(1);
+        VehNode bottom = new VehNode(2);
+        VehNode left = new VehNode(3);
+        VehNode right = new VehNode(4);
 
-        // entry link
-        VehLink B = new VehLink(top, middle, 200, true);
-        VehLink A = new VehLink(left, middle, 200, true);
-        Link[] entry_links = {A, B};
+        // incoming links
+        VehLink B = new VehLink(top, middle, 200, "NS");
+        VehLink A = new VehLink(left, middle, 200, "WE");
+        HashSet<VehLink> incomingLinks = new HashSet<VehLink>();
+        incomingLinks.add(A);
+        incomingLinks.add(B);
+        middle.setIncomingLinks(incomingLinks);
 
-        // exit links
-        VehLink C = new VehLink(middle, right, 200);
-        VehLink D = new VehLink(middle, bottom, 200);
+        // outgoing links
+        VehLink C = new VehLink(middle, right, 200, "WE");
+        VehLink D = new VehLink(middle, bottom, 200, "NS");
+        HashSet<VehLink> outgoingLinks = new HashSet<VehLink>();
+        outgoingLinks.add(C);
+        outgoingLinks.add(D);
+        middle.setOutgoingLinks(outgoingLinks);
 
-        Node[] nodes = {middle, top, bottom, left, right};
-        Link[] links = {A, B, C, D};
+        // add links
+        // NOTE: this uses the incoming and outgoing vehicle links to set allLinks
+        middle.setVehLinks();
 
-        PedNode ped_1 = new PedNode(6);
-        PedNode ped_2 = new PedNode(7);
-        PedNode ped_3 = new PedNode(8);
-        Intersection ped_4 = new Intersection(9);
-        Intersection ped_5 = new Intersection(10);
-        PedNode ped_6 = new PedNode(11);
+        // Node[] nodes = {middle, top, bottom, left, right};
+        // Link[] links = {A, B, C, D};
+
+        PedIntersection ped_1 = new PedIntersection(6);
+        PedIntersection ped_2 = new PedIntersection(7);
+        PedIntersection ped_3 = new PedIntersection(8);
+        PedIntersection ped_4 = new PedIntersection(9);
 
         // entry links
-        PedLink ped_1_to_4 = new PedLink(ped_1, ped_4, 200, true);
-        PedLink ped_3_to_4 = new PedLink(ped_3, ped_4, 200, true);
-        PedLink ped_2_to_5 = new PedLink(ped_2, ped_5, 200, true);
-        PedLink ped_6_to_5 = new PedLink(ped_6, ped_5, 200, true);
-
-        PedLink[] ped_entry_links = {ped_1_to_4, ped_3_to_4, ped_2_to_5, ped_6_to_5 };
-
-        // crosswalks
-        PedLink ped_4_to_5 = new PedLink(ped_4, ped_5, 200);
-        PedLink ped_5_to_4 = new PedLink(ped_5, ped_4, 200);
+        PedLink into_ped_1 = new PedLink(null, ped_1, 200, "NS");
+        PedLink into_ped_2 = new PedLink(null, ped_2, 200, "NS");
+        PedLink into_ped_3 = new PedLink(null, ped_3, 200, "SN");
+        PedLink into_ped_4 = new PedLink(null, ped_4, 200, "SN");
 
         // exit links
-        PedLink ped_4_to_1 = new PedLink(ped_4, ped_1, 200);
-        PedLink ped_4_to_3 = new PedLink(ped_4, ped_3, 200);
-        PedLink ped_5_to_2 = new PedLink(ped_5, ped_2, 200);
-        PedLink ped_5_to_6 = new PedLink(ped_5, ped_6, 200);
+        PedLink out_ped_1 = new PedLink(ped_1, null, 200, "EW");
+        PedLink out_ped_2 = new PedLink(ped_2, null, 200, "WE");
+        PedLink out_ped_3 = new PedLink(ped_3, null, 200, "EW");
+        PedLink out_ped_4 = new PedLink(ped_4, null, 200, "WE");
 
-        Link[] pedLinks = {ped_1_to_4, ped_3_to_4, ped_2_to_5, ped_6_to_5, ped_4_to_5, ped_5_to_4, ped_4_to_1, ped_4_to_3, ped_5_to_2, ped_5_to_6};
-        Node[] pedNodes = {ped_1, ped_2, ped_3, ped_4, ped_5, ped_6};
+        // crosswalks
+        PedLink ped_1_to_2 = new PedLink(ped_1, ped_2, 200, "WE");
+        PedLink ped_1_to_3 = new PedLink(ped_1, ped_3, 200, "NS");
+        PedLink ped_2_to_4 = new PedLink(ped_2, ped_4, 200, "NS");
+        PedLink ped_3_to_4 = new PedLink(ped_3, ped_4, 200, "WE");
+        PedLink ped_2_to_1 = new PedLink(ped_2, ped_1, 200, "EW");
+        PedLink ped_3_to_1 = new PedLink(ped_3, ped_1, 200, "SN");
+        PedLink ped_4_to_2 = new PedLink(ped_4, ped_2, 200, "SN");
+        PedLink ped_4_to_3 = new PedLink(ped_4, ped_3, 200, "EW");
+
+        // ped 1
+        HashSet<PedLink> ped1IncomingLinks = new HashSet<PedLink>();
+        HashSet<PedLink> ped1OutgoingLinks = new HashSet<PedLink>();
+        ped1IncomingLinks.add(into_ped_1);
+        ped1IncomingLinks.add(ped_2_to_1);
+        ped1IncomingLinks.add(ped_3_to_1);
+        ped1OutgoingLinks.add(out_ped_1);
+        ped1OutgoingLinks.add(ped_1_to_3);
+        ped1OutgoingLinks.add(ped_1_to_2);
+        ped_1.setIncomingLinks(ped1IncomingLinks);
+        ped_1.setOutgoingLinks(ped1OutgoingLinks);
+        ped_1.setPedLinks();
+
+        // ped2
+        HashSet<PedLink> ped2IncomingLinks = new HashSet<PedLink>();
+        HashSet<PedLink> ped2OutgoingLinks = new HashSet<PedLink>();
+        ped2IncomingLinks.add(into_ped_2);
+        ped2IncomingLinks.add(ped_4_to_2);
+        ped2IncomingLinks.add(ped_1_to_2);
+        ped2OutgoingLinks.add(out_ped_2);
+        ped2OutgoingLinks.add(ped_2_to_1);
+        ped2OutgoingLinks.add(ped_2_to_4);
+        ped_2.setIncomingLinks(ped2IncomingLinks);
+        ped_2.setOutgoingLinks(ped2OutgoingLinks);
+        ped_2.setPedLinks();
+
+        // ped3
+        HashSet<PedLink> ped3IncomingLinks = new HashSet<PedLink>();
+        HashSet<PedLink> ped3OutgoingLinks = new HashSet<PedLink>();
+        ped3IncomingLinks.add(into_ped_3);
+        ped3IncomingLinks.add(ped_4_to_3);
+        ped3IncomingLinks.add(ped_1_to_3);
+        ped3OutgoingLinks.add(out_ped_3);
+        ped3OutgoingLinks.add(ped_3_to_1);
+        ped3OutgoingLinks.add(ped_3_to_4);
+        ped_3.setIncomingLinks(ped3IncomingLinks);
+        ped_3.setOutgoingLinks(ped3OutgoingLinks);
+        ped_3.setPedLinks();
+
+        // ped 4
+        HashSet<PedLink> ped4IncomingLinks = new HashSet<PedLink>();
+        HashSet<PedLink> ped4OutgoingLinks = new HashSet<PedLink>();
+        ped4IncomingLinks.add(into_ped_4);
+        ped4IncomingLinks.add(ped_3_to_4);
+        ped4IncomingLinks.add(ped_2_to_4);
+        ped4OutgoingLinks.add(out_ped_4);
+        ped4OutgoingLinks.add(ped_4_to_2);
+        ped4OutgoingLinks.add(ped_4_to_3);
+        ped_4.setIncomingLinks(ped4IncomingLinks);
+        ped_4.setOutgoingLinks(ped4OutgoingLinks);
+        ped_4.setPedLinks();
+
+
+        VehIntersection vehInt = middle;
+        ArrayList<PedIntersection> pedInts = new ArrayList<PedIntersection>() {
+            {
+                add(ped_1);
+                add(ped_2);
+                add(ped_3);
+                add(ped_4);
+            }
+        };
+        // pedInts = {ped_1, ped_2, ped_3, ped_4};
+
+        // Intersection: VehIntersection, Set PedIntersection
+
+        Intersection mainIntersection = new Intersection(vehInt, pedInts);
+        mainIntersection.generatePhases();
+
+        // TODO: generate set of all possible phases
 
 
 
-        // TODO: make square vehicle node grid
-
-        // TODO: make square pedestrian node grid
-        PedNode[][] pedNodeGrid = {{}, {}};
+        // PedIntersection[] pedInts2 = {ped_1, null, ped_3, ped_4};
+        // Intersection ignoreSomePedsIntersection = new Intersection(vehInt, pedInts2);
 
 
-        Network University_10th_Ave = new Network(nodes, links);
+        // Network University_10th_Ave = new Network(nodes, links);
+        // Network University_10th_Ave_ped = new Network(pedNodes, pedLinks);
 
-        Network University_10th_Ave_ped = new Network(pedNodes, pedLinks);
 
-        // TODO: make engine network (has everything)
-
-        // TODO: make intersections using the nodes and links
-
-        Intersection mainIntersection = new Intersection(0, 0, 1, University_10th_Ave);
-
+        System.out.println("ooga booga");
 
         /*
         for (Link link : University_10th_Ave.getLinks()) {

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 // import java.util.*;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
  */
 public class Network 
 {
-    private VehNode[] vehicleNodes;
+    // private VehNode[] vehicleNodes;
     private PedNode[] pedestrianNodes;
     private Node[] nodes;
     private Link[] links;
@@ -33,8 +34,8 @@ public class Network
     public HashMap<String, Integer> allSignals; // Integer 1 = green, Integer 0 = red
     public double T = 0;
     public static double timeStep = 15;
-    // public Set<VehNode> vehNodes = new HashSet<VehNode>();
-    // public Set<PedNode> pedNodes = new HashSet<>();
+    public Set<VehNode> vehNodes = new HashSet<VehNode>();
+    public Set<PedNode> pedNodes = new HashSet<PedNode>();
     public List<Intersection> intersections = new ArrayList<>();
     // public Set<PedTurnNode> pedTurnNodes = new HashSet<>(); // Q: what's the point of this??
     public PedNode[][] pedNodeGrid;
@@ -54,6 +55,7 @@ public class Network
         this.vehNodeGrid = new VehNode[][]{{}, {}};
 
 
+
         // initialize signals for each node
         for (Node node : this.nodes) {
             for (Link incoming_link : node.getIncoming()) {
@@ -70,6 +72,36 @@ public class Network
 
     }
 
+    /*
+    public VehNode getVehNode(int index) {
+        for (VehNode n : vehNodes) {
+            if (n.getId() == index) {
+                return n;
+            }
+        }
+        return null;
+    }
+    */
+
+    /*
+    public PedNode getPedNode(int index) {
+        for (PedNode n : pedNodes) {
+            if (n.getId() == index) {
+                return n;
+            }
+        }
+        return null;
+    }
+    */
+
+
+    public VehNode getVehNode(int row, int col) {
+        return vehNodeGrid[row][col];
+    }
+
+    public PedNode getPedNode(int row, int col) {
+        return pedNodeGrid[row][col];
+    }
 
     public void printSignal() {
         for (Node node : this.nodes) {
@@ -83,9 +115,10 @@ public class Network
         }
     }
 
+    /*
     public void setSignal(Link incoming, Link outgoing, int new_signal) {
-        if (incoming.getEnd().getId() == outgoing.getStart().getId()) {
-            Node node = incoming.getEnd();
+        if (incoming.getDestinationNode().getId() == outgoing.getStart().getId()) {
+            Node node = incoming.getDestinationNode();
             String key = incoming.toString() + "::" + outgoing.toString();
             node.signals.put(key, new_signal);
         } else {
@@ -93,6 +126,8 @@ public class Network
         }
 
     }
+
+     */
 
     public Link[] getLinks()
     {
@@ -287,7 +322,7 @@ public class Network
         
         for(Link l : i.getOutgoing())
         {
-            if(l.getEnd() == j)
+            if(l.getDestinationNode() == j)
             {
                 return l;
             }
