@@ -13,6 +13,14 @@ public class Turn {
         this.direction = "" + incoming.getDirection().charAt(0) + outgoing.getDirection().charAt(1);
     }
 
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
+    }
+
     @Override
     public String toString() {
         return "Turn{" +

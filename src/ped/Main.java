@@ -126,7 +126,7 @@ public class Main
 
 
         VehIntersection vehInt = middle;
-        ArrayList<PedIntersection> pedInts = new ArrayList<PedIntersection>() {
+        ArrayList<PedIntersection> pedInts = new ArrayList<>() {
             {
                 add(ped_1);
                 add(ped_2);
@@ -139,11 +139,7 @@ public class Main
         // Intersection: VehIntersection, Set PedIntersection
 
         Intersection mainIntersection = new Intersection(vehInt, pedInts);
-        mainIntersection.generatePhases();
-
-        // TODO: generate set of all possible phases
-
-
+        mainIntersection.generatePhases(); // TODO: working on this
 
         // PedIntersection[] pedInts2 = {ped_1, null, ped_3, ped_4};
         // Intersection ignoreSomePedsIntersection = new Intersection(vehInt, pedInts2);

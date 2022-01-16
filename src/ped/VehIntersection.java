@@ -14,6 +14,7 @@ public class VehIntersection extends VehNode {
     private Set<VehLink> vehLinks;
     private Set<VehLink> incomingVehLinks;
     private Set<VehLink> outgoingVehLinks;
+    private Set<Turn> vehicleTurns;
 
 
 
@@ -26,25 +27,9 @@ public class VehIntersection extends VehNode {
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
     public Network engine;
 
-    public VehIntersection(int row, int col, int id, Network engine)
-    {
-        super(row, col, id, engine);
-        // conflictPoints = new HashMap<Link, Map<Link, Set<ConflictPoint>>>();
-        // allConflicts = new HashMap<Location, ConflictPoint>();
-        vehTurns = new HashMap<VehLink, List<VehLink>>();
-        // pedTurns = new HashMap<PedLink, List<PedLink>>();
-        crosswalks = new HashSet<Crosswalk>();
-        pedIntersections = new HashSet<PedNode>();
-        conflictingVehicles = new HashMap<>();
-        this.engine = engine;
-
-        // TODO: fill out the vehTurns, pedTurns, etc..
-
-    }
-
-
     public VehIntersection(int id) {
         super(id);
+        vehicleTurns = new HashSet<>();
     }
 
     public void setVehLinks() {
@@ -77,6 +62,21 @@ public class VehIntersection extends VehNode {
     public Set<VehLink> getOutgoingLinks() {
         return outgoingVehLinks;
     }
+
+    public Set<Turn> getVehicleTurns() {
+        return vehicleTurns;
+    }
+
+    public void generateVehicleTurns() {
+        // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
+        for (Link in : this.getIncomingLinks()) {
+            for (Link out : this.getOutgoingLinks()) {
+                vehicleTurns.add(new Turn(in, out));
+            }
+        }
+        // System.out.println(vehicleTurns);
+    }
+
 
     /*
     public void addTurns() {
