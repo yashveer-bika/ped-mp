@@ -10,7 +10,7 @@ import java.util.*;
 
 /**
  *
- * @author micha
+ * @author bikax003, micha
  */
 public class Main 
 {

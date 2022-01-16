@@ -1,7 +1,30 @@
 Workflow stuff
 1) Add enforced JavaDocs
 
-1) Make a simple one-way intersecting a one-way, with 2 crosswalks
-2) hand-code some basic flow
-3) build ped-MP control on the simple one-way X one-way
-4) then, .... add turning, 2-way roads, more crosswalks, etc.
+Code functionality
+1) Make a simple one-way intersecting a one-way, with 4 crosswalks (DONE)
+2) Implement network structure
+    a) Node, Links, and components of a single intersection
+    b) Join various traffic intersections together
+    Note: refer to old code for ideas (ped-AIM, AVDTA)
+3) Implement the queueing model equations from Te.
+4) Implement Te's signal timing method. This will probably involve using CPLEX; Rohit has previous experience working with it.
+5) Make a normal 4-way intersection with 4 crosswalks
+6) Run a simulation on the 4-way
+7) Read coacongress data from AVDTA
+    * Look at AVDTA code for reading a network
+    * Copy the coacongress data into our pedMP folder
+    * Copy the AVDTA code for reading a network
+    * Modify the network code to handle ped and veh???
+8) Set up initial conditions on coacongress data
+9) Run simulation on coacongress
+
+
+Code Readability stuff
+1) Make a parent class for VehIntersection and PedIntersection
+    (Intersection) since they are pretty much that same
+2) Rename Intersection class to CombinedIntersection (or something like that)
+
+Code optimization stuff
+1) Write a better phase generator??
+2) Remove redundant memory stuff???

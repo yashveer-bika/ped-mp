@@ -56,10 +56,10 @@ public class Intersection {
         numToDirectionMap.put(9, "WN");
         numToDirectionMap.put(10, "WS");
         numToDirectionMap.put(11, "WE");
-        numToDirectionMap.put(12, "LEFT");
-        numToDirectionMap.put(13, "RIGHT");
-        numToDirectionMap.put(14, "TOP");
-        numToDirectionMap.put(15, "BOTTOM");
+        numToDirectionMap.put(12, "LEFT"); // The crosswalk on the left side
+        numToDirectionMap.put(13, "RIGHT"); // The crosswalk on the right side
+        numToDirectionMap.put(14, "TOP"); // The crosswalk on the top side
+        numToDirectionMap.put(15, "BOTTOM"); // The crosswalk on the bottom side
 
         directionToNumMap = new HashMap<>();
         for(Map.Entry<Integer, String> entry : numToDirectionMap.entrySet()){
@@ -350,14 +350,15 @@ public class Intersection {
         //         at the intersection
         Set<Integer> turns = new HashSet<>();
         turns = new HashSet<>();
-        // TODO: get the directions of the vehicleTurns in my intersection
-        System.out.println("Vehicle Turning directions are");
         for (Turn curTurn : this.vehicleTurns) {
             String curDir = curTurn.getDirection();
-            System.out.println(curDir);
             turns.add(directionToNumMap.get(curDir));
         }
-        System.out.println();
+
+        for (Turn curTurn : this.vehicleTurns) {
+            String curDir = curTurn.getDirection();
+            turns.add(directionToNumMap.get(curDir));
+        }
 
 
         Set<Set<Integer>> possiblePhases = PowerSet.powerSet(turns);
