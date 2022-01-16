@@ -7,32 +7,34 @@ import util.PowerSet;
 
 public class Intersection {
     private VehIntersection vehInt;
-    private ArrayList<PedIntersection> pedInts;
+    private ArrayList<PedIntersection> pedInts; // NOTE: assume length = 4
     private HashSet<Link> allLinks;
-    private Set<Set<Turn>> phases; // a set of a set of turns that can run at once
     private Set<Turn> vehicleTurns;
-    private Set<Turn> pedestrianTurns;
-    private Set<VecPhase> vecPhases;
+    private Set<Crosswalk> crosswalks;
+    private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
+
+    // private Set<VecPhase> vecPhases;
 
 
     // private Set<Turn> allTurns; // DEPRECATED
 
     private HashMap<String, Set<String>> conflictingVehicleDirections;
-    private HashMap<Integer, Set<Integer>> conflictMap; // includes veh and ped
     private HashMap<String, Set<String>> vehPedConflictMap;
+    private HashMap<Integer, Set<Integer>> conflictMap; // includes veh and ped
     private HashMap<Integer, String> numToDirectionMap;
     private HashMap<String, Integer> directionToNumMap;
+    private HashMap<Phase, Integer> phaseToNumMap;
+    private HashMap<Integer, Phase> numToPhaseMap;
 
 
-    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts) {
+    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts, Set<Crosswalk> crosswalks) {
         this.vehInt = vehInt;
+        assert pedInts.size() == 4;
         this.pedInts = pedInts;
         vehInt.generateVehicleTurns();
         this.vehicleTurns = vehInt.getVehicleTurns();
-        this.pedestrianTurns = new HashSet<Turn>();
+        this.crosswalks = crosswalks;
         this.conflictMap = new HashMap<Integer, Set<Integer>>();
-        
-
         this.allLinks = new HashSet<Link>();
 
         // get all the pedestrian links
@@ -43,6 +45,7 @@ public class Intersection {
         // get all vehicle links
         allLinks.addAll(vehInt.getVehLinks());
 
+        // create numToDirectionMap
         numToDirectionMap = new HashMap<>();
         numToDirectionMap.put(0, "NS");
         numToDirectionMap.put(1, "NW");
@@ -61,10 +64,28 @@ public class Intersection {
         numToDirectionMap.put(14, "TOP"); // The crosswalk on the top side
         numToDirectionMap.put(15, "BOTTOM"); // The crosswalk on the bottom side
 
+        // create directionToNumMap (inverse mapping)
         directionToNumMap = new HashMap<>();
         for(Map.Entry<Integer, String> entry : numToDirectionMap.entrySet()){
             directionToNumMap.put(entry.getValue(), entry.getKey());
         }
+
+
+        // make a hashmap, (mapping turn to phase)
+        this.phaseToNumMap = new HashMap<>();
+        for (Turn turn : this.vehicleTurns) {
+            this.phaseToNumMap.put(turn, turn.getId());
+        }
+        for (Crosswalk cWalk : this.crosswalks) {
+            this.phaseToNumMap.put(cWalk, cWalk.getId());
+        }
+
+        // create numToPhaseMap (inverse mapping)
+        this.numToPhaseMap = new HashMap<>();
+        for(Map.Entry<Phase, Integer> entry : this.phaseToNumMap.entrySet()){
+            this.numToPhaseMap.put(entry.getValue(), entry.getKey());
+        }
+
 
 
     }
@@ -88,7 +109,7 @@ public class Intersection {
         // the possible pedestrian directions are
         // NS/SN 1/3, NS/SN 2/4, EW/WE 1/2, EW/WE 3/4
         // 4 possible (12-15)
-        // each phase is a 16-element binary vector
+        // each phaseSet is a 16-element binary vector
         //
         // vehPedConflictMap = new HashMap<String, Set<String>>();
 
@@ -215,163 +236,27 @@ public class Intersection {
         conflictMap.put(15, conflictPedBottom);
     }
 
-    public void generateVehicleConflictMap(){
-        // the possible vehicle directions are
-        // "NS", "NW", "NE", "EN", "ES", "EW", "SN", "SW", "SE", "WN", "WS", "WE"
-        conflictingVehicleDirections = new HashMap<String, Set<String>>();
 
-        // set of directions that conflict with NS
-        HashSet<String> conflictNS = new HashSet<String>();
-        String[] confDirsNS = {"EW", "WE", "ES", "WS", "WN"};
-        List allNS = Arrays.asList(confDirsNS);
-        conflictNS.addAll(allNS);
-        conflictingVehicleDirections.put("NS", conflictNS);
-
-        // set of directions that conflict with SN
-        HashSet<String> conflictSN = new HashSet<String>();
-        String[] confDirsSN = {"EW", "WE", "EN", "WN", "ES"};
-        List allSN = Arrays.asList(confDirsSN);
-        conflictSN.addAll(allSN);
-        conflictingVehicleDirections.put("SN", conflictSN);
-
-        // set of directions that conflict with EW
-        HashSet<String> conflictEW = new HashSet<String>();
-        String[] confDirsEW = {"NS", "SN", "NW", "SW", "NE"};
-        List allEW = Arrays.asList(confDirsEW);
-        conflictEW.addAll(allEW);
-        conflictingVehicleDirections.put("EW", conflictEW);
-
-        // set of directions that conflict with WE
-        HashSet<String> conflictWE = new HashSet<String>();
-        String[] confDirsWE = {"NS", "SN", "SE", "SW", "NE"};
-        List allWE = Arrays.asList(confDirsWE);
-        conflictWE.addAll(allWE);
-        conflictingVehicleDirections.put("WE", conflictWE);
-
-        // set of directions that conflict with NW
-        HashSet<String> conflictNW = new HashSet<String>();
-        String[] confDirsNW = {"EW", "SW"};
-        List allNW = Arrays.asList(confDirsNW);
-        conflictNW.addAll(allNW);
-        conflictingVehicleDirections.put("NW", conflictNW);
-
-        // set of directions that conflict with WN
-        HashSet<String> conflictWN = new HashSet<String>();
-        String[] confDirsWN = {"NS", "NE", "EW", "EN", "SN", "SW"};
-        List allWN = Arrays.asList(confDirsWN);
-        conflictWN.addAll(allWN);
-        conflictingVehicleDirections.put("WN", conflictWN);
-
-        // set of directions that conflict with NE
-        HashSet<String> conflictNE = new HashSet<String>();
-        String[] confDirsNE = {"ES", "EW", "SN", "SE", "WN", "WE"};
-        List allNE = Arrays.asList(confDirsNE);
-        conflictNE.addAll(allNE);
-        conflictingVehicleDirections.put("NE", conflictNE);
-
-        // set of directions that conflict with EN
-        HashSet<String> conflictEN = new HashSet<String>();
-        String[] confDirsEN = {"SN", "WN"};
-        List allEN = Arrays.asList(confDirsEN);
-        conflictEN.addAll(allEN);
-        conflictingVehicleDirections.put("EN", conflictEN);
-
-        // set of directions that conflict with ES
-        HashSet<String> conflictES = new HashSet<String>();
-        String[] confDirsES = {"NS", "NE", "SN", "SW", "WS", "WE"};
-        List allES = Arrays.asList(confDirsES);
-        conflictES.addAll(allES);
-        conflictingVehicleDirections.put("ES", conflictES);
-
-        // set of directions that conflict with SE
-        HashSet<String> conflictSE = new HashSet<String>();
-        String[] confDirsSE = {"NE", "WE"};
-        List allSE = Arrays.asList(confDirsSE);
-        conflictSE.addAll(allSE);
-        conflictingVehicleDirections.put("SE", conflictSE);
-
-        // set of directions that conflict with SW
-        HashSet<String> conflictSW = new HashSet<String>();
-        String[] confDirsSW = {"NS", "NW", "ES", "EW", "WN", "WE"};
-        List allSW = Arrays.asList(confDirsSW);
-        conflictSW.addAll(allSW);
-        conflictingVehicleDirections.put("SW", conflictSW);
-
-        // set of directions that conflict with WS
-        HashSet<String> conflictWS = new HashSet<String>();
-        String[] confDirsWS = {"NS", "ES"};
-        List allWS = Arrays.asList(confDirsWS);
-        conflictWS.addAll(allWS);
-        conflictingVehicleDirections.put("WS", conflictWS);
-
-        System.out.println(conflictingVehicleDirections);
-    }
-
-    // HELPER FOR generatePotentialPhases()
-    // makes a powerSet and filters out conflicting sets as it goes
-
-    public static <T> Set<Set<T>> filteredPowerSet(Set<T> originalSet) {
-        Set<Set<T>> sets = new HashSet<Set<T>>();
-        if (originalSet.isEmpty()) {
-            sets.add(new HashSet<T>());
-            return sets;
-        }
-        List<T> list = new ArrayList<T>(originalSet);
-        T head = list.get(0);
-        Set<T> rest = new HashSet<T>(list.subList(1, list.size()));
-        for (Set<T> set : filteredPowerSet(rest)) {
-            Set<T> newSet = new HashSet<T>();
-            newSet.add(head);
-            newSet.addAll(set);
-            // FILTER IS HERE
-            sets.add(newSet);
-            sets.add(set);
-        }
-        return sets;
-    }
-
-    public boolean isConflicting(Turn requiredTurn, Turn potentialTurn) {
-        String requiredDir = requiredTurn.getDirection();
-        String potentialDir = potentialTurn.getDirection();
-
-        Set<String> conflictDirs = conflictingVehicleDirections.get(requiredDir);
-        return conflictDirs.contains(potentialDir);
-    }
-
-    public boolean isConflictPhase(Set<Turn> phase) {
-
-        return false; // TODO: update
-    }
-
-    public void generatePhases() {
-        generateVehPedConflictMap();
-
-        // 'turns' here refers to the integer corresponding to each movement
-        //         at the intersection
-        Set<Integer> turns = new HashSet<>();
-        turns = new HashSet<>();
-        for (Turn curTurn : this.vehicleTurns) {
+    public Set<Integer> generatePhaseNums() {
+        Set<Integer> allPhaseNums = new HashSet<>();
+        allPhaseNums = new HashSet<>();
+        for (Phase curTurn : this.vehicleTurns) {
             String curDir = curTurn.getDirection();
-            turns.add(directionToNumMap.get(curDir));
+            allPhaseNums.add(directionToNumMap.get(curDir));
         }
-
-        for (Turn curTurn : this.vehicleTurns) {
-            String curDir = curTurn.getDirection();
-            turns.add(directionToNumMap.get(curDir));
+        //
+        for (Phase cWalk : this.crosswalks) {
+            String curDir = cWalk.getDirection();
+            allPhaseNums.add(directionToNumMap.get(curDir));
         }
+        return allPhaseNums;
+    }
 
-
-        Set<Set<Integer>> possiblePhases = PowerSet.powerSet(turns);
-
-        System.out.println(possiblePhases.size());
-
-        // TODO: verify that code below here works
-
-        Set<Set<Integer>> feasiblePhases = new HashSet<>();
-        Set<Set<Integer>> conflictPhases = new HashSet<>();
+    public Set<Set<Integer>> filterFeasiblePhaseSets(Set<Set<Integer>> possiblePhaseSets) {
+        Set<Set<Integer>> feasiblePhaseSets = new HashSet<>();
 
         // Filter possiblePhases using conflictMap
-        for (Set<Integer> possiblePhase : possiblePhases) {
+        for (Set<Integer> possiblePhaseSet : possiblePhaseSets) {
             // if this phase has a conflict, ignore it
             // (1) check for conflict
             boolean hasConflict = false;
@@ -379,39 +264,17 @@ public class Intersection {
             Set<Integer> nonConflicting = new HashSet<>();
             Set<Integer> conflicts;
 
-            /*
-            System.out.println("possiblePhase");
-            possiblePhase = new HashSet<Integer>();
-            possiblePhase.add(0);
-            possiblePhase.add(5);
-            possiblePhase.add(7);
-            System.out.println(possiblePhase);
-            */
-
-            for (Integer turn: possiblePhase) {
+            for (Integer turn: possiblePhaseSet) {
                 conflicts = new CopyOnWriteArraySet( conflictMap.get(turn) );
-
-                /*
-                System.out.println("turn");
-                System.out.println(turn);
-                System.out.println("potential conflicts");
-                System.out.println(conflicts);
-                System.out.println("non-conflicting");
-                System.out.println(nonConflicting);
-                 */
 
                 // Do set intersection of conflicts and nonconflicting turns
                 conflicts.retainAll(nonConflicting);
-                // System.out.println("conflicts");
-                // System.out.println(conflicts);
 
                 // if there is no conflict, our current turn is nonconflicting with
                 // previous turns
                 if (conflicts.size() == 0) {
-                    // System.out.println("A");
                     nonConflicting.add(turn);
                 } else { // we have a conflict, must end
-                    // System.out.println("B");
                     hasConflict = true;
                     break;
                 }
@@ -423,18 +286,56 @@ public class Intersection {
                 continue;
                 // conflictPhases.add(possiblePhase);
             } else {
-                feasiblePhases.add(possiblePhase);
+                feasiblePhaseSets.add(possiblePhaseSet);
             }
 
             // System.out.println(feasiblePhases.size());
             // break;
-
         }
-        System.out.println("Number of feasible phases");
-        System.out.println(feasiblePhases.size());
-        System.out.println("Feasible phases");
-        for (Set<Integer> phase : feasiblePhases) {
-            System.out.println(phase);
+        return feasiblePhaseSets;
+    }
+
+    // TODO: CONVERT Set<Set<Integer>> feasiblePhases, into Set<Set<Phase>> feasiblePhases
+    public Set<Set<Phase>> convertIntToPhase(Set<Set<Integer>> feasibleIntsSets) {
+        Set<Set<Phase>> feasiblePhaseSets = new HashSet<>();
+        for (Set<Integer> intSet : feasibleIntsSets) {
+            Set<Phase> curPhases = new HashSet<>();
+            for (Integer inte : intSet) {
+                curPhases.add(numToPhaseMap.get(inte));
+            }
+            feasiblePhaseSets.add(curPhases);
+        }
+
+        return feasiblePhaseSets;
+    }
+
+    /**
+     * generate all feasible phaseSets (groups of phases)
+     * An example of a single feasible phaseSet:
+     *      {NS, SN, LEFT, RIGHT}
+     */
+    public void generatePhaseSet() {
+        generateVehPedConflictMap();
+        Set<Integer> allPhaseNums = generatePhaseNums();
+        Set<Set<Integer>> possiblePhaseSets = PowerSet.powerSet(allPhaseNums);
+
+        Set<Set<Integer>> feasiblePhaseSets = filterFeasiblePhaseSets(possiblePhaseSets);
+
+
+        /*
+        System.out.println("Number of feasible phase sets");
+        System.out.println(feasiblePhaseSets.size());
+        System.out.println("Feasible phase sets");
+
+        for (Set<Integer> phaseSet : feasiblePhaseSets) {
+            System.out.println(phaseSet);
+        }
+         */
+
+        this.setOfFeasiblePhaseGrouping = convertIntToPhase(feasiblePhaseSets);
+        System.out.println("Phase Sets");
+        for (Set<Phase> phaseSet : setOfFeasiblePhaseGrouping) {
+            System.out.println(phaseSet);
         }
 
 

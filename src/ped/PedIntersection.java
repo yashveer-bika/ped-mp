@@ -19,8 +19,8 @@ public class PedIntersection extends PedNode {
         pedLinks = new HashSet<PedLink>();
         pedLinks.addAll(incomingLinks);
         pedLinks.addAll(outgoingLinks);
-
     }
+
     public void setPedLinks(Set<PedLink> newLinks) {
         pedLinks = newLinks;
     }
@@ -44,6 +44,8 @@ public class PedIntersection extends PedNode {
     public Set<PedLink> getOutgoingLinks() {
         return outgoingLinks;
     }
+
+
 
     /*
     public void setControl(IntersectionControl c)

@@ -26,5 +26,9 @@ Code Readability stuff
 2) Rename Intersection class to CombinedIntersection (or something like that)
 
 Code optimization stuff
-1) Write a better phase generator??
-2) Remove redundant memory stuff???
+1) Put the following at the network level instead of intersection:
+    private HashMap<Integer, Set<Integer>> conflictMap; // includes veh and ped
+    private HashMap<Integer, String> numToDirectionMap;
+    private HashMap<String, Integer> directionToNumMap;
+2) Write a better phase generator??
+3) Remove redundant memory stuff???

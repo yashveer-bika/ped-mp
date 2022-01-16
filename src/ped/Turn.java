@@ -1,8 +1,8 @@
 package ped;
 
-public class Turn {
-    private Link i, j;
-    private String direction;
+public class Turn extends Phase {
+    // private Link i, j;
+    // private String direction;
     // direction: "NS", "NW", "NE", "EN", "ES", "EW", "SN", "SW", "SE", "WN", "WS", "WE"
 
     public Turn(Link incoming, Link outgoing) {
@@ -11,22 +11,6 @@ public class Turn {
         i = incoming;
         j = outgoing;
         this.direction = "" + incoming.getDirection().charAt(0) + outgoing.getDirection().charAt(1);
-    }
-
-    public String getDirection() {
-        return direction;
-    }
-
-    public void setDirection(String direction) {
-        this.direction = direction;
-    }
-
-    @Override
-    public String toString() {
-        return "Turn{" +
-                "i=" + i +
-                ", j=" + j +
-                ", direction='" + direction + '\'' +
-                '}';
+        setId();
     }
 }

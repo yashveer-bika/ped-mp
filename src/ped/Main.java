@@ -63,14 +63,27 @@ public class Main
         PedLink out_ped_4 = new PedLink(ped_4, null, 200, "WE");
 
         // crosswalks
+        Set<Crosswalk> crosswalks = new HashSet<>();
         PedLink ped_1_to_2 = new PedLink(ped_1, ped_2, 200, "WE");
-        PedLink ped_1_to_3 = new PedLink(ped_1, ped_3, 200, "NS");
-        PedLink ped_2_to_4 = new PedLink(ped_2, ped_4, 200, "NS");
-        PedLink ped_3_to_4 = new PedLink(ped_3, ped_4, 200, "WE");
         PedLink ped_2_to_1 = new PedLink(ped_2, ped_1, 200, "EW");
+        Crosswalk cTop = new Crosswalk(ped_1_to_2, ped_2_to_1, "TOP");
+        crosswalks.add(cTop);
+
+        PedLink ped_1_to_3 = new PedLink(ped_1, ped_3, 200, "NS");
         PedLink ped_3_to_1 = new PedLink(ped_3, ped_1, 200, "SN");
+        Crosswalk cLeft = new Crosswalk(ped_1_to_3, ped_3_to_1, "LEFT");
+        crosswalks.add(cLeft);
+
+        PedLink ped_2_to_4 = new PedLink(ped_2, ped_4, 200, "NS");
         PedLink ped_4_to_2 = new PedLink(ped_4, ped_2, 200, "SN");
+        Crosswalk cRight = new Crosswalk(ped_2_to_4, ped_4_to_2, "RIGHT");
+        crosswalks.add(cRight);
+
+        PedLink ped_3_to_4 = new PedLink(ped_3, ped_4, 200, "WE");
         PedLink ped_4_to_3 = new PedLink(ped_4, ped_3, 200, "EW");
+        Crosswalk cBottom = new Crosswalk(ped_3_to_4, ped_4_to_3, "BOTTOM");
+        crosswalks.add(cBottom);
+
 
         // ped 1
         HashSet<PedLink> ped1IncomingLinks = new HashSet<PedLink>();
@@ -138,8 +151,10 @@ public class Main
 
         // Intersection: VehIntersection, Set PedIntersection
 
-        Intersection mainIntersection = new Intersection(vehInt, pedInts);
-        mainIntersection.generatePhases(); // TODO: working on this
+        Intersection mainIntersection = new Intersection(vehInt, pedInts, crosswalks);
+        mainIntersection.generatePhaseSet();
+
+
 
         // PedIntersection[] pedInts2 = {ped_1, null, ped_3, ped_4};
         // Intersection ignoreSomePedsIntersection = new Intersection(vehInt, pedInts2);
