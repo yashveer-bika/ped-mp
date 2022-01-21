@@ -19,10 +19,10 @@ public class Link
     private boolean activated;
 
     private boolean entry = false;
-    private double cur_queue_length;
+    private double queue_length;
     
     // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
-    private double C;
+    private double capacity;
     
     // the start and end nodes of this link. Links are directed.
     private Node start, destination;
@@ -41,7 +41,7 @@ public class Link
     {
         this.start = start;
         this.destination = destination;
-        this.C = C;
+        this.capacity = C;
         this.entry = entry;
         
         if(start != null)
@@ -59,7 +59,7 @@ public class Link
     {
         this.start = start;
         this.destination = destination;
-        this.C = C;
+        this.capacity = C;
         this.direction = direction;
         // this.type = type;
 
@@ -78,7 +78,7 @@ public class Link
     {
         this.start = start;
         this.destination = destination;
-        this.C = C;
+        this.capacity = C;
 
         if(start != null)
         {
@@ -134,22 +134,22 @@ public class Link
 
     // move num_cars from this to destination_link
     public void moveCars(Link destination_link, double num_cars) {
-        if (num_cars > this.cur_queue_length) {
+        if (num_cars > this.queue_length) {
             return; // TODO: throw an error for moving more cars than I have
         } else {
-            this.setQueueLength(this.cur_queue_length - num_cars);
-            destination_link.setQueueLength(destination_link.cur_queue_length + num_cars);
+            this.setQueueLength(this.queue_length - num_cars);
+            destination_link.setQueueLength(destination_link.queue_length + num_cars);
         }
     }
 
     // updates the flow on this link
     public void setQueueLength(double cur_queue_length)
     {
-        if (cur_queue_length > C) {
-            throw new IllegalArgumentException("Input is too large, must be less than capacity");
+        if (cur_queue_length > capacity) {
+            throw new IllegalArgumentException("New queue length is too large, must be less than capacity");
         }
 
-        this.cur_queue_length = cur_queue_length;
+        this.queue_length = cur_queue_length;
     }
 
     

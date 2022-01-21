@@ -7,9 +7,9 @@ public class VehNode extends Node {
     protected ArrayList<VehLink> vehOutgoing;
     protected ArrayList<VehLink> vehIncoming;
     protected HashSet<Vehicle> outgoingVehicles;
-    public Network engine;
+    public OldNetwork engine;
 
-    public VehNode(int row, int col, int id, Network engine)
+    public VehNode(int row, int col, int id, OldNetwork engine)
     {
         super(row, col, id);
         vehOutgoing = new ArrayList<VehLink>();

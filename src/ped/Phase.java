@@ -22,6 +22,7 @@ public class Phase {
     protected int id;
     private HashMap<Integer, String> numToDirectionMap;
     private HashMap<String, Integer> directionToNumMap;
+    protected int queue_length;
 
     public Phase() {
         // create numToDirectionMap

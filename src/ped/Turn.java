@@ -7,6 +7,7 @@ public class Turn extends Phase {
 
     public Turn(Link incoming, Link outgoing) {
         // TODO: enforce that the links are connected
+        assert incoming.getDestinationNode() == outgoing.getStart();
 
         i = incoming;
         j = outgoing;

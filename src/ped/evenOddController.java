@@ -2,11 +2,11 @@ package ped;
 
 public class evenOddController {
     // variables
-    Network network;
+    OldNetwork network;
     int time;
 
 
-    public evenOddController(Network network) {
+    public evenOddController(OldNetwork network) {
         this.network = network;
         this.time = 0;
     }

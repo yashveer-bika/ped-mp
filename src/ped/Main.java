@@ -16,35 +16,36 @@ public class Main
 {
     public static void main(String[] args)
     {
-        VehIntersection middle = new VehIntersection(0);
+        VehIntersection leftVehInt = new VehIntersection(0);
         VehNode top = new VehNode(1);
         VehNode bottom = new VehNode(2);
         VehNode left = new VehNode(3);
-        VehNode right = new VehNode(4);
+        VehIntersection rightVehInt = new VehIntersection(4);
+        VehNode right = rightVehInt;
+
 
         // incoming links
-        VehLink B = new VehLink(top, middle, 200, "NS");
-        VehLink A = new VehLink(left, middle, 200, "WE");
+        VehLink B = new VehLink(top, leftVehInt, 200, "NS");
+        VehLink A = new VehLink(left, leftVehInt, 200, "WE");
         HashSet<VehLink> incomingLinks = new HashSet<VehLink>();
         incomingLinks.add(A);
         incomingLinks.add(B);
-        middle.setIncomingLinks(incomingLinks);
+        leftVehInt.setIncomingLinks(incomingLinks);
 
         // outgoing links
-        VehLink C = new VehLink(middle, right, 200, "WE");
-        VehLink D = new VehLink(middle, bottom, 200, "NS");
+        VehLink C = new VehLink(leftVehInt, right, 200, "WE");
+        VehLink D = new VehLink(leftVehInt, bottom, 200, "NS");
         HashSet<VehLink> outgoingLinks = new HashSet<VehLink>();
         outgoingLinks.add(C);
         outgoingLinks.add(D);
-        middle.setOutgoingLinks(outgoingLinks);
+        leftVehInt.setOutgoingLinks(outgoingLinks);
 
         // add links
         // NOTE: this uses the incoming and outgoing vehicle links to set allLinks
-        middle.setVehLinks();
+        leftVehInt.setVehLinks();
 
         // Node[] nodes = {middle, top, bottom, left, right};
         // Link[] links = {A, B, C, D};
-
         PedIntersection ped_1 = new PedIntersection(6);
         PedIntersection ped_2 = new PedIntersection(7);
         PedIntersection ped_3 = new PedIntersection(8);
@@ -83,7 +84,6 @@ public class Main
         PedLink ped_4_to_3 = new PedLink(ped_4, ped_3, 200, "EW");
         Crosswalk cBottom = new Crosswalk(ped_3_to_4, ped_4_to_3, "BOTTOM");
         crosswalks.add(cBottom);
-
 
         // ped 1
         HashSet<PedLink> ped1IncomingLinks = new HashSet<PedLink>();
@@ -137,8 +137,7 @@ public class Main
         ped_4.setOutgoingLinks(ped4OutgoingLinks);
         ped_4.setPedLinks();
 
-
-        VehIntersection vehInt = middle;
+        VehIntersection vehInt = leftVehInt;
         ArrayList<PedIntersection> pedInts = new ArrayList<>() {
             {
                 add(ped_1);
@@ -150,21 +149,159 @@ public class Main
         // pedInts = {ped_1, ped_2, ped_3, ped_4};
 
         // Intersection: VehIntersection, Set PedIntersection
-
         Intersection mainIntersection = new Intersection(vehInt, pedInts, crosswalks);
         mainIntersection.generatePhaseSet();
-
-
 
         // PedIntersection[] pedInts2 = {ped_1, null, ped_3, ped_4};
         // Intersection ignoreSomePedsIntersection = new Intersection(vehInt, pedInts2);
 
 
+        /*** ***/
+        // BUILD THE RIGHT SIDE INTERSECTION
+        /*** ***/
+
+
+        VehNode top_R = new VehNode(5);
+        VehNode bottom_R = new VehNode(6);
+        VehNode left_R = leftVehInt;
+        VehNode right_R = new VehNode(7);
+
+        // incoming links
+        VehLink B_R = new VehLink(top_R, rightVehInt, 200, "NS");
+        VehLink A_R = new VehLink(left_R, rightVehInt, 200, "WE");
+        HashSet<VehLink> incomingLinks_R = new HashSet<>();
+        incomingLinks_R.add(A_R);
+        incomingLinks_R.add(B_R);
+        rightVehInt.setIncomingLinks(incomingLinks_R);
+
+        // outgoing links
+        VehLink C_R = new VehLink(rightVehInt, right_R, 200, "WE");
+        VehLink D_R = new VehLink(rightVehInt, bottom_R, 200, "NS");
+        HashSet<VehLink> outgoingLinks_R = new HashSet<>();
+        outgoingLinks_R.add(C_R);
+        outgoingLinks_R.add(D_R);
+        rightVehInt.setOutgoingLinks(outgoingLinks_R);
+
+        // add links
+        // NOTE: this uses the incoming and outgoing vehicle links to set allLinks
+        rightVehInt.setVehLinks();
+
+        // Node[] nodes = {middle, top_R, bottom, left, right};
+        // Link[] links = {A, B, C, D};
+        PedIntersection ped_1_R = new PedIntersection(6);
+        PedIntersection ped_2_R = new PedIntersection(7);
+        PedIntersection ped_3_R = new PedIntersection(8);
+        PedIntersection ped_4_R = new PedIntersection(9);
+
+        // entry links
+        PedLink into_ped_1_R = new PedLink(null, ped_1_R, 200, "NS");
+        PedLink into_ped_2_R = new PedLink(null, ped_2_R, 200, "NS");
+        PedLink into_ped_3_R = new PedLink(null, ped_3_R, 200, "SN");
+        PedLink into_ped_4_R = new PedLink(null, ped_4_R, 200, "SN");
+
+        // exit links
+        PedLink out_ped_1_R = new PedLink(ped_1_R, null, 200, "EW");
+        PedLink out_ped_2_R = new PedLink(ped_2_R, null, 200, "WE");
+        PedLink out_ped_3_R = new PedLink(ped_3_R, null, 200, "EW");
+        PedLink out_ped_4_R = new PedLink(ped_4_R, null, 200, "WE");
+
+        // crosswalks
+        Set<Crosswalk> crosswalks_R = new HashSet<>();
+        PedLink ped_1_to_2_R = new PedLink(ped_1_R, ped_2_R, 200, "WE");
+        PedLink ped_2_to_1_R = new PedLink(ped_2_R, ped_1_R, 200, "EW");
+        Crosswalk cTop_R = new Crosswalk(ped_1_to_2_R, ped_2_to_1_R, "TOP");
+        crosswalks_R.add(cTop_R);
+
+        PedLink ped_1_to_3_R = new PedLink(ped_1_R, ped_3_R, 200, "NS");
+        PedLink ped_3_to_1_R = new PedLink(ped_3_R, ped_1_R, 200, "SN");
+        Crosswalk cLeft_R = new Crosswalk(ped_1_to_3_R, ped_3_to_1_R, "LEFT");
+        crosswalks_R.add(cLeft_R);
+
+        PedLink ped_2_to_4_R = new PedLink(ped_2_R, ped_4_R, 200, "NS");
+        PedLink ped_4_to_2_R = new PedLink(ped_4_R, ped_2_R, 200, "SN");
+        Crosswalk cRight_R = new Crosswalk(ped_2_to_4_R, ped_4_to_2_R, "RIGHT");
+        crosswalks_R.add(cRight_R);
+
+        PedLink ped_3_to_4_R = new PedLink(ped_3_R, ped_4_R, 200, "WE");
+        PedLink ped_4_to_3_R = new PedLink(ped_4_R, ped_3_R, 200, "EW");
+        Crosswalk cBottom_R = new Crosswalk(ped_3_to_4_R, ped_4_to_3_R, "BOTTOM");
+        crosswalks_R.add(cBottom_R);
+
+        // ped 1
+        HashSet<PedLink> ped1IncomingLinks_R = new HashSet<PedLink>();
+        HashSet<PedLink> ped1OutgoingLinks_R = new HashSet<PedLink>();
+        ped1IncomingLinks_R.add(into_ped_1_R);
+        ped1IncomingLinks_R.add(ped_2_to_1_R);
+        ped1IncomingLinks_R.add(ped_3_to_1_R);
+        ped1OutgoingLinks_R.add(out_ped_1_R);
+        ped1OutgoingLinks_R.add(ped_1_to_3_R);
+        ped1OutgoingLinks_R.add(ped_1_to_2_R);
+        ped_1_R.setIncomingLinks(ped1IncomingLinks_R);
+        ped_1_R.setOutgoingLinks(ped1OutgoingLinks_R);
+        ped_1_R.setPedLinks();
+
+        // ped2
+        HashSet<PedLink> ped2IncomingLinks_R = new HashSet<PedLink>();
+        HashSet<PedLink> ped2OutgoingLinks_R = new HashSet<PedLink>();
+        ped2IncomingLinks_R.add(into_ped_2_R);
+        ped2IncomingLinks_R.add(ped_4_to_2_R);
+        ped2IncomingLinks_R.add(ped_1_to_2_R);
+        ped2OutgoingLinks_R.add(out_ped_2_R);
+        ped2OutgoingLinks_R.add(ped_2_to_1_R);
+        ped2OutgoingLinks_R.add(ped_2_to_4_R);
+        ped_2_R.setIncomingLinks(ped2IncomingLinks_R);
+        ped_2_R.setOutgoingLinks(ped2OutgoingLinks_R);
+        ped_2_R.setPedLinks();
+
+        // ped3
+        HashSet<PedLink> ped3IncomingLinks_R = new HashSet<PedLink>();
+        HashSet<PedLink> ped3OutgoingLinks_R = new HashSet<PedLink>();
+        ped3IncomingLinks_R.add(into_ped_3_R);
+        ped3IncomingLinks_R.add(ped_4_to_3_R);
+        ped3IncomingLinks_R.add(ped_1_to_3_R);
+        ped3OutgoingLinks_R.add(out_ped_3_R);
+        ped3OutgoingLinks_R.add(ped_3_to_1_R);
+        ped3OutgoingLinks_R.add(ped_3_to_4_R);
+        ped_3_R.setIncomingLinks(ped3IncomingLinks_R);
+        ped_3_R.setOutgoingLinks(ped3OutgoingLinks_R);
+        ped_3_R.setPedLinks();
+
+        // ped 4
+        HashSet<PedLink> ped4IncomingLinks_R = new HashSet<PedLink>();
+        HashSet<PedLink> ped4OutgoingLinks_R = new HashSet<PedLink>();
+        ped4IncomingLinks_R.add(into_ped_4_R);
+        ped4IncomingLinks_R.add(ped_3_to_4_R);
+        ped4IncomingLinks_R.add(ped_2_to_4_R);
+        ped4OutgoingLinks_R.add(out_ped_4_R);
+        ped4OutgoingLinks_R.add(ped_4_to_2_R);
+        ped4OutgoingLinks_R.add(ped_4_to_3_R);
+        ped_4_R.setIncomingLinks(ped4IncomingLinks_R);
+        ped_4_R.setOutgoingLinks(ped4OutgoingLinks_R);
+        ped_4_R.setPedLinks();
+
+        VehIntersection vehInt_R = rightVehInt;
+        ArrayList<PedIntersection> pedInts_R = new ArrayList<>() {
+            {
+                add(ped_1_R);
+                add(ped_2_R);
+                add(ped_3_R);
+                add(ped_4_R);
+            }
+        };
+        // pedInts = {ped_1, ped_2, ped_3, ped_4};
+
+        // Intersection: VehIntersection, Set PedIntersection
+        Intersection mainIntersection_R = new Intersection(vehInt_R, pedInts_R, crosswalks_R);
+        mainIntersection_R.generatePhaseSet();
+        System.out.println(mainIntersection_R.getSetOfFeasiblePhaseGrouping());
+
+        mainIntersection_R.iterateTimeStep();
+
+
+
         // Network University_10th_Ave = new Network(nodes, links);
         // Network University_10th_Ave_ped = new Network(pedNodes, pedLinks);
 
-
-        System.out.println("ooga booga");
 
         /*
         for (Link link : University_10th_Ave.getLinks()) {
@@ -175,9 +312,6 @@ public class Main
             link.setQueueLength(100);
         }
         */
-
-
-
 
         // NOTE: CAR MOVEMENT
 
@@ -245,7 +379,6 @@ public class Main
             System.out.println(link.getQueueLength());
         }
         */
-
 
         //        for (Link link : University_10th_Ave.getLinks()) {
 //            System.out.println(link.getSignals());
@@ -359,21 +492,6 @@ public class Main
 //
 //        }
 
-
-
-
-        /*  TODO:
-             hardcode intersection conflict
-
-            Assume we follow a hardcoded cycle
-            1) CE is green, CD is green, CF is green
-            2) AE is green, BE is green
-            3) AF is green, BD is green, BE is green
-
-         */
-        // TODO: make turning ratios happens
-        // TODO: define signal on/off
-        // TODO: define a move function that moves cars according to the current state
 
     }
 }

@@ -25,7 +25,7 @@ public class VehIntersection extends VehNode {
     private HashMap<Vehicle, Vehicle> conflictingVehicles;
 
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
-    public Network engine;
+    public OldNetwork engine;
 
     public VehIntersection(int id) {
         super(id);

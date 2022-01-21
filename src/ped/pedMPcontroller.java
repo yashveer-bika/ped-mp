@@ -1,31 +1,69 @@
 package ped;
 
-public class pedMPcontroller {
+import java.util.Set;
+
+import ilog.concert.*;
+import ilog.cplex.*;
+
+
+public class pedMPcontroller implements Controller {
     // variables
-    Network network;
-    int time;
+    Intersection intersection;
 
 
-    public pedMPcontroller(Network network) {
-        this.network = network;
-        this.time = 0;
+    public pedMPcontroller(Intersection intersection) {
+        this.intersection = intersection;
     }
 
-    // THIS IS THE FUNCTION THAT DETERMINES HOW THE SIGNAL CONTROLLER WORKS
-    public void runSimulation(int timeSteps) {
-        while (time < timeSteps) {
+    public Set<Phase> selectBestPhaseSet() {
+        Set<Set<Phase>> setOfFeasiblePhaseGrouping = intersection.getSetOfFeasiblePhaseGrouping();
 
-            // set signals for every node based on the state of the network
+        // LOOK AT EACH Set<Phase> with setOfFeasiblePhaseGrouping
+        // and find the best one (maximizes objective function)
+        // TODO: implement the pedMP logic
 
+        try {
+            // create cplex environment
+            IloCplex cplex = new IloCplex();
 
+            // create decision variables
+            IloNumVar x = cplex.numVar(0, Double.MAX_VALUE, "x");
+            IloNumVar y = cplex.numVar(0, Double.MAX_VALUE, "y");
 
-            time += 1;
+            // create constraints
+            IloLinearNumExpr expr = cplex.linearNumExpr();
+            expr.addTerm(1, x);
+            expr.addTerm(1, y);
+            cplex.addLe(expr, 1);
+            // x + y <= 1
+
+            // add objective
+            IloLinearNumExpr objExpr = cplex.linearNumExpr();
+            objExpr.addTerm(3, x);
+            objExpr.addTerm(2, y);
+            cplex.addMaximize(objExpr);
+            // max 3x+2y
+            System.out.println("OBJECTIVE FUNCTION");
+            System.out.println();
+
+            // solve and retrieve optimal solution
+            if (cplex.solve()) {
+                System.out.println("Optimal value = " + cplex.getObjValue());
+                System.out.println("x = " + cplex.getValue(x));
+                System.out.println("y = " + cplex.getValue(y));
+            }
+        } catch (IloException e) {
+            e.printStackTrace();
         }
+
+
+        return null;
     }
 
-    // Define the control
-    public void setSignals() {
-        return;
+    public void moveObjectsThroughIntersection() {
+        // move objects
+        //the intersection
+        Set<Phase> best_phase_set = selectBestPhaseSet();
+        //
     }
-
 }

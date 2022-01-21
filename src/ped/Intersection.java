@@ -12,6 +12,7 @@ public class Intersection {
     private Set<Turn> vehicleTurns;
     private Set<Crosswalk> crosswalks;
     private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
+    private Controller controller;
 
     // private Set<VecPhase> vecPhases;
 
@@ -36,6 +37,7 @@ public class Intersection {
         this.crosswalks = crosswalks;
         this.conflictMap = new HashMap<Integer, Set<Integer>>();
         this.allLinks = new HashSet<Link>();
+        this.controller = new pedMPcontroller(this);
 
         // get all the pedestrian links
         for (PedIntersection pedInt : pedInts) {
@@ -90,17 +92,9 @@ public class Intersection {
 
     }
 
-    /*
-    public void generateVehicleTurns() {
-        // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
-        for (Link in : vehInt.getIncomingLinks()) {
-            for (Link out : vehInt.getOutgoingLinks()) {
-                vehicleTurns.add(new Turn(in, out));
-            }
-        }
-        System.out.println(vehicleTurns);
+    public Set<Set<Phase>> getSetOfFeasiblePhaseGrouping() {
+        return setOfFeasiblePhaseGrouping;
     }
-     */
 
     public void generateVehPedConflictMap() {
         // the possible vehicle directions are
@@ -236,7 +230,6 @@ public class Intersection {
         conflictMap.put(15, conflictPedBottom);
     }
 
-
     public Set<Integer> generatePhaseNums() {
         Set<Integer> allPhaseNums = new HashSet<>();
         allPhaseNums = new HashSet<>();
@@ -295,7 +288,6 @@ public class Intersection {
         return feasiblePhaseSets;
     }
 
-    // TODO: CONVERT Set<Set<Integer>> feasiblePhases, into Set<Set<Phase>> feasiblePhases
     public Set<Set<Phase>> convertIntToPhase(Set<Set<Integer>> feasibleIntsSets) {
         Set<Set<Phase>> feasiblePhaseSets = new HashSet<>();
         for (Set<Integer> intSet : feasibleIntsSets) {
@@ -321,7 +313,6 @@ public class Intersection {
 
         Set<Set<Integer>> feasiblePhaseSets = filterFeasiblePhaseSets(possiblePhaseSets);
 
-
         /*
         System.out.println("Number of feasible phase sets");
         System.out.println(feasiblePhaseSets.size());
@@ -333,14 +324,19 @@ public class Intersection {
          */
 
         this.setOfFeasiblePhaseGrouping = convertIntToPhase(feasiblePhaseSets);
+
+        /*
         System.out.println("Phase Sets");
         for (Set<Phase> phaseSet : setOfFeasiblePhaseGrouping) {
             System.out.println(phaseSet);
         }
-
-
-
-
+         */
 
     }
+
+    public void iterateTimeStep() {
+        Set<Phase> best_phase_set = controller.selectBestPhaseSet();
+    }
+
+
 }
