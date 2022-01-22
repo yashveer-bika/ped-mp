@@ -2,21 +2,13 @@ Workflow stuff
 1) JavaDocs comment everywhere
 
 Code functionality
-- Make a simple one-way intersecting a one-way, with 4 crosswalks (DONE)
-- Implement network structure
-        Node, Links, and components of a single intersection (DONE)
-        Make a good Network class
-- Implement the queueing model equations from Te.
+- load sioux fall network (Yash)
+- Implement the queueing model equations from Te (Rohit)
 - Implement Te's signal timing method. This will probably involve using CPLEX; Rohit has previous experience working with it.
-- Make a normal 4-way intersection with 4 crosswalks
-- Run a simulation on the 4-way
-- Read coacongress data from AVDTA
-    * Look at AVDTA code for reading a network
-    * Copy the coacongress data into our pedMP folder
-    * Copy the AVDTA code for reading a network
-    * Modify the network code to handle ped and veh???
-- Set up initial conditions on coacongress data)
-- Run simulation on coacongress
+- Set up initial conditions on Sioux Falls data
+- Run simulation on Sioux Falls data
+    - have random turning proportions for peds
+    - use turning proportions for vehs from Sioux Falls data
 
 
 Code Readability stuff

@@ -6,6 +6,7 @@
 
 package ped;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -293,9 +294,18 @@ public class Main
         // Intersection: VehIntersection, Set PedIntersection
         Intersection mainIntersection_R = new Intersection(vehInt_R, pedInts_R, crosswalks_R);
         mainIntersection_R.generatePhaseSet();
-        System.out.println(mainIntersection_R.getSetOfFeasiblePhaseGrouping());
 
-        mainIntersection_R.iterateTimeStep();
+        // System.out.println(mainIntersection_R.getSetOfFeasiblePhaseGrouping());
+
+        // TODO: load Sioux Falls Network
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        File sf_net_file = new File("data/SiouxFalls/net.txt");
+        File sf_trips_file = new File("data/SiouxFalls/trips.txt");
+
+        Network sf_net = new Network(sf_net_file);
+
+
+        // mainIntersection_R.iterateTimeStep();
 
 
 

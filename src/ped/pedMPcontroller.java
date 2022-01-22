@@ -63,21 +63,24 @@ public class pedMPcontroller implements Controller {
 
             // create decision variables
             IloNumVar v_signal_ij = cplex.numVar(0, 1, "s_ij");
+                // we want constraint that v_signal_ij is {0,1}
             IloNumVar v_flow_ij = cplex.numVar(0, Integer.MAX_VALUE, "y^v_ij");
+                // we want integer constraints
             IloNumVar v_queue_ij = cplex.numVar(0, Integer.MAX_VALUE, "x^v_ij");
+                // we want integer constraints
             IloNumVar v_weight_ij = cplex.numVar(Integer.MIN_VALUE, Integer.MAX_VALUE, "w^v_ij");
             IloNumVar p_signal_mn = cplex.numVar(0, 1, "s_mn");
+
             IloNumVar waiting_time_mn = cplex.numVar(0, max_ped_tolerance_time, "phi_mn");
 
-            TODO: Question
-                    In equation (31), what is p_{jk}(t)? For now I assume it equals 1
 
            s_ij(t) = signal on off 0-1
                         decision var.
            Q^v_ij = capacity of turning movement from link i to link j
                        we set this parameter (from data??)
-           w^ij(t) = the weight of turn from link i to j
-                       decision var, equation (31)
+           w_ij(t) = the weight of turn from link i to j
+                       decision var, equation (31),
+                       x_ij(t) - avg. queue length of movements on downstream links
            s_mn(t) = signal on off 0-1
                  decision var.
            phi_{mn}(t) = The pedestrians waiting time for cross movement (m, n) at time step t
