@@ -53,17 +53,17 @@ public class OldNetwork
         this.pedNodeGrid = new PedNode[][]{{}, {}};
         this.vehNodeGrid = new VehNode[][]{{}, {}};
 
-        // initialize signals for each node
-        for (Node node : this.nodes) {
-            for (Link incoming_link : node.getIncoming()) {
-                for (Link outgoing_link : node.getOutgoing()) {
-                    // Link[] pair = {incoming_link, outgoing_link};
-                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
-                    node.signals.put(pair, 0);
-                     // System.out.println( node.signals.get(pair) );
-                }
-            }
-        }
+//        // initialize signals for each node
+//        for (Node node : this.nodes) {
+//            for (Link incoming_link : node.getIncomingLinks()) {
+//                for (Link outgoing_link : node.getOutgoingLinks()) {
+//                    // Link[] pair = {incoming_link, outgoing_link};
+//                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
+//                    node.signals.put(pair, 0);
+//                     // System.out.println( node.signals.get(pair) );
+//                }
+//            }
+//        }
     }
 
     /*
@@ -97,17 +97,17 @@ public class OldNetwork
         return pedNodeGrid[row][col];
     }
 
-    public void printSignal() {
-        for (Node node : this.nodes) {
-            for (Link incoming_link : node.getIncoming()) {
-                for (Link outgoing_link : node.getOutgoing()) {
-                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
-                    // node.signals.put(pair, 0);
-                    System.out.println( node.signals.get(pair) );
-                }
-            }
-        }
-    }
+//    public void printSignal() {
+//        for (Node node : this.nodes) {
+//            for (Link incoming_link : node.getIncoming()) {
+//                for (Link outgoing_link : node.getOutgoing()) {
+//                    String pair = incoming_link.toString() + "::" + outgoing_link.toString();
+//                    // node.signals.put(pair, 0);
+//                    System.out.println( node.signals.get(pair) );
+//                }
+//            }
+//        }
+//    }
 
     /*
     public void setSignal(Link incoming, Link outgoing, int new_signal) {
@@ -314,9 +314,9 @@ public class OldNetwork
             return null;
         }
         
-        for(Link l : i.getOutgoing())
+        for(Link l : i.getOutgoingLinks())
         {
-            if(l.getDestinationNode() == j)
+            if(l.getDestination() == j)
             {
                 return l;
             }

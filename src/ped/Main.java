@@ -17,6 +17,21 @@ public class Main
 {
     public static void main(String[] args)
     {
+        // TODO: load Sioux Falls Network
+        File sf_net_file = new File("data/SiouxFalls/net.txt");
+        File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
+        File sf_links_f = new File("data/SiouxFalls/network/links.txt");
+
+        // Network sf_net = new Network(sf_net_file);
+        // System.out.println( sf_net.getNodes() );
+
+        Network sf_net2 = new Network();
+        sf_net2.loadNetworkData(sf_nodes_f, sf_links_f);
+        // sanity checks
+        // System.out.println( sf_net2.getNodes().size() );
+        // System.out.println( sf_net2.getLinkSet().size() );
+
+        /*
         VehIntersection leftVehInt = new VehIntersection(0);
         VehNode top = new VehNode(1);
         VehNode bottom = new VehNode(2);
@@ -157,9 +172,7 @@ public class Main
         // Intersection ignoreSomePedsIntersection = new Intersection(vehInt, pedInts2);
 
 
-        /*** ***/
         // BUILD THE RIGHT SIDE INTERSECTION
-        /*** ***/
 
 
         VehNode top_R = new VehNode(5);
@@ -170,10 +183,13 @@ public class Main
         // incoming links
         VehLink B_R = new VehLink(top_R, rightVehInt, 200, "NS");
         VehLink A_R = new VehLink(left_R, rightVehInt, 200, "WE");
+
         HashSet<VehLink> incomingLinks_R = new HashSet<>();
         incomingLinks_R.add(A_R);
         incomingLinks_R.add(B_R);
         rightVehInt.setIncomingLinks(incomingLinks_R);
+
+
 
         // outgoing links
         VehLink C_R = new VehLink(rightVehInt, right_R, 200, "WE");
@@ -289,23 +305,14 @@ public class Main
                 add(ped_4_R);
             }
         };
-        // pedInts = {ped_1, ped_2, ped_3, ped_4};
 
         // Intersection: VehIntersection, Set PedIntersection
         Intersection mainIntersection_R = new Intersection(vehInt_R, pedInts_R, crosswalks_R);
         mainIntersection_R.generatePhaseSet();
-
-        // System.out.println(mainIntersection_R.getSetOfFeasiblePhaseGrouping());
-
-        // TODO: load Sioux Falls Network
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        File sf_net_file = new File("data/SiouxFalls/net.txt");
-        File sf_trips_file = new File("data/SiouxFalls/trips.txt");
-
-        Network sf_net = new Network(sf_net_file);
-
-
+        System.out.println(mainIntersection_R.getSetOfFeasiblePhaseGrouping());
         // mainIntersection_R.iterateTimeStep();
+
+
 
 
 

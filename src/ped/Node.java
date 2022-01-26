@@ -8,6 +8,8 @@ package ped;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -19,70 +21,120 @@ import java.util.List;
 
 public class Node 
 {
-    
-    
-    /* **********
-    Exercise 3(b)
-    ********** */
-    static int cur_id = 0;
+    // static int cur_id = 0;
     protected int rowPosition;
     protected int colPosition;
     protected int id;
 
-    private ArrayList<Link> incoming;
-    private ArrayList<Link> outgoing;
-    public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
+    private Set<Link> incomingLinks;
+    private Set<Link> outgoingLinks;
+    // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
 
     // private boolean thruNode;
 
     public Node() {
-
+        this.outgoingLinks = new HashSet<>();
+        this.incomingLinks = new HashSet<>();
+//        signals = new HashMap<>();
     }
 
     public Node(int id)
     {
         this.id = id;
-        outgoing = new ArrayList<>();
-        incoming = new ArrayList<>();
-        signals = new HashMap<>();
+        this.outgoingLinks = new HashSet<>();
+        this.incomingLinks = new HashSet<>();
+//        signals = new HashMap<>();
     }
 
-    public Node(int row, int col, int id)
+    public Node(int id, int row, int col)
     {
         this.rowPosition = row;
         this.colPosition = col;
         this.id = id;
+        this.outgoingLinks = new HashSet<>();
+        this.incomingLinks = new HashSet<>();
+    }
+
+    public Set<Link> getOutgoingLinks()
+    {
+        return this.outgoingLinks;
+    }
+
+    public Set<Link> getIncomingLinks()
+    {
+        return this.incomingLinks;
+    }
+
+    public void addOutgoingLink(Link l)
+    {
+        this.outgoingLinks.add(l);
+    }
+
+    public void addIncomingLink(Link l)
+    {
+        this.incomingLinks.add(l);
     }
 
     public int getRowPosition() {
         return rowPosition;
     }
 
+    public void setColPosition(int colPosition) {
+        this.colPosition = colPosition;
+    }
+
+    public void setRowPosition(int rowPosition) {
+        this.rowPosition = rowPosition;
+    }
+
     public int getColPosition() {
         return colPosition;
     }
-
-
-
-    public HashMap<String, Integer> getSignals() {
-        return signals;
-    }
-
-    public void setSignal(Link in, Link out, int new_phase) {
-        String key = in + "::" + out;
-        signals.put(key, new_phase);
-    }
-
-    public void setSignal(String key, int new_phase) {
-        signals.put(key, new_phase);
-    }
-
 
     public int getId()
     {
         return id;
     }
+
+
+
+    /*
+    public void setIncomingLinks(Set<Link> incoming) {
+        this.incoming = incoming;
+    }
+
+    public Set<Link> getIncomingLinks() {
+        return incoming;
+    }
+
+    public void setOutgoingLinks(Set<Link> outgoingLinks) {
+        this.outgoing = outgoing;
+    }
+
+    public Set<Link> getOutgoingLinks() {
+        return outgoing;
+    }
+
+     */
+
+
+
+
+//    public HashMap<String, Integer> getSignals() {
+//        return signals;
+//    }
+//
+//    public void setSignal(Link in, Link out, int new_phase) {
+//        String key = in + "::" + out;
+//        signals.put(key, new_phase);
+//    }
+//
+//    public void setSignal(String key, int new_phase) {
+//        signals.put(key, new_phase);
+//    }
+
+
 
 
     
@@ -100,10 +152,10 @@ public class Node
     /* **********
     Exercise 3(c)
     ********** */
-    // public String toString()
-    // {
-    //     return ""+getId();
-    // }
+     public String toString()
+     {
+         return ""+this.getId();
+     }
     
     
     
@@ -111,27 +163,6 @@ public class Node
     /* **********
     Exercise 3(d)
     ********** */
-    
-
-    public ArrayList<Link> getOutgoing()
-    {
-        return outgoing;
-    }
-
-    public ArrayList<Link> getIncoming()
-    {
-        return incoming;
-    }
-
-    public void addOutgoingLink(Link l)
-    {
-        outgoing.add(l);
-    }
-
-    public void addIncomingLink(Link l)
-    {
-        incoming.add(l);
-    }
 
 
 

@@ -3,47 +3,51 @@ import java.util.*;
 
 
 public class PedIntersection extends PedNode {
-    // TODO: implement an IntersectionControl class
-
-    private Set<PedLink> pedLinks;
-    private Set<PedLink> incomingLinks;
-    private Set<PedLink> outgoingLinks;
+    static int curr_id = 900;
+//    private Set<PedLink> pedLinks;
+//    private Set<PedLink> incomingLinks;
+//    private Set<PedLink> outgoingLinks;
 
     private Map<PedLink, List<Pedestrian>> pedestrians;
 
-    public PedIntersection(int id) {
-        super(id);
+    public PedIntersection() {
+        super();
+        this.id = curr_id++;
     }
 
-    public void setPedLinks() {
-        pedLinks = new HashSet<PedLink>();
-        pedLinks.addAll(incomingLinks);
-        pedLinks.addAll(outgoingLinks);
-    }
+//    public PedIntersection(int id) {
+//        super(id);
+//    }
 
-    public void setPedLinks(Set<PedLink> newLinks) {
-        pedLinks = newLinks;
-    }
+//    public void setPedLinks() {
+//        pedLinks = new HashSet<PedLink>();
+//        pedLinks.addAll(incomingLinks);
+//        pedLinks.addAll(outgoingLinks);
+//    }
 
-    public Set<PedLink> getPedLinks() {
-        return pedLinks;
-    }
+//    public void setPedLinks(Set<PedLink> newLinks) {
+//        pedLinks = newLinks;
+//    }
 
-    public void setIncomingLinks(Set<PedLink> incomingLinks) {
-        this.incomingLinks = incomingLinks;
-    }
+//    public Set<PedLink> getPedLinks() {
+//        return pedLinks;
+//    }
 
-    public Set<PedLink> getIncomingLinks() {
-        return incomingLinks;
-    }
+//    public void setIncomingLinks(Set<PedLink> incomingLinks) {
+//        this.incomingLinks = incomingLinks;
+//    }
+//
+//    public Set<PedLink> getIncomingLinks() {
+//        return incomingLinks;
+//    }
 
-    public void setOutgoingLinks(Set<PedLink> outgoingLinks) {
-        this.outgoingLinks = outgoingLinks;
-    }
+//    public void setOutgoingLinks(Set<PedLink> outgoingLinks) {
+//        this.outgoingLinks = outgoingLinks;
+//    }
 
-    public Set<PedLink> getOutgoingLinks() {
-        return outgoingLinks;
-    }
+//    public Set<PedLink> getOutgoingLinks() {
+//        return outgoingLinks;
+//    }
 
 
 
@@ -117,4 +121,10 @@ public class PedIntersection extends PedNode {
 
      */
 
+    @Override
+    public String toString() {
+        return "PedIntersection{" +
+                "pedestrians=" + pedestrians +
+                '}';
+    }
 }

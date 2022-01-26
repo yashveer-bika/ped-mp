@@ -2,41 +2,39 @@ package ped;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 public class VehNode extends Node {
-    protected ArrayList<VehLink> vehOutgoing;
-    protected ArrayList<VehLink> vehIncoming;
-    protected HashSet<Vehicle> outgoingVehicles;
-    public OldNetwork engine;
-
-    public VehNode(int row, int col, int id, OldNetwork engine)
-    {
-        super(row, col, id);
-        vehOutgoing = new ArrayList<VehLink>();
-        vehIncoming = new ArrayList<VehLink>();
-        outgoingVehicles = new HashSet<Vehicle>();
-        this.engine = engine;
-
-        if (engine.vehNodeGrid[row][col] != null) {
-            throw new RuntimeException("trying to overwrite an existing VehNode");
-        }
-    }
+//    protected Set<VehLink> vehOutgoing;
+//    protected Set<VehLink> vehIncoming;
+//    protected HashSet<Vehicle> outgoingVehicles;
+//    public OldNetwork engine;
 
     public VehNode(int id) {
         super(id);
+//        vehOutgoing = new HashSet<>();
+//        vehIncoming = new HashSet<>();
     }
 
-    public ArrayList<VehLink>  getVehOutgoing() {
-        return vehOutgoing;
+    public VehNode(int id, int row, int col) {
+        super(id, row, col);
     }
 
-    public ArrayList<VehLink>  getVehIncoming() {
-        return vehIncoming;
-    }
-
-    public void addVehOutgoing(VehLink l) {
-        vehOutgoing.add(l);
-    }
+//    public Set<VehLink>  getVehOutgoing() {
+//        return vehOutgoing;
+//    }
+//
+//    public Set<VehLink>  getVehIncoming() {
+//        return vehIncoming;
+//    }
+//
+//    public void addVehOutgoing(VehLink l) {
+//        vehOutgoing.add(l);
+//    }
+//
+//    public void addVehIncoming(VehLink l) {
+//        vehIncoming.add(l);
+//    }
 
 
 

@@ -27,6 +27,9 @@ public class Intersection {
     private HashMap<Phase, Integer> phaseToNumMap;
     private HashMap<Integer, Phase> numToPhaseMap;
 
+//    public Intersection() {
+//
+//    }
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts, Set<Crosswalk> crosswalks) {
         this.vehInt = vehInt;
@@ -42,10 +45,20 @@ public class Intersection {
         // get all the pedestrian links
         for (PedIntersection pedInt : pedInts) {
             // pedLinks
-            allLinks.addAll(pedInt.getPedLinks());
+            // System.out.println( ( (PedNode) pedInt).getIncoming() );
+            // System.out.println( ( (PedNode) pedInt).getOutgoing() );
+
+            allLinks.addAll( ((PedNode) pedInt).getIncomingLinks() );
+            allLinks.addAll( ((PedNode) pedInt).getOutgoingLinks() );
+
+            // System.out.println(allLinks);
+
+            // allLinks.addAll(pedInt.getPedLinks());
         }
         // get all vehicle links
-        allLinks.addAll(vehInt.getVehLinks());
+        allLinks.addAll(vehInt.getIncomingLinks());
+        allLinks.addAll(vehInt.getOutgoingLinks());
+
 
         // create numToDirectionMap
         numToDirectionMap = new HashMap<>();
@@ -90,6 +103,14 @@ public class Intersection {
 
 
 
+    }
+
+    public VehIntersection getVehInt() {
+        return this.vehInt;
+    }
+
+    public ArrayList<PedIntersection> getPedInts() {
+        return pedInts;
     }
 
     public Set<Set<Phase>> getSetOfFeasiblePhaseGrouping() {
@@ -338,5 +359,15 @@ public class Intersection {
         Set<Phase> best_phase_set = controller.selectBestPhaseSet();
     }
 
-
+    @Override
+    public String toString() {
+        return "Intersection{" +
+                "vehInt=" + vehInt +
+                ", pedInts=" + pedInts +
+                ", \n\tallLinks=" + allLinks +
+                ", \n\tvehicleTurns=" + vehicleTurns +
+                ", \n\tcrosswalks=" + crosswalks +
+                ", \n\tcontroller=" + controller +
+                '}';
+    }
 }

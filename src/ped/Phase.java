@@ -43,15 +43,28 @@ public class Phase {
         numToDirectionMap.put(13, "RIGHT"); // The crosswalk on the right side
         numToDirectionMap.put(14, "TOP"); // The crosswalk on the top side
         numToDirectionMap.put(15, "BOTTOM"); // The crosswalk on the bottom side
+        numToDirectionMap.put(16, "N");
+        numToDirectionMap.put(17, "S");
+        numToDirectionMap.put(18, "E");
+        numToDirectionMap.put(19, "W");
+
+        numToDirectionMap.put(-1, "SS");
+        numToDirectionMap.put(-2, "NN");
+        numToDirectionMap.put(-3, "EE");
+        numToDirectionMap.put(-4, "WW");
 
         // create directionToNumMap
         directionToNumMap = new HashMap<>();
         for(Map.Entry<Integer, String> entry : numToDirectionMap.entrySet()){
             directionToNumMap.put(entry.getValue(), entry.getKey());
         }
+
     }
 
     public void setId() {
+//        System.out.println("DIRECTION");
+//        System.out.println(this.direction);
+//        System.out.println(directionToNumMap.get(this.direction));
         this.id = directionToNumMap.get(this.direction);
     }
 

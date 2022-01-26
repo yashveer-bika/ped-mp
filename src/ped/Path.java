@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Path extends ArrayList<Link> {
     public boolean isConnected() {
         for (int i = 0; i < size() - 1; i++) {
-            if (get(i).getDestinationNode() != get(i + 1).getStart()) {
+            if (get(i).getDestination() != get(i + 1).getStart()) {
                 return false;
             }
         }

@@ -4,64 +4,76 @@ import java.util.*;
 
 public class VehIntersection extends VehNode {
     // TODO: implement an IntersectionControl class
-
     public static boolean PRINT_STATUS = false;
 
-    private Map<VehLink, List<VehLink>> vehTurns;
+    // private Map<VehLink, List<VehLink>> vehTurns;
 
     //
-
-    private Set<VehLink> vehLinks;
-    private Set<VehLink> incomingVehLinks;
-    private Set<VehLink> outgoingVehLinks;
+    // private Set<VehLink> vehLinks;
+    // private Set<VehLink> incomingVehLinks;
+    // private Set<VehLink> outgoingVehLinks;
     private Set<Turn> vehicleTurns;
 
-
-
-
-    private HashSet<PedNode> pedIntersections;
+    // private HashSet<PedNode> pedIntersections;
     // private HashSet<Pedestrian> pedestrians;
-    private HashSet<Crosswalk> crosswalks;
-    private HashMap<Vehicle, Vehicle> conflictingVehicles;
+    // private HashSet<Crosswalk> crosswalks;
+    // private HashMap<Vehicle, Vehicle> conflictingVehicles;
 
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
-    public OldNetwork engine;
+    // public OldNetwork engine;
 
     public VehIntersection(int id) {
         super(id);
         vehicleTurns = new HashSet<>();
+//        incomingVehLinks = new HashSet<>();
+//        outgoingVehLinks = new HashSet<>();
+//        this.vehLinks = new HashSet<>();
     }
 
-    public void setVehLinks() {
-        vehLinks = new HashSet<VehLink>();
-        vehLinks.addAll(incomingVehLinks);
-        vehLinks.addAll(outgoingVehLinks);
-
+    public VehIntersection(int id, int row, int col) {
+        super(id, row, col);
+        vehicleTurns = new HashSet<>();
     }
 
-    public void setVehLinks(Set<VehLink> newlinks) {
-        vehLinks = newlinks;
-    }
+//    public void setVehLinks() {
+//        vehLinks = new HashSet<VehLink>();
+//        vehLinks.addAll(incomingVehLinks);
+//        vehLinks.addAll(outgoingVehLinks);
+//    }
 
-    public Set<VehLink> getVehLinks() {
-        return vehLinks;
-    }
+//    public void setVehLinks(Set<VehLink> newlinks) {
+//        vehLinks = newlinks;
+//    }
 
-    public void setIncomingLinks(Set<VehLink> incomingVehLinks) {
-        this.incomingVehLinks = incomingVehLinks;
-    }
+//    public Set<VehLink> getVehLinks() {
+//        return vehLinks;
+//    }
 
-    public Set<VehLink> getIncomingLinks() {
-        return incomingVehLinks;
-    }
+//    public void setIncomingLinks(Set<VehLink> incomingVehLinks) {
+//        this.incomingVehLinks = incomingVehLinks;
+//    }
 
-    public void setOutgoingLinks(Set<VehLink> outgoingVehLinks) {
-        this.outgoingVehLinks = outgoingVehLinks;
-    }
+//    public void addIncomingLink(VehLink newLink) {
+//        incomingVehLinks.add(newLink);
+//        vehLinks.add(newLink);
+//    }
+//
+//    public Set<VehLink> getIncomingLinks() {
+//        return incomingVehLinks;
+//    }
+//
+//    public void setOutgoingLinks(Set<VehLink> outgoingVehLinks) {
+//        this.outgoingVehLinks = outgoingVehLinks;
+//    }
+//
+//    public void addOutgoingLink(VehLink newLink) {
+//        outgoingVehLinks.add(newLink);
+//        vehLinks.add(newLink);
+//    }
 
-    public Set<VehLink> getOutgoingLinks() {
-        return outgoingVehLinks;
-    }
+//    public Set<VehLink> getOutgoingLinks() {
+//        return outgoingVehLinks;
+//    }
 
     public Set<Turn> getVehicleTurns() {
         return vehicleTurns;
@@ -71,12 +83,19 @@ public class VehIntersection extends VehNode {
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {
             for (Link out : this.getOutgoingLinks()) {
+//                System.out.println(in);
+//                System.out.println(out);
+
+                // prevent u-turns
+                // NOTE: adding u-turn logic will require a change of feasible states
+                if (in.getDirection().charAt(0) == out.getDirection().charAt(1)) {
+                    continue;
+                }
                 vehicleTurns.add(new Turn(in, out));
             }
         }
         // System.out.println(vehicleTurns);
     }
-
 
     /*
     public void addTurns() {
@@ -144,4 +163,11 @@ public class VehIntersection extends VehNode {
 
      */
 
+    @Override
+    public String toString() {
+        return "VehIntersection{" +
+                "vehicleTurns=" + vehicleTurns +
+                super.toString() +
+                '}';
+    }
 }

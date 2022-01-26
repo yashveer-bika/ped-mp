@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class VehLink extends Link {
-    String direction, type;
+    // String direction;
+    String type;
     private Set<String> turningDirections;
 
 
@@ -20,8 +21,8 @@ public class VehLink extends Link {
     }
 
     public VehLink(Node start, Node end, double C, String direction) {
-        super(start, end, C);
-        this.direction = direction;
+        super(start, end, C, direction);
+//        this.direction = direction;
         // this.type = type;
         turningDirections = new HashSet<String>();
 
@@ -31,9 +32,9 @@ public class VehLink extends Link {
         return this.type;
     }
 
-    public String getDirection() {
-        return this.direction;
-    }
+//    public String getDirection() {
+//        return this.direction;
+//    }
 
     public Set<String> getTurningDirections() {
         return this.turningDirections;
