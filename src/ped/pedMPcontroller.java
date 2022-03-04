@@ -22,7 +22,7 @@ public class pedMPcontroller implements Controller {
 
         // LOOK AT EACH Set<Phase> with setOfFeasiblePhaseGrouping
         // and find the best one (maximizes objective function)
-        // TODO: implement the pedMP logic
+        // TODO: test the pedMP logic
 
         System.out.println("\nWORKING ON CPLEX EQUATIONS\n");
 
@@ -59,6 +59,7 @@ public class pedMPcontroller implements Controller {
             // for every pedestrian movement \hat{phi}_{mn}(t)
             double max_ped_tolerance_time = 10.0;
 
+            // TODO: get vehicle and ped turningMovements once and store them locally
 
             // constants
             // NEED r_ij (turning ratios)
@@ -69,44 +70,138 @@ public class pedMPcontroller implements Controller {
             //                          This value comes from the intersection
             // Qc = max(i,j)|c∈Cij {Qij}
             //          precompute in the Intersection class???
+            //          make a conflict region class???
 
             // for each turning movement, there is a cap. (Q^{v}_{ij})
             // vehicle turning movement capacity
 
             // TODO: correctly generate all vehicle turning movements [intersection.getVehicleTurns()]
             // CREATE VEHICLE SIGNALS
-            Map<Turn, IloIntVar> v_signals = new HashMap<>();
-            for (Turn t : intersection.getVehicleTurns()) {
+            Map<TurningMovement, IloIntVar> v_signals = new HashMap<>();
+            for (TurningMovement t : intersection.getVehicleTurningMovements()) {
                 IloIntVar v_signal_ij = cplex.intVar(0, 1, "s_ij");
                 v_signals.put(t, v_signal_ij);
             }
+            System.out.println("intersection : " + intersection);
+            System.out.println("veh signals : " + v_signals);
+
             // TODO: correctly generate all ped turning movements [intersection.getPedestrianTurningMovements()]
             // CREATE PEDESTRIAN SIGNALS
-            Map<Turn, IloIntVar> ped_signals = new HashMap<>();
-            for (Turn t : intersection.getPedestrianTurningMovements()) {
-                IloIntVar p_signal_mn = cplex.intVar(0, 1, "s_ij");
+            Map<TurningMovement, IloIntVar> ped_signals = new HashMap<>();
+            for (TurningMovement t : intersection.getPedestrianTurningMovements()) {
+                IloIntVar p_signal_mn = cplex.intVar(0, 1, "s_mn");
                 ped_signals.put(t, p_signal_mn);
             }
+
+            // TODO: verify getVehicleTurns()
+            // CREATE number of vehicles to move through a turning movement
+            // y^v_{ij}
+            Map<TurningMovement, IloNumVar> vehMoveNums = new HashMap<>();
+            for (TurningMovement t : intersection.getVehicleTurns()) {
+                IloNumVar num_vehs_to_move = cplex.numVar(0, Double.MAX_VALUE, "y^v_{ij}");
+                vehMoveNums.put(t, num_vehs_to_move);
+            }
+
+            // TODO: verify getVehicleTurns()
+            // CREATE number of vehicles to move through a turning movement
+            // y^p_{ij}
+            Map<TurningMovement, IloNumVar> pedMoveNums = new HashMap<>();
+            for (TurningMovement t : intersection.getPedestrianTurningMovements()) {
+                IloNumVar num_peds_to_move = cplex.numVar(0, Double.MAX_VALUE, "y^p_{mn}");
+                pedMoveNums.put(t, num_peds_to_move);
+            }
+
             // FETCH PEDESTRIAN WAIT TIMES
-            Map<Turn, Double> ped_wait_times = new HashMap<>(); // {phi}_{mn}(t}
-            for (Turn t : intersection.getPedestrianTurningMovements()) {
-                // TODO: verify that t.getPedWaitTime() works correctly
-                double wait_time = t.getPedWaitTime();
+            Map<TurningMovement, Double> ped_wait_times = new HashMap<>(); // {phi}_{mn}(t}
+            for (TurningMovement t : intersection.getPedestrianTurningMovements()) {
+                // TODO:
+                double wait_time = t.getWaiting_time();
                 ped_wait_times.put(t, wait_time);
             }
-            // get vehicle pedestrian conflicts
+            // FETCH vehicle pedestrian conflicts
             // TODO: verify intersection.getVehPedConflicts() works
             // \alpha_{ij}^{n} : a vehicle turning movement ij conflicts with a crosswalk n
-            Map<Turn, Crosswalk> vehPedConflict = intersection.getVehPedConflicts();
+            Map<TurningMovement, Map<Crosswalk, Integer>> vehPedConflict = intersection.getVehPedConflicts();
 
-            Map<Turn, Double> queueLengths = intersection.getQueueLengths();
+            // FETCH vehicle queue lengths (x^v_{ij}}
+            Map<TurningMovement, Double> vehQueueLengths = intersection.getVehQueueLengths();
+
+            // FETCH pedestrian queue lengths (x^p_{ij}}
+            Map<TurningMovement, Double> pedQueueLengths = intersection.getPedQueueLengths();
+
+            // FETCH veh turning movement capacities (Q^v_{ij}}
+            Map<TurningMovement, Double> vehTurnMovCaps = intersection.getVehTurnMovCaps();
+
+            Map<TurningMovement, Double> pedTurnMovCaps = intersection.getPedTurnMovCaps();
+
+
+
+            /*** CONSTRAINTS ***/
+            // NOTE: the numbering is directly from the paper
+            // enforce pedestrian tolerance time
+            for (TurningMovement t : intersection.getPedestrianTurningMovements()) {
+                IloLinearNumExpr expr68b = cplex.linearNumExpr();
+                double time_diff = (ped_wait_times.get(t) - max_ped_tolerance_time);
+                // (1 - s_mn) (phi_mn - \hat{phi}_mn ) <= 0
+                // (phi_mn - \hat{phi}_mn ) - (phi_mn - \hat{phi}_mn ) * s_mn <= 0
+                //  - (phi_mn - \hat{phi}_mn ) * s_mn <= -(phi_mn - \hat{phi}_mn )
+                expr68b.addTerm(-1 * time_diff, ped_signals.get(t));
+                cplex.addLe(expr68b, -1 * time_diff);
+            }
+            // prevent vehicle-pedestrain collision
+            for (TurningMovement ped_t : intersection.getPedestrianTurningMovements()) {
+                for (TurningMovement veh_t : intersection.getVehicleTurns()) {
+                    try {
+                        IloLinearNumExpr expr68c = cplex.linearNumExpr();
+                        expr68c.addTerm(1, ped_signals.get(ped_t)); // pedestrian signal
+                        // interfering veh signal
+                        // TODO: fix vehPedConflict (needs to be populated)
+                        expr68c.addTerm(vehPedConflict.get(veh_t).get(ped_t), v_signals.get(veh_t));
+                        cplex.addLe(expr68c, 1);
+                    } catch (NullPointerException e) {
+                        System.out.println("null value related to vehPedConflicts");
+                    }
+                }
+            }
+            // sets the flow through a turning movement by capping the
+            // flow with the capacity of the turn. mov., otherwise letting
+            // the flow by the queue length for the turning movement
+            // for vehicles
+            for (TurningMovement t : intersection.getVehicleTurns()) {
+                IloLinearNumExpr expr68e = cplex.linearNumExpr();
+                // TODO: make sure vehTurnMovCaps is populated
+                expr68e.addTerm(vehTurnMovCaps.get(t), v_signals.get(t));
+                cplex.addEq(vehMoveNums.get(t), cplex.min(expr68e, vehQueueLengths.get(t)));
+            }
+            // sets the flow through a turning movement by capping the
+            // flow with the capacity of the turn. mov., otherwise letting
+            // the flow by the queue length for the turning movement
+            // for pedestrians
+            for (Turn t : intersection.getPedestrianTurningMovements()) {
+                IloLinearNumExpr expr68f = cplex.linearNumExpr();
+                expr68f.addTerm(pedTurnMovCaps.get(t), ped_signals.get(t));
+                cplex.addEq(pedMoveNums.get(t), cplex.min(expr68f, pedQueueLengths.get(t)));
+            }
+
+            /*
+            // create constraints
+            IloLinearNumExpr expr2 = cplex2.linearNumExpr();
+            expr2.addTerm(1, x2);
+            expr2.addTerm(1, y);
+            cplex2.addLe(expr2, 1);
+            // x + y <= 1
+            */
+
+            // calculate vehicle weight ( w^{v}_{ij}(t) )
+            // NOTE: weight calculation is a network level operation,
+            //       since we look at the downstream turning movements
 
 
 
             // CREATE OBJECTIVE FUNCTION
-            for (Turn t : intersection.getVehicleTurns()) {
+            for (TurningMovement t : intersection.getVehicleTurns()) {
                 // TODO: get capacity from network
-                double v_turn_mov_cap = Double.MAX_VALUE;
+                double v_turn_mov_cap = vehTurnMovCaps.get(t);
                 // TODO: calculate weight (w^{v}_{ij}(t) )
                 double v_weight_ij = Double.MAX_VALUE;
                 objExpr.addTerm(v_turn_mov_cap * v_weight_ij, v_signals.get(t));
@@ -116,7 +211,7 @@ public class pedMPcontroller implements Controller {
             // solve and retrieve optimal solution
             if (cplex.solve()) {
                 System.out.println("Optimal value = " + cplex.getObjValue());
-                for (Turn t : v_signals.keySet()) {
+                for (TurningMovement t : v_signals.keySet()) {
                     IloIntVar v_sig = v_signals.get(t);
                     System.out.println("vehicle signal @ " + t + " = " + cplex.getValue(v_sig));
                 }

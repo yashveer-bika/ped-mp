@@ -8,23 +8,42 @@ public class PedIntersection extends PedNode {
 //    private Set<PedLink> incomingLinks;
 //    private Set<PedLink> outgoingLinks;
 
+    private Set<TurningMovement> pedestrianTurns;
+
     private Map<PedLink, List<Pedestrian>> pedestrians;
 
     public PedIntersection() {
         super();
         this.id = curr_id++;
+        pedestrianTurns = new HashSet<>();
     }
 
     public PedIntersection(Location lcn) {
         super();
         this.id = curr_id++;
         this.setLocation(lcn);
+        pedestrianTurns = new HashSet<>();
     }
 
+    public void generatePedestrianTurns() {
+        // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
+        for (Link in : this.getIncomingLinks()) {
+            for (Link out : this.getOutgoingLinks()) {
+                // prevent u-turns
+                // NOTE: adding u-turn logic will require a change of feasible states
+                if (in.getStart() == out.getDestination()) {
+                    continue;
+                }
+                pedestrianTurns.add(new TurningMovement(in, out));
+            }
+        }
+    }
 
+    public Set<TurningMovement> getPedestrianTurns() {
+        return pedestrianTurns;
+    }
 
-
-//    public PedIntersection(int id) {
+    //    public PedIntersection(int id) {
 //        super(id);
 //    }
 

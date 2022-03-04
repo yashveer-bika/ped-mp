@@ -12,7 +12,7 @@ public class VehIntersection extends VehNode {
     // private Set<VehLink> vehLinks;
     // private Set<VehLink> incomingVehLinks;
     // private Set<VehLink> outgoingVehLinks;
-    private Set<Turn> vehicleTurns;
+    private Set<TurningMovement> vehicleTurns;
 
     // private HashSet<PedNode> pedIntersections;
     // private HashSet<Pedestrian> pedestrians;
@@ -75,10 +75,26 @@ public class VehIntersection extends VehNode {
 //        return outgoingVehLinks;
 //    }
 
-    public Set<Turn> getVehicleTurns() {
+    public Set<TurningMovement> getVehicleTurns() {
         return vehicleTurns;
     }
 
+    // TODO: use the TurningMovement object
+    public void generateVehicleTurns() {
+        // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
+        for (Link in : this.getIncomingLinks()) {
+            for (Link out : this.getOutgoingLinks()) {
+                // prevent u-turns
+                // NOTE: adding u-turn logic will require a change of feasible states
+                if (in.getStart() == out.getDestination()) {
+                    continue;
+                }
+                vehicleTurns.add(new TurningMovement(in, out));
+            }
+        }
+    }
+
+    /*
     public void generateVehicleTurns() {
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {
@@ -96,6 +112,7 @@ public class VehIntersection extends VehNode {
         }
         // System.out.println(vehicleTurns);
     }
+    */
 
     /*
     public void addTurns() {

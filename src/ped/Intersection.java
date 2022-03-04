@@ -6,17 +6,25 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import util.PowerSet;
 
 public class Intersection {
+    private Network engine;
     private VehIntersection vehInt;
     private ArrayList<PedIntersection> pedInts;
     private Set<PedNode> pedNodes;
 
     private HashSet<Link> allLinks;
-    private Set<Turn> vehicleTurns;
-    private Set<Turn> pedestrianTurningMovements;
+    private Set<TurningMovement> vehicleTurns;
+    private Set<TurningMovement> pedestrianTurningMovements;
     private Set<Crosswalk> crosswalks;
     private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
     private Controller controller;
-    private HashMap<Turn, Crosswalk> vehPedConflicts;
+    private Map<Turn, Map<Crosswalk, Integer>> vehPedConflicts;
+    private HashMap<Turn, Double> vehQueueLengths;
+    private HashMap<Turn, Double> pedQueueLengths;
+    private HashMap<Turn, Double> vehTurnMovCaps;
+    private HashMap<Turn, Double> pedTurnMovCaps;
+
+
+
     // this is the Q_c defined in the paper
     private double capacityConflictRegion_Qc;
 
@@ -44,18 +52,21 @@ public class Intersection {
         assert pedInts.size() == 4;
         this.pedInts = pedInts;
         this.vehicleTurns = new HashSet<>();
-        // TODO: remove forced turn
-        vehicleTurns.add(new Turn());
+        vehInt.generateVehicleTurns();
+        this.vehicleTurns = vehInt.getVehicleTurns();
 
         this.pedestrianTurningMovements = new HashSet<>();
-        // TODO: remove forced turn
-        pedestrianTurningMovements.add(new Turn());
+        for (PedIntersection pedInt : this.pedInts) {
+            pedInt.generatePedestrianTurns();
+            this.pedestrianTurningMovements.addAll(pedInt.getPedestrianTurns());
+        }
 
         this.vehPedConflicts = new HashMap<>();
+        this.vehQueueLengths = new HashMap<>();
+        this.pedQueueLengths = new HashMap<>();
+        this.vehTurnMovCaps = new HashMap<>();
+        this.pedTurnMovCaps = new HashMap<>();
 
-
-        // vehInt.generateVehicleTurns();
-        // this.vehicleTurns = vehInt.getVehicleTurns();
         this.crosswalks = crosswalks;
         this.conflictMap = new HashMap<Integer, Set<Integer>>();
         this.allLinks = new HashSet<Link>();
@@ -109,7 +120,7 @@ public class Intersection {
         // capacityConflictRegion_Qc
         // max Q_{ij} where ij is a turning movement
         double maxTurn = Double.MIN_VALUE;
-        for (Turn t : this.vehicleTurns) {
+        for (TurningMovement t : this.vehicleTurns) {
             double temp = t.getCapacity();
             if (temp > maxTurn) {
                 maxTurn = temp;
@@ -135,19 +146,38 @@ public class Intersection {
 
     }
 
-    public Map<Turn, Crosswalk> getVehPedConflicts() {
+    public HashMap<Turn, Double> getVehTurnMovCaps() {
+        return vehTurnMovCaps;
+    }
+
+    public HashMap<Turn, Double> getPedTurnMovCaps() {
+        return pedTurnMovCaps;
+    }
+
+    public Map<Turn, Map<Crosswalk, Integer>> getVehPedConflicts() {
         return this.vehPedConflicts;
+    }
+
+    public HashMap<Turn, Double> getVehQueueLengths() {
+        return vehQueueLengths;
+    }
+
+    public HashMap<Turn, Double> getPedQueueLengths() {
+        return pedQueueLengths;
     }
 
     public Set<PedNode> getPedNodes() {
         return this.pedNodes;
     }
 
-    public Set<Turn> getPedestrianTurningMovements() {
+    public Set<TurningMovement> getPedestrianTurningMovements() {
         return this.pedestrianTurningMovements;
     }
 
-    public Set<Turn> getVehicleTurns() {
+    public Set<TurningMovement> getVehicleTurningMovements() {
+        return this.vehicleTurns;
+    }
+    public Set<TurningMovement> getVehicleTurns() {
         return this.vehicleTurns;
     }
 
@@ -297,6 +327,8 @@ public class Intersection {
         conflictMap.put(15, conflictPedBottom);
     }
 
+    /*
+
     public Set<Integer> generatePhaseNums() {
         Set<Integer> allPhaseNums = new HashSet<>();
         allPhaseNums = new HashSet<>();
@@ -312,6 +344,8 @@ public class Intersection {
         return allPhaseNums;
     }
 
+
+     */
     public Set<Set<Integer>> filterFeasiblePhaseSets(Set<Set<Integer>> possiblePhaseSets) {
         Set<Set<Integer>> feasiblePhaseSets = new HashSet<>();
 
@@ -368,38 +402,40 @@ public class Intersection {
         return feasiblePhaseSets;
     }
 
-    /**
-     * generate all feasible phaseSets (groups of phases)
-     * An example of a single feasible phaseSet:
-     *      {NS, SN, LEFT, RIGHT}
-     */
-    public void generatePhaseSet() {
-        generateVehPedConflictMap();
-        Set<Integer> allPhaseNums = generatePhaseNums();
-        Set<Set<Integer>> possiblePhaseSets = PowerSet.powerSet(allPhaseNums);
 
-        Set<Set<Integer>> feasiblePhaseSets = filterFeasiblePhaseSets(possiblePhaseSets);
-
-        /*
-        System.out.println("Number of feasible phase sets");
-        System.out.println(feasiblePhaseSets.size());
-        System.out.println("Feasible phase sets");
-
-        for (Set<Integer> phaseSet : feasiblePhaseSets) {
-            System.out.println(phaseSet);
-        }
-         */
-
-        this.setOfFeasiblePhaseGrouping = convertIntToPhase(feasiblePhaseSets);
-
-        /*
-        System.out.println("Phase Sets");
-        for (Set<Phase> phaseSet : setOfFeasiblePhaseGrouping) {
-            System.out.println(phaseSet);
-        }
-         */
-
-    }
+//    /**
+//     * generate all feasible phaseSets (groups of phases)
+//     * An example of a single feasible phaseSet:
+//     *      {NS, SN, LEFT, RIGHT}
+//     */
+//    public void generatePhaseSet() {
+//        generateVehPedConflictMap();
+//        Set<Integer> allPhaseNums = generatePhaseNums();
+//        Set<Set<Integer>> possiblePhaseSets = PowerSet.powerSet(allPhaseNums);
+//
+//        Set<Set<Integer>> feasiblePhaseSets = filterFeasiblePhaseSets(possiblePhaseSets);
+//
+//        /*
+//        System.out.println("Number of feasible phase sets");
+//        System.out.println(feasiblePhaseSets.size());
+//        System.out.println("Feasible phase sets");
+//
+//        for (Set<Integer> phaseSet : feasiblePhaseSets) {
+//            System.out.println(phaseSet);
+//        }
+//         */
+//
+//        this.setOfFeasiblePhaseGrouping = convertIntToPhase(feasiblePhaseSets);
+//
+//        /*
+//        System.out.println("Phase Sets");
+//        for (Set<Phase> phaseSet : setOfFeasiblePhaseGrouping) {
+//            System.out.println(phaseSet);
+//        }
+//         */
+//
+//    }
+//
 
     public void iterateTimeStep() {
         Set<Phase> best_phase_set = controller.selectBestPhaseSet();

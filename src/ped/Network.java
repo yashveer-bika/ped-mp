@@ -24,6 +24,11 @@ public class Network {
     private HashMap<PedNode, Set<Double>> pedNodesRoadAngles;
     private HashMap<PedNode, Set<Link>> pedNodeRoads;
 
+    private double networkTime; // total network time (time in simulation)
+    private double cycleTime; // time within a cycle of the simulation
+    private double toleranceTime; // pedestrian tolerance time
+
+
 
     public Network(File nodesFile, File linksFile) {
         this.pedNodeRoads = new HashMap<>();
