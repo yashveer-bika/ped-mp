@@ -9,6 +9,9 @@ package ped;
 import java.io.File;
 import java.util.*;
 
+import util.*;
+
+
 /**
  *
  * @author bikax003, micha
@@ -17,19 +20,54 @@ public class Main
 {
     public static void main(String[] args)
     {
-        // TODO: load Sioux Falls Network
-        File sf_net_file = new File("data/SiouxFalls/net.txt");
-        File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
-        File sf_links_f = new File("data/SiouxFalls/network/links.txt");
+//         File sf_net_file = new File("data/SiouxFalls/net.txt");
+//         File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
+//         File sf_links_f = new File("data/SiouxFalls/network/links.txt");
+//         Network sf_net2 = new Network(sf_nodes_f, sf_links_f);
+//         // Network sf_net = new Network(sf_net_file);
+//         System.out.println( sf_net2.getNodes() );
 
-        // Network sf_net = new Network(sf_net_file);
-        // System.out.println( sf_net.getNodes() );
+        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
+        File pq3_links_f = new File("data/PQ3/links.txt");
+        // TODO: implement a robust conflict solution
+        Network pq3_net = new Network(pq3_nodes_f, pq3_links_f);
 
-        Network sf_net2 = new Network();
-        sf_net2.loadNetworkData(sf_nodes_f, sf_links_f);
+        // get a single and run controller at a single intersection for a single timestep
+        ((Intersection) pq3_net.getIntersectionSet().toArray()[0]).iterateTimeStep();
+
+
+//        for (Node n : pq3_net.getNodeSet()) {
+//            System.out.println("node : " + n.getId() + ", " + n.getLocation());
+//
+//        }
+
+
+        // generate orthogonal point
+
+//        /*
+//        input : double angle
+//                Location loc
+//                double dist
+//         */
+//        double angle;
+//        Location loc;
+//        double dist;
+//        angle = 0*Math.PI / 4;
+//        loc = new Location(0,0);
+//        dist = 1.0;
+//        Location newLoc = loc.spawnNewLocation(dist, angle);
+//        System.out.println("newLoc: " + newLoc);
+
+
+
+        // pq3_net.drawAllNodes();
         // sanity checks
-        // System.out.println( sf_net2.getNodes().size() );
-        // System.out.println( sf_net2.getLinkSet().size() );
+//        System.out.println( pq3_net.getNodes().size() );
+//        System.out.println( pq3_net.getNodes());
+//        System.out.println( pq3_net.getLinkSet().size() );
+//        System.out.println( pq3_net.getLinkSet());
+//
+//        System.out.println( pq3_net.getIntersectionSet());
 
         /*
         VehIntersection leftVehInt = new VehIntersection(0);

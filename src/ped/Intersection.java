@@ -7,12 +7,19 @@ import util.PowerSet;
 
 public class Intersection {
     private VehIntersection vehInt;
-    private ArrayList<PedIntersection> pedInts; // NOTE: assume length = 4
+    private ArrayList<PedIntersection> pedInts;
+    private Set<PedNode> pedNodes;
+
     private HashSet<Link> allLinks;
     private Set<Turn> vehicleTurns;
+    private Set<Turn> pedestrianTurningMovements;
     private Set<Crosswalk> crosswalks;
     private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
     private Controller controller;
+    private HashMap<Turn, Crosswalk> vehPedConflicts;
+    // this is the Q_c defined in the paper
+    private double capacityConflictRegion_Qc;
+
 
     // private Set<VecPhase> vecPhases;
 
@@ -20,7 +27,6 @@ public class Intersection {
     // private Set<Turn> allTurns; // DEPRECATED
 
     private HashMap<String, Set<String>> conflictingVehicleDirections;
-    private HashMap<String, Set<String>> vehPedConflictMap;
     private HashMap<Integer, Set<Integer>> conflictMap; // includes veh and ped
     private HashMap<Integer, String> numToDirectionMap;
     private HashMap<String, Integer> directionToNumMap;
@@ -31,12 +37,25 @@ public class Intersection {
 //
 //    }
 
-    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts, Set<Crosswalk> crosswalks) {
+    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
+                        Set<Crosswalk> crosswalks, Set<PedNode> pedNodes) {
+        this.pedNodes = pedNodes;
         this.vehInt = vehInt;
         assert pedInts.size() == 4;
         this.pedInts = pedInts;
-        vehInt.generateVehicleTurns();
-        this.vehicleTurns = vehInt.getVehicleTurns();
+        this.vehicleTurns = new HashSet<>();
+        // TODO: remove forced turn
+        vehicleTurns.add(new Turn());
+
+        this.pedestrianTurningMovements = new HashSet<>();
+        // TODO: remove forced turn
+        pedestrianTurningMovements.add(new Turn());
+
+        this.vehPedConflicts = new HashMap<>();
+
+
+        // vehInt.generateVehicleTurns();
+        // this.vehicleTurns = vehInt.getVehicleTurns();
         this.crosswalks = crosswalks;
         this.conflictMap = new HashMap<Integer, Set<Integer>>();
         this.allLinks = new HashSet<Link>();
@@ -86,23 +105,50 @@ public class Intersection {
         }
 
 
-        // make a hashmap, (mapping turn to phase)
-        this.phaseToNumMap = new HashMap<>();
-        for (Turn turn : this.vehicleTurns) {
-            this.phaseToNumMap.put(turn, turn.getId());
-        }
-        for (Crosswalk cWalk : this.crosswalks) {
-            this.phaseToNumMap.put(cWalk, cWalk.getId());
-        }
-
-        // create numToPhaseMap (inverse mapping)
-        this.numToPhaseMap = new HashMap<>();
-        for(Map.Entry<Phase, Integer> entry : this.phaseToNumMap.entrySet()){
-            this.numToPhaseMap.put(entry.getValue(), entry.getKey());
+        // find the capacity of the conflict region
+        // capacityConflictRegion_Qc
+        // max Q_{ij} where ij is a turning movement
+        double maxTurn = Double.MIN_VALUE;
+        for (Turn t : this.vehicleTurns) {
+            double temp = t.getCapacity();
+            if (temp > maxTurn) {
+                maxTurn = temp;
+            }
         }
 
+//        // make a hashmap, (mapping turn to phase)
+//        this.phaseToNumMap = new HashMap<>();
+//        for (Turn turn : this.vehicleTurns) {
+//            this.phaseToNumMap.put(turn, turn.getId());
+//        }
+//        for (Crosswalk cWalk : this.crosswalks) {
+//            this.phaseToNumMap.put(cWalk, cWalk.getId());
+//        }
+
+//        // create numToPhaseMap (inverse mapping)
+//        this.numToPhaseMap = new HashMap<>();
+//        for(Map.Entry<Phase, Integer> entry : this.phaseToNumMap.entrySet()){
+//            this.numToPhaseMap.put(entry.getValue(), entry.getKey());
+//        }
 
 
+
+    }
+
+    public Map<Turn, Crosswalk> getVehPedConflicts() {
+        return this.vehPedConflicts;
+    }
+
+    public Set<PedNode> getPedNodes() {
+        return this.pedNodes;
+    }
+
+    public Set<Turn> getPedestrianTurningMovements() {
+        return this.pedestrianTurningMovements;
+    }
+
+    public Set<Turn> getVehicleTurns() {
+        return this.vehicleTurns;
     }
 
     public VehIntersection getVehInt() {
@@ -359,15 +405,22 @@ public class Intersection {
         Set<Phase> best_phase_set = controller.selectBestPhaseSet();
     }
 
+//    @Override
+//    public String toString() {
+//        return "Intersection{" +
+//                "vehInt=" + vehInt +
+//                ", pedInts=" + pedInts +
+//                ", \n\tallLinks=" + allLinks +
+//                ", \n\tvehicleTurns=" + vehicleTurns +
+//                ", \n\tcrosswalks=" + crosswalks +
+//                ", \n\tcontroller=" + controller +
+//                '}';
+//    }
+
     @Override
     public String toString() {
         return "Intersection{" +
-                "vehInt=" + vehInt +
-                ", pedInts=" + pedInts +
-                ", \n\tallLinks=" + allLinks +
-                ", \n\tvehicleTurns=" + vehicleTurns +
-                ", \n\tcrosswalks=" + crosswalks +
-                ", \n\tcontroller=" + controller +
-                '}';
+                "vehInt=" + vehInt.getLocation() + "";
     }
+
 }

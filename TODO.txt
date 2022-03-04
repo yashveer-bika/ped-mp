@@ -2,8 +2,7 @@ Workflow stuff
 1) JavaDocs comment everywhere
 
 Code functionality
-- load sioux fall network (Yash)
-- Implement the queueing model equations from Te (Rohit)
+- Implement the queueing model equations from Te
 - Implement Te's signal timing method. This will probably involve using CPLEX; Rohit has previous experience working with it.
 - Set up initial conditions on Sioux Falls data
 - Run simulation on Sioux Falls data

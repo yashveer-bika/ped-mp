@@ -15,6 +15,15 @@ public class PedIntersection extends PedNode {
         this.id = curr_id++;
     }
 
+    public PedIntersection(Location lcn) {
+        super();
+        this.id = curr_id++;
+        this.setLocation(lcn);
+    }
+
+
+
+
 //    public PedIntersection(int id) {
 //        super(id);
 //    }
@@ -124,7 +133,8 @@ public class PedIntersection extends PedNode {
     @Override
     public String toString() {
         return "PedIntersection{" +
-                "pedestrians=" + pedestrians +
+                "location=" + location +
+                ", id=" + id +
                 '}';
     }
 }

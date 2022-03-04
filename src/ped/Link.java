@@ -23,9 +23,12 @@ public class Link
     
     // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
     private double capacity;
-    
+
+
     // the start and end nodes of this link. Links are directed.
     private Node start, destination;
+    // the angle between the start and destination node
+    private double angle;
 
     private String direction;
     // POSSIBLE values for direction:
@@ -43,19 +46,21 @@ public class Link
         this.destination = destination;
         this.capacity = C;
         this.entry = entry;
-        if (entry) {
-            this.direction = "entry";
-        } else {
-            throw new IllegalArgumentException("the entry parameter should only ever be true");
-        }
         
         if(start != null)
         {
             start.addOutgoingLink(this);
         }
-        if(destination != null)
+        if(entry && destination == null)
         {
-            destination.addIncomingLink(this);
+            throw new IllegalArgumentException("if entry link, then there must be a destination");
+        }
+
+        if (entry) {
+            this.direction = "entry";
+            this.destination.addEntryLink(this);
+        } else {
+            throw new IllegalArgumentException("the entry parameter should only ever be true");
         }
     }
 
@@ -79,6 +84,28 @@ public class Link
         }
     }
 
+    // construct this Link with the given parameters
+    public Link(Node start, Node destination, double C, String direction, double angle)
+    {
+        this.start = start;
+        this.destination = destination;
+        this.capacity = C;
+        this.direction = direction;
+        this.angle = angle;
+        // this.type = type;
+
+
+        if(start != null)
+        {
+            start.addOutgoingLink(this);
+        }
+        if(destination != null)
+        {
+            destination.addIncomingLink(this);
+        }
+    }
+
+
     public Link(Node start, Node destination, double C)
     {
         this.start = start;
@@ -95,6 +122,10 @@ public class Link
         }
     }
 
+    public double getAngle() {
+        return this.angle;
+    }
+
     public String getDirection() {
         return direction;
     }
@@ -103,6 +134,9 @@ public class Link
         return this.destination;
     }
 
+    public boolean getIfEntry() {
+        return this.entry;
+    }
 
 
 //    public HashMap<String, Integer> getSignals() {
@@ -176,17 +210,17 @@ public class Link
 
     public String toString()
     {
-        if (this.start == null && this.destination == null) {
-            return "("+"null"+", "+"null"+" " + this.direction +")";
-        }
-        else if (this.start == null && this.destination != null) {
-            return "("+"null"+", "+this.destination.getId()+" " + this.direction+")";
-        }
-        else if (this.start != null && this.destination == null) {
-            return "("+this.start.getId()+", "+"null"+" " + this.direction+")";
+        if (this.entry) {
+            return "(" + this.destination.getId() + " : entry)";
         }
         else {
-            return "("+this.start.getId()+", "+this.destination.getId()+" " + this.direction+")";
+            return "(" + this.start.getId() +
+                    ", " +
+                    this.destination.getId() +
+                    " " +
+                    this.direction +
+                    " " +
+                    this.angle / (2 * Math.PI) + ")";
         }
     }
 }

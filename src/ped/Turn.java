@@ -7,6 +7,13 @@ public class Turn extends Phase {
     //  "NS", "NW", "NE", "EN", "ES", "EW", "SN", "SW", "SE", "WN", "WS", "WE",
     //  "N", "S", "W", "E",
 
+    // EACH TURNING MOVEMENT HAS A CAPACITY OF MOVEMENT OVER A TIME STEP
+    private double capacity;
+
+    public Turn() {
+        System.out.println("Turn made : empty constructor");
+    }
+
     public Turn(Link incoming, Link outgoing) {
         // TODO: enforce that the links are connected
         assert incoming.getDestination() == outgoing.getStart();
@@ -30,5 +37,13 @@ public class Turn extends Phase {
         } else {
             this.direction = "" + incomingDirection.charAt(0) + outgoingDirection.charAt(1);
         }
+    }
+
+    public double getPedWaitTime() {
+        return 69.0;
+    }
+
+    public double getCapacity() {
+        return this.capacity;
     }
 }

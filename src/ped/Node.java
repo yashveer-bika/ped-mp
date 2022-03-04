@@ -24,10 +24,12 @@ public class Node
     // static int cur_id = 0;
     protected int rowPosition;
     protected int colPosition;
+    protected Location location;
     protected int id;
 
     private Set<Link> incomingLinks;
     private Set<Link> outgoingLinks;
+    private Set<Link> allLinks;
     // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
 
@@ -36,6 +38,7 @@ public class Node
     public Node() {
         this.outgoingLinks = new HashSet<>();
         this.incomingLinks = new HashSet<>();
+        this.allLinks = new HashSet<>();
 //        signals = new HashMap<>();
     }
 
@@ -44,6 +47,8 @@ public class Node
         this.id = id;
         this.outgoingLinks = new HashSet<>();
         this.incomingLinks = new HashSet<>();
+        this.allLinks = new HashSet<>();
+
 //        signals = new HashMap<>();
     }
 
@@ -54,6 +59,27 @@ public class Node
         this.id = id;
         this.outgoingLinks = new HashSet<>();
         this.incomingLinks = new HashSet<>();
+        this.allLinks = new HashSet<>();
+
+    }
+
+    public Set<Node> getNeighbors() {
+        Set<Node> neighs = new HashSet<>();
+        for (Link l : this.getIncomingLinks()) {
+            neighs.add( l.getStart() );
+        }
+        for (Link l : this.getOutgoingLinks()) {
+            neighs.add( l.getDestination() );
+        }
+        return neighs;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public Set<Link> getOutgoingLinks()
@@ -66,14 +92,24 @@ public class Node
         return this.incomingLinks;
     }
 
+    public Set<Link> getAllLinks() {
+        return this.allLinks;
+    }
+
     public void addOutgoingLink(Link l)
     {
         this.outgoingLinks.add(l);
+        this.allLinks.add(l);
     }
 
     public void addIncomingLink(Link l)
     {
         this.incomingLinks.add(l);
+        this.allLinks.add(l);
+    }
+
+    public void addEntryLink(Link l) {
+        this.allLinks.add(l);
     }
 
     public int getRowPosition() {

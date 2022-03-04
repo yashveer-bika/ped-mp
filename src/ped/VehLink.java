@@ -28,6 +28,14 @@ public class VehLink extends Link {
 
     }
 
+    public VehLink(Node start, Node end, double C, String direction, double angle) {
+        super(start, end, C, direction, angle);
+//        this.direction = direction;
+        // this.type = type;
+        turningDirections = new HashSet<String>();
+
+    }
+
     public String getLaneType() {
         return this.type;
     }

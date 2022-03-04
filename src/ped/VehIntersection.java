@@ -88,7 +88,7 @@ public class VehIntersection extends VehNode {
 
                 // prevent u-turns
                 // NOTE: adding u-turn logic will require a change of feasible states
-                if (in.getDirection().charAt(0) == out.getDirection().charAt(1)) {
+                if (in.getStart() == out.getDestination()) {
                     continue;
                 }
                 vehicleTurns.add(new Turn(in, out));
@@ -167,6 +167,8 @@ public class VehIntersection extends VehNode {
     public String toString() {
         return "VehIntersection{" +
                 "vehicleTurns=" + vehicleTurns +
+                ", location=" + location +
+                " " +
                 super.toString() +
                 '}';
     }
