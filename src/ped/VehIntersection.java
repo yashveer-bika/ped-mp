@@ -79,7 +79,13 @@ public class VehIntersection extends VehNode {
         return vehicleTurns;
     }
 
-    // TODO: use the TurningMovement object
+    public void updateTime(double newTime) {
+        for (TurningMovement t : vehicleTurns) {
+            t.updateTime(newTime);
+        }
+    }
+
+        // TODO: use the TurningMovement object
     public void generateVehicleTurns() {
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {

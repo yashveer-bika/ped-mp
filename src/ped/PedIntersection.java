@@ -43,6 +43,12 @@ public class PedIntersection extends PedNode {
         return pedestrianTurns;
     }
 
+    public void updateTime(double newTime) {
+        for (TurningMovement t : pedestrianTurns) {
+            t.updateTime(newTime);
+        }
+    }
+
     //    public PedIntersection(int id) {
 //        super(id);
 //    }

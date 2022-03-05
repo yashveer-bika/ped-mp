@@ -3,10 +3,10 @@ package ped;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import Geometry.Geometry;
 import util.PowerSet;
 
 public class Intersection {
-    private Network engine;
     private VehIntersection vehInt;
     private ArrayList<PedIntersection> pedInts;
     private Set<PedNode> pedNodes;
@@ -14,14 +14,16 @@ public class Intersection {
     private HashSet<Link> allLinks;
     private Set<TurningMovement> vehicleTurns;
     private Set<TurningMovement> pedestrianTurningMovements;
+    private Set<TurningMovement> allTurningMovements;
+
     private Set<Crosswalk> crosswalks;
     private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
     private Controller controller;
-    private Map<Turn, Map<Crosswalk, Integer>> vehPedConflicts;
-    private HashMap<Turn, Double> vehQueueLengths;
-    private HashMap<Turn, Double> pedQueueLengths;
-    private HashMap<Turn, Double> vehTurnMovCaps;
-    private HashMap<Turn, Double> pedTurnMovCaps;
+    // vehicle tm, pedestrian tm, 0/1
+    private Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
+    private HashMap<TurningMovement, Double> vehQueueLengths;
+    private HashMap<TurningMovement, Double> pedQueueLengths;
+    private HashMap<TurningMovement, Double> pedTurnMovCaps;
 
 
 
@@ -57,14 +59,20 @@ public class Intersection {
 
         this.pedestrianTurningMovements = new HashSet<>();
         for (PedIntersection pedInt : this.pedInts) {
+            System.out.println("PedInt : " + pedInt);
+            for (Link l : pedInt.getIncomingLinks()) {
+                System.out.println("\tincoming : " + l);
+            }
+
             pedInt.generatePedestrianTurns();
             this.pedestrianTurningMovements.addAll(pedInt.getPedestrianTurns());
         }
 
+        this.allTurningMovements = new HashSet<>();
+
         this.vehPedConflicts = new HashMap<>();
         this.vehQueueLengths = new HashMap<>();
         this.pedQueueLengths = new HashMap<>();
-        this.vehTurnMovCaps = new HashMap<>();
         this.pedTurnMovCaps = new HashMap<>();
 
         this.crosswalks = crosswalks;
@@ -74,16 +82,8 @@ public class Intersection {
 
         // get all the pedestrian links
         for (PedIntersection pedInt : pedInts) {
-            // pedLinks
-            // System.out.println( ( (PedNode) pedInt).getIncoming() );
-            // System.out.println( ( (PedNode) pedInt).getOutgoing() );
-
             allLinks.addAll( ((PedNode) pedInt).getIncomingLinks() );
             allLinks.addAll( ((PedNode) pedInt).getOutgoingLinks() );
-
-            // System.out.println(allLinks);
-
-            // allLinks.addAll(pedInt.getPedLinks());
         }
         // get all vehicle links
         allLinks.addAll(vehInt.getIncomingLinks());
@@ -116,6 +116,7 @@ public class Intersection {
         }
 
 
+        // TODO: verify the purpose of the code below
         // find the capacity of the conflict region
         // capacityConflictRegion_Qc
         // max Q_{ij} where ij is a turning movement
@@ -146,23 +147,43 @@ public class Intersection {
 
     }
 
-    public HashMap<Turn, Double> getVehTurnMovCaps() {
-        return vehTurnMovCaps;
+
+
+    // NOTE: not efficient, searchs over the sidewalks and may search over the
+    // same vehLinks multiple times
+    public void setVehPedConflicts() {
+        for (TurningMovement veh_tm : vehicleTurns) {
+            // Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
+            Map<TurningMovement, Integer> tmp = new HashMap<>();
+            for (TurningMovement ped_tm : pedestrianTurningMovements) {
+                if (veh_tm.intersects(ped_tm)) {
+                    tmp.put(ped_tm, 1);
+                } else {
+                    tmp.put(ped_tm, 1);
+                }
+            }
+            vehPedConflicts.put(veh_tm, tmp);
+        }
     }
 
-    public HashMap<Turn, Double> getPedTurnMovCaps() {
+    public Set<TurningMovement> getAllTurningMovements() {
+        return allTurningMovements;
+    }
+
+    public HashMap<TurningMovement, Double> getPedTurnMovCaps() {
         return pedTurnMovCaps;
     }
 
-    public Map<Turn, Map<Crosswalk, Integer>> getVehPedConflicts() {
+    public Map<TurningMovement, Map<TurningMovement, Integer>> getVehPedConflicts() {
+        setVehPedConflicts();
         return this.vehPedConflicts;
     }
 
-    public HashMap<Turn, Double> getVehQueueLengths() {
+    public HashMap<TurningMovement, Double> getVehQueueLengths() {
         return vehQueueLengths;
     }
 
-    public HashMap<Turn, Double> getPedQueueLengths() {
+    public HashMap<TurningMovement, Double> getPedQueueLengths() {
         return pedQueueLengths;
     }
 
@@ -452,6 +473,14 @@ public class Intersection {
 //                ", \n\tcontroller=" + controller +
 //                '}';
 //    }
+
+    public void updateTime(double newTime) {
+        controller.updateTime(newTime);
+        vehInt.updateTime(newTime);
+        for (PedIntersection pedInt : pedInts) {
+            pedInt.updateTime(newTime);
+        }
+    }
 
     @Override
     public String toString() {

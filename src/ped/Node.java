@@ -5,6 +5,8 @@
  */
 package ped;
 
+import Geometry.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +63,10 @@ public class Node
         this.incomingLinks = new HashSet<>();
         this.allLinks = new HashSet<>();
 
+    }
+
+    public Point asPoint() {
+        return new Point(location.getX(), location.getY());
     }
 
     public Set<Node> getNeighbors() {

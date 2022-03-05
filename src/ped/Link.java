@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 package ped;
+import Geometry.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -20,7 +22,7 @@ public class Link
 
     private boolean entry = false;
     private double queue_length;
-    
+
     // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
     private double capacity;
 
@@ -35,8 +37,20 @@ public class Link
     // "NS", "EW", "SN", "WE", "entry"
 
 
-    public Link() {
+    public Link(Node start, Node destination, double C)
+    {
+        this.start = start;
+        this.destination = destination;
+        this.capacity = C;
 
+        if(start != null)
+        {
+            start.addOutgoingLink(this);
+        }
+        if(destination != null)
+        {
+            destination.addIncomingLink(this);
+        }
     }
 
     // construct this Link with the given parameters
@@ -105,21 +119,14 @@ public class Link
         }
     }
 
+    public LineSegment asLineSegment() {
+        return new LineSegment(start.asPoint(), getDestination().asPoint());
+    }
 
-    public Link(Node start, Node destination, double C)
-    {
-        this.start = start;
-        this.destination = destination;
-        this.capacity = C;
-
-        if(start != null)
-        {
-            start.addOutgoingLink(this);
-        }
-        if(destination != null)
-        {
-            destination.addIncomingLink(this);
-        }
+    public boolean intersects(Link rhs) {
+        LineSegment a = this.asLineSegment();
+        LineSegment b = rhs.asLineSegment();
+        return Geometry.doLinesIntersect(a, b);
     }
 
     public double getAngle() {
@@ -180,6 +187,11 @@ public class Link
 //            destination_link.setQueueLength(destination_link.queue_length + num_cars);
 //        }
 //    }
+
+
+    public double getCapacity() {
+        return capacity;
+    }
 
     // updates the flow on this link
     public void setQueueLength(double cur_queue_length)
