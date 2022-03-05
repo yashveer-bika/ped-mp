@@ -74,6 +74,9 @@ public class pedMPcontroller implements Controller {
                 System.out.println(k + " : " + ped_signals.get(k));
             }
 
+            System.out.println("Pedestrian Turning Movements");
+            System.out.println(intersection.getPedestrianTurningMovements());
+
             // TODO: verify getVehicleTurns()
             // CREATE number of vehicles to move through a turning movement
             // y^v_{ij}
@@ -132,6 +135,14 @@ public class pedMPcontroller implements Controller {
                     cplex.addLe(expr68b, -1 * time_diff);
                 } catch (EmptyQueueException e) {
                     // if we have an empty queue, turn the signal off
+                    System.out.println("EMPTY QUEUE");
+                    System.out.println("ped signals dict");
+                    System.out.println(ped_signals);
+                    
+                    System.out.println(turn);
+
+                    System.out.println("signal for this turning movement");
+                    System.out.println(ped_signals.get(turn));
                     expr68b.addTerm(1, ped_signals.get(turn));
                     cplex.eq(0, expr68b);
                 }
@@ -178,12 +189,9 @@ public class pedMPcontroller implements Controller {
                 cplex.addEq( pedMoveNums.get(turn), cplex.min(expr68f, turn.getQueueLength()) );
             }
 
-
-
             // calculate vehicle weight ( w^{v}_{ij}(t) )
             // NOTE: weight calculation is a network level operation,
             //       since we look at the downstream turning movements
-
 
             // CREATE OBJECTIVE FUNCTION
             IloLinearNumExpr objExpr = cplex.linearNumExpr();

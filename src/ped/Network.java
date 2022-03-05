@@ -82,6 +82,22 @@ public class Network {
 
     /** CONSTRUCTOR HELPERS **/
 
+    // ensures connectivity of pedNodes
+    private void connectSidewalkCrosswalk() {
+        for (PedNode n : pedNodes) {
+            for (Link l : n.getIncomingLinks()) {
+                Node src = l.getStart();
+
+            }
+        }
+        // look at each pedNode
+        // look at all incoming and outgoing links
+    }
+
+    public Set<PedNode> getPedNodes() {
+        return pedNodes;
+    }
+
     private void loadNodes_constructor(File nodesFile) {
         try {
             String[] header = {};
@@ -360,12 +376,6 @@ public class Network {
         for (Intersection intersection_ : this.intersectionSet) {
             Set<Intersection> neighbors = new HashSet<>();
             VehIntersection vehInt = intersection_.getVehInt();
-//            System.out.println("outgoing VehLinks");
-//            System.out.println(vehInt.getOutgoingLinks());
-//            System.out.println( "vehInt id" );
-//            System.out.println( vehInt_to_id.get(vehInt) );
-//            System.out.println("Number of neighbors: " + vehInt.getOutgoingLinks().size());
-//            System.out.println("Outgoing links: " + vehInt.getOutgoingLinks());
             for (Link outVehLink : vehInt.getOutgoingLinks()) {
 //                System.out.println(outVehLink);
                 Node outVehInt = outVehLink.getDestination();
@@ -691,10 +701,9 @@ public class Network {
 
         this.nodeSet.addAll(this.pedNodes);
         System.out.println("# of crosswalks: " + crosswalk_count);
-
     }
 
-    // TODO: network level generate conflicts within each intersection
+    // TODO: network level calculate conflicts within each intersection
     private void generateConflicts() {
         // for each Intersection i, call i.generateConflicts()
     }

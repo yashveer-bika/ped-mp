@@ -190,13 +190,10 @@ public class Node
     // }
     
 
-    
-    /* **********
-    Exercise 3(c)
-    ********** */
+
      public String toString()
      {
-         return ""+this.getId();
+         return "Node{location=" + location + ", id=" + id + "}";
      }
     
     

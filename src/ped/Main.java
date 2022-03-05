@@ -32,6 +32,14 @@ public class Main
         // TODO: implement a robust conflict solution
         Network pq3_net = new Network(pq3_nodes_f, pq3_links_f);
 
+        System.out.println("MAIN");
+        for (Node n : pq3_net.getPedNodes()) {
+            System.out.println(n.getId());
+            System.out.println("\t" + n.getIncomingLinks());
+            System.out.println("\t" + n.getOutgoingLinks());
+        }
+
+
         // get a single and run controller at a single intersection for a single timestep
         ((Intersection) pq3_net.getIntersectionSet().toArray()[0]).iterateTimeStep();
 
