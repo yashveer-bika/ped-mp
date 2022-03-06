@@ -29,7 +29,6 @@ public class pedMPcontroller implements Controller {
         // and find the best one (maximizes objective function)
         // TODO: test the pedMP logic
 
-        System.out.println("\nWORKING ON CPLEX EQUATIONS\n");
 
         try {
             IloCplex cplex = new IloCplex();
@@ -59,8 +58,6 @@ public class pedMPcontroller implements Controller {
                 IloIntVar v_signal_ij = cplex.intVar(0, 1, "s_ij");
                 v_signals.put(turn, v_signal_ij);
             }
-            System.out.println("intersection : " + intersection);
-            System.out.println("veh signals : " + v_signals);
 
             // CREATE PEDESTRIAN SIGNALS
             Map<TurningMovement, IloIntVar> ped_signals = new HashMap<>();
@@ -68,14 +65,6 @@ public class pedMPcontroller implements Controller {
                 IloIntVar p_signal_mn = cplex.intVar(0, 1, "s_mn");
                 ped_signals.put(turn, p_signal_mn);
             }
-
-            System.out.println("ped_signals : " + ped_signals.size());
-            for (TurningMovement k : ped_signals.keySet()) {
-                System.out.println(k + " : " + ped_signals.get(k));
-            }
-
-            System.out.println("Pedestrian Turning Movements");
-            System.out.println(intersection.getPedestrianTurningMovements());
 
             // TODO: verify getVehicleTurns()
             // CREATE number of vehicles to move through a turning movement
@@ -135,22 +124,12 @@ public class pedMPcontroller implements Controller {
                     cplex.addLe(expr68b, -1 * time_diff);
                 } catch (EmptyQueueException e) {
                     // if we have an empty queue, turn the signal off
-                    System.out.println("EMPTY QUEUE");
-                    System.out.println("ped signals dict");
-                    System.out.println(ped_signals);
-                    
-                    System.out.println(turn);
-
-                    System.out.println("signal for this turning movement");
-                    System.out.println(ped_signals.get(turn));
                     expr68b.addTerm(1, ped_signals.get(turn));
                     cplex.eq(0, expr68b);
                 }
             }
 
-            System.out.println("\n\nvehPedConflict:");
-            System.out.println(vehPedConflict);
-            System.out.println("\n\n");
+
 
             // prevent vehicle-pedestrian collision
             for (TurningMovement ped_turn : intersection.getPedestrianTurningMovements()) {
@@ -197,11 +176,12 @@ public class pedMPcontroller implements Controller {
             IloLinearNumExpr objExpr = cplex.linearNumExpr();
             for (TurningMovement turn : intersection.getVehicleTurns()) {
                 double v_turn_mov_cap = turn.getCapacity();
-                // TODO: calculate weight (w^{v}_{ij}(t) )
-                double v_weight_ij = Double.MAX_VALUE;
+                // TODO: calculate weight ( w^{v}_{ij}(t) )
+                double v_weight_ij = 10;
                 objExpr.addTerm(v_turn_mov_cap * v_weight_ij, v_signals.get(turn));
-                cplex.addMaximize(objExpr);
+
             }
+            cplex.addMaximize(objExpr);
 
             // solve and retrieve optimal solution
             if (cplex.solve()) {

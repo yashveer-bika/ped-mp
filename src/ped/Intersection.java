@@ -24,7 +24,7 @@ public class Intersection {
     private HashMap<TurningMovement, Double> vehQueueLengths;
     private HashMap<TurningMovement, Double> pedQueueLengths;
     private HashMap<TurningMovement, Double> pedTurnMovCaps;
-
+    private boolean firstTime = true;
 
 
     // this is the Q_c defined in the paper
@@ -198,7 +198,10 @@ public class Intersection {
     }
 
     public Set<TurningMovement> getPedestrianTurningMovements() {
-        setPedestrianTurningMovements();
+        if (firstTime) {
+            setPedestrianTurningMovements();
+        }
+        firstTime = false;
         return this.pedestrianTurningMovements;
     }
 

@@ -29,15 +29,8 @@ public class Main
 
         File pq3_nodes_f = new File("data/PQ3/nodes.txt");
         File pq3_links_f = new File("data/PQ3/links.txt");
-        // TODO: implement a robust conflict solution
+        // TODO: implement a robust veh-2-veh conflict solution
         Network pq3_net = new Network(pq3_nodes_f, pq3_links_f);
-
-        System.out.println("MAIN");
-        for (Node n : pq3_net.getPedNodes()) {
-            System.out.println(n.getId());
-            System.out.println("\t" + n.getIncomingLinks());
-            System.out.println("\t" + n.getOutgoingLinks());
-        }
 
 
         // get a single and run controller at a single intersection for a single timestep

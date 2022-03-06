@@ -66,11 +66,11 @@ public class Network {
         this.createIntersectionGraph_constructor();
 
         int size_before = this.linkSet.size();
-        System.out.println("#Links before: " + size_before);
+//        System.out.println("#Links before: " + size_before);
         this.loadSidewalks_constructor();
         int size_after = this.linkSet.size();
-        System.out.println("#Links after: " + size_after);
-        assert size_after - size_before == 16*2 : "incorrect number of sidewalks";
+//        System.out.println("#Links after: " + size_after);
+//        assert size_after - size_before == 16*2 : "incorrect number of sidewalks";
 
 
         // reverse vehInts to make vehInt_to_id
@@ -610,7 +610,7 @@ public class Network {
                     PedLink sidewalk_ = new PedLink(ped2, ped1, true, sidewalk_capacity);
                     this.linkSet.add(sidewalk);
                     this.linkSet.add(sidewalk_);
-                    System.out.println("\tPed Int list: " + pedIntList);
+                    // System.out.println("\tPed Int list: " + pedIntList);
 
                     // make crosswalks
                     for (int j = 0; j < pedIntList.size() - 2 ; j++) {
@@ -682,11 +682,10 @@ public class Network {
             int colPos = vehInt.getColPosition();
             int rowPos = vehInt.getRowPosition();
 
-            System.out.println("Crosswalks");
-            for (Crosswalk c : crosswalks) {
-                System.out.println(c);
-
-            }
+//            System.out.println("Crosswalks");
+//            for (Crosswalk c : crosswalks) {
+//                System.out.println(c);
+//            }
             Intersection int_sec = new Intersection(vehInt, pedInts, crosswalks, pedNodes);
             intersectionGrid[rowPos][colPos] = int_sec;
             intersectionSet.add(int_sec);
@@ -700,7 +699,7 @@ public class Network {
         }
 
         this.nodeSet.addAll(this.pedNodes);
-        System.out.println("# of crosswalks: " + crosswalk_count);
+//        System.out.println("# of crosswalks: " + crosswalk_count);
     }
 
     // TODO: network level calculate conflicts within each intersection
