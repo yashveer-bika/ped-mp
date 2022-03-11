@@ -27,10 +27,11 @@ public class Network {
     private double networkTime; // total network time (time in simulation)
     private double cycleTime; // time within a cycle of the simulation
     private double toleranceTime; // pedestrian tolerance time
+    private boolean ped; // says whether we load the network with pedestrians
 
 
 
-    public Network(File nodesFile, File linksFile) {
+    public Network(File nodesFile, File linksFile, boolean ped) {
         this.pedNodeRoads = new HashMap<>();
         this.pedNodesRoadAngles = new HashMap<>();
         this.intersectionSet = new HashSet<>();
@@ -41,6 +42,8 @@ public class Network {
         this.entryLinks = new HashMap<>();
         this.intersectionGraph = new HashMap<>();
         this.pedNodes = new HashSet<>();
+        this.ped = ped;
+
         // load vehicle intersections
         this.loadNodes_constructor(nodesFile);
 
@@ -59,18 +62,19 @@ public class Network {
         // create pedIntersection(s) around each vehicle intersection
         // creates crosswalks within an intersection
         // creates Intersection objects
-        this.loadPedIntersections_constructor();
-
+        if (ped) {
+            loadPedIntersections_constructor();
+        }
+        else {
+            loadIntersections_constructor();
+        }
 
         // create intersection graph
         this.createIntersectionGraph_constructor();
 
-        int size_before = this.linkSet.size();
-//        System.out.println("#Links before: " + size_before);
-        this.loadSidewalks_constructor();
-        int size_after = this.linkSet.size();
-//        System.out.println("#Links after: " + size_after);
-//        assert size_after - size_before == 16*2 : "incorrect number of sidewalks";
+        if (ped) {
+            this.loadSidewalks_constructor();
+        }
 
 
         // reverse vehInts to make vehInt_to_id
@@ -81,18 +85,7 @@ public class Network {
     }
 
     /** CONSTRUCTOR HELPERS **/
-
-    // ensures connectivity of pedNodes
-    private void connectSidewalkCrosswalk() {
-        for (PedNode n : pedNodes) {
-            for (Link l : n.getIncomingLinks()) {
-                Node src = l.getStart();
-
-            }
-        }
-        // look at each pedNode
-        // look at all incoming and outgoing links
-    }
+    
 
     public Set<PedNode> getPedNodes() {
         return pedNodes;
@@ -323,23 +316,6 @@ public class Network {
                 double angle = Location.angle(src, dest);
 
 
-                // System.out.println("src_row: " + src_row + " dest_row: " + dest_row);
-
-//                if (src_row == dest_row && src_col < dest_col) {
-//                    direction = "WE";
-//                } else if (src_row == dest_row && src_col > dest_col) {
-//                    direction = "EW";
-//                } else if (src_row < dest_row && src_col == dest_col) {
-//                    direction = "NS";
-//                } else if (src_row > dest_row && src_col == dest_col) {
-//                    direction = "SN";
-//                } else { // ignore "skew" roads (for now)
-//                    // prints out skew cases
-////                    System.out.println("srcID: " + srcId + " destId: " + destId);
-//                    // continue;
-//                }
-                // System.out.println("srcNode lat/long: " + startNode.getRowPosition() + " " + startNode.getColPosition());
-                // System.out.println("endNode lat/long: " + endNode.getRowPosition() + " " + endNode.getColPosition());
                 VehLink link = new VehLink(startNode, endNode, capacity, direction, angle);
                 assert link.getStart() == startNode;
                 assert link.getDestination() == endNode;
@@ -701,6 +677,19 @@ public class Network {
         this.nodeSet.addAll(this.pedNodes);
 //        System.out.println("# of crosswalks: " + crosswalk_count);
     }
+
+    private void loadIntersections_constructor() {
+        // iterate over vehInts to make the pedIntersections around each vehInt
+        for (Integer key : this.vehInts.keySet()) {
+            VehIntersection vehInt = this.vehInts.get(key);
+            int colPos = vehInt.getColPosition();
+            int rowPos = vehInt.getRowPosition();
+            Intersection int_sec = new Intersection(vehInt);
+            intersectionGrid[rowPos][colPos] = int_sec;
+            intersectionSet.add(int_sec);
+        }
+    }
+
 
     // TODO: network level calculate conflicts within each intersection
     private void generateConflicts() {

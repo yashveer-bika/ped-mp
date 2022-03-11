@@ -85,7 +85,6 @@ public class VehIntersection extends VehNode {
         }
     }
 
-        // TODO: use the TurningMovement object
     public void generateVehicleTurns() {
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {

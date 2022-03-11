@@ -11,7 +11,6 @@ import java.util.*;
 
 import util.*;
 
-
 /**
  *
  * @author bikax003, micha
@@ -30,11 +29,15 @@ public class Main
         File pq3_nodes_f = new File("data/PQ3/nodes.txt");
         File pq3_links_f = new File("data/PQ3/links.txt");
         // TODO: implement a robust veh-2-veh conflict solution
-        Network pq3_net = new Network(pq3_nodes_f, pq3_links_f);
+        Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false);
 
 
-        // get a single and run controller at a single intersection for a single timestep
-        ((Intersection) pq3_net.getIntersectionSet().toArray()[0]).iterateTimeStep();
+
+
+        // run iterate on all intersections
+        for (Intersection i : pq3_net.getIntersectionSet()) {
+            i.iterateTimeStep();
+        }
 
 
 //        for (Node n : pq3_net.getNodeSet()) {

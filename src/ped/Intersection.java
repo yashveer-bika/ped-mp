@@ -25,6 +25,7 @@ public class Intersection {
     private HashMap<TurningMovement, Double> pedQueueLengths;
     private HashMap<TurningMovement, Double> pedTurnMovCaps;
     private boolean firstTime = true;
+    private boolean ped;
 
 
     // this is the Q_c defined in the paper
@@ -46,6 +47,48 @@ public class Intersection {
 //    public Intersection() {
 //
 //    }
+
+    public Intersection(VehIntersection vehInt) {
+        this.vehInt = vehInt;
+        this.vehicleTurns = new HashSet<>();
+        vehInt.generateVehicleTurns();
+        this.vehicleTurns = vehInt.getVehicleTurns();
+
+        this.pedestrianTurningMovements = new HashSet<>();
+
+        this.allTurningMovements = new HashSet<>();
+
+        this.vehPedConflicts = new HashMap<>();
+        this.vehQueueLengths = new HashMap<>();
+        this.pedQueueLengths = new HashMap<>();
+        this.pedTurnMovCaps = new HashMap<>();
+
+        this.crosswalks = crosswalks;
+        this.conflictMap = new HashMap<Integer, Set<Integer>>();
+        this.allLinks = new HashSet<Link>();
+        // TOOD: a vehicle only MP controller
+        this.controller = new vehMPcontroller(this);
+
+
+        // get all vehicle links
+        allLinks.addAll(vehInt.getIncomingLinks());
+        allLinks.addAll(vehInt.getOutgoingLinks());
+
+
+
+        // TODO: verify the purpose of the code below
+        // find the capacity of the conflict region
+        // capacityConflictRegion_Qc
+        // max Q_{ij} where ij is a turning movement
+        double maxTurn = Double.MIN_VALUE;
+        for (TurningMovement t : this.vehicleTurns) {
+            double temp = t.getCapacity();
+            if (temp > maxTurn) {
+                maxTurn = temp;
+            }
+        }
+    }
+
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
                         Set<Crosswalk> crosswalks, Set<PedNode> pedNodes) {
@@ -72,9 +115,11 @@ public class Intersection {
         this.controller = new pedMPcontroller(this);
 
         // get all the pedestrian links
-        for (PedIntersection pedInt : pedInts) {
-            allLinks.addAll( ((PedNode) pedInt).getIncomingLinks() );
-            allLinks.addAll( ((PedNode) pedInt).getOutgoingLinks() );
+        if (pedInts != null) {
+            for (PedIntersection pedInt : pedInts) {
+                allLinks.addAll( ((PedNode) pedInt).getIncomingLinks() );
+                allLinks.addAll( ((PedNode) pedInt).getOutgoingLinks() );
+            }
         }
         // get all vehicle links
         allLinks.addAll(vehInt.getIncomingLinks());
@@ -155,7 +200,7 @@ public class Intersection {
         this.pedestrianTurningMovements = pedestrianTurningMovements;
     }
 
-    // NOTE: not efficient, searchs over the sidewalks and may search over the
+    // NOTE: not efficient since this searchs over the sidewalks and may search over the
     // same vehLinks multiple times
     public void setVehPedConflicts() {
         for (TurningMovement veh_tm : vehicleTurns) {
@@ -163,7 +208,7 @@ public class Intersection {
             Map<TurningMovement, Integer> tmp = new HashMap<>();
             for (TurningMovement ped_tm : pedestrianTurningMovements) {
                 if (veh_tm.intersects(ped_tm)) {
-                    tmp.put(ped_tm, 1);
+                    tmp.put(ped_tm, 0);
                 } else {
                     tmp.put(ped_tm, 1);
                 }
@@ -484,6 +529,10 @@ public class Intersection {
         for (PedIntersection pedInt : pedInts) {
             pedInt.updateTime(newTime);
         }
+    }
+
+    public int getId() {
+        return this.getVehInt().getId();
     }
 
     @Override
