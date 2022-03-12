@@ -188,8 +188,12 @@ public class Node
     // {
     //     return true;
     // }
-    
 
+
+    public boolean equals(Object o) {
+        Node rhs = (Node) o;
+        return location.equals(rhs.getLocation());
+    }
 
      public String toString()
      {

@@ -220,6 +220,11 @@ public class Link
     Exercise 3(c)
     ********** */
 
+    public boolean equals(Object o) {
+        Link rhs = (Link) o;
+        return start.equals(rhs.getStart()) && destination.equals(rhs.getDestination());
+    }
+
     public String toString()
     {
         if (this.entry) {

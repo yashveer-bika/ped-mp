@@ -17,10 +17,12 @@ public class Intersection {
     private Set<TurningMovement> allTurningMovements;
 
     private Set<Crosswalk> crosswalks;
-    private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
+    // private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
+    private Set<Phase2> feasiblePhases;
     private Controller controller;
     // vehicle tm, pedestrian tm, 0/1
     private Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
+    private Map<TurningMovement, Map<TurningMovement, Integer>> v2vConflicts;
     private HashMap<TurningMovement, Double> vehQueueLengths;
     private HashMap<TurningMovement, Double> pedQueueLengths;
     private HashMap<TurningMovement, Double> pedTurnMovCaps;
@@ -53,28 +55,22 @@ public class Intersection {
         this.vehicleTurns = new HashSet<>();
         vehInt.generateVehicleTurns();
         this.vehicleTurns = vehInt.getVehicleTurns();
-
         this.pedestrianTurningMovements = new HashSet<>();
-
         this.allTurningMovements = new HashSet<>();
-
         this.vehPedConflicts = new HashMap<>();
+        this.v2vConflicts = new HashMap<>();
         this.vehQueueLengths = new HashMap<>();
         this.pedQueueLengths = new HashMap<>();
         this.pedTurnMovCaps = new HashMap<>();
-
         this.crosswalks = crosswalks;
         this.conflictMap = new HashMap<Integer, Set<Integer>>();
         this.allLinks = new HashSet<Link>();
         // TOOD: a vehicle only MP controller
         this.controller = new vehMPcontroller(this);
 
-
         // get all vehicle links
         allLinks.addAll(vehInt.getIncomingLinks());
         allLinks.addAll(vehInt.getOutgoingLinks());
-
-
 
         // TODO: verify the purpose of the code below
         // find the capacity of the conflict region
@@ -87,6 +83,7 @@ public class Intersection {
                 maxTurn = temp;
             }
         }
+        generateV2Vconflicts();
     }
 
 
@@ -105,6 +102,8 @@ public class Intersection {
         this.allTurningMovements = new HashSet<>();
 
         this.vehPedConflicts = new HashMap<>();
+        this.v2vConflicts = new HashMap<>();
+
         this.vehQueueLengths = new HashMap<>();
         this.pedQueueLengths = new HashMap<>();
         this.pedTurnMovCaps = new HashMap<>();
@@ -183,6 +182,77 @@ public class Intersection {
 
     }
 
+    public void generateV2Vconflicts() {
+        for (TurningMovement veh_tm : vehicleTurns) {
+            // Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
+            Map<TurningMovement, Integer> tmp = new HashMap<>();
+            for (TurningMovement veh_tm2 : vehicleTurns) {
+                if (veh_tm.intersects(veh_tm2)) {
+                    tmp.put(veh_tm2, 0);
+                } else {
+                    tmp.put(veh_tm2, 1);
+                }
+            }
+            v2vConflicts.put(veh_tm, tmp);
+        }
+
+        // print out vehicle turns
+//        for (TurningMovement veh_tm : vehicleTurns) {
+//            for (TurningMovement veh_tm2 : vehicleTurns) {
+//                int signal = v2vConflicts.get(veh_tm).get(veh_tm2);
+//                System.out.println("\t" + veh_tm + " : " + veh_tm2 + " : " + signal);
+//            }
+//        }
+
+    }
+
+
+
+    public Set<Phase2> filterFeasiblePhases(Set<Set<TurningMovement>> possiblePhases) {
+        Set<Phase2> feasiblePhases = new HashSet<>();
+        // Filter possiblePhases using conflictMap
+        for (Set<TurningMovement> possiblePhase : possiblePhases) {
+            // if this phase has a conflict, ignore it
+            // (1) check for conflict
+            boolean hasConflict = false;
+
+            Set<TurningMovement> nonConflicting = new HashSet<>();
+            Set<TurningMovement> conflicts;
+
+            for (TurningMovement turn: possiblePhase) {
+                conflicts = new CopyOnWriteArraySet( conflictMap.get(turn) );
+                // Do set intersection of conflicts and nonconflicting turns
+                conflicts.retainAll(nonConflicting);
+                // if there is no conflict, our current turn is nonconflicting with
+                // previous turns
+                if (conflicts.size() == 0) {
+                    nonConflicting.add(turn);
+                } else { // we have a conflict, must end
+                    hasConflict = true;
+                    break;
+                }
+            }
+            if (hasConflict) {
+                continue;
+            } else {
+                Phase2 phase = new Phase2(nonConflicting);
+                feasiblePhases.add(phase);
+            }
+        }
+        return feasiblePhases;
+    }
+
+    public void generatePhases() {
+        allTurningMovements.addAll(vehicleTurns);
+        allTurningMovements.addAll(pedestrianTurningMovements);
+        Set<Set<TurningMovement>> possiblePhases = PowerSet.powerSet(allTurningMovements);
+        this.feasiblePhases = filterFeasiblePhases(possiblePhases);
+    }
+
+    public Set<Phase2> getFeasiblePhases() {
+        generatePhases();
+        return feasiblePhases;
+    }
 
 
 
@@ -263,10 +333,6 @@ public class Intersection {
 
     public ArrayList<PedIntersection> getPedInts() {
         return pedInts;
-    }
-
-    public Set<Set<Phase>> getSetOfFeasiblePhaseGrouping() {
-        return setOfFeasiblePhaseGrouping;
     }
 
     public void generateVehPedConflictMap() {
@@ -418,46 +484,46 @@ public class Intersection {
 
 
      */
-    public Set<Set<Integer>> filterFeasiblePhaseSets(Set<Set<Integer>> possiblePhaseSets) {
-        Set<Set<Integer>> feasiblePhaseSets = new HashSet<>();
-
-        // Filter possiblePhases using conflictMap
-        for (Set<Integer> possiblePhaseSet : possiblePhaseSets) {
-            // if this phase has a conflict, ignore it
-            // (1) check for conflict
-            boolean hasConflict = false;
-
-            Set<Integer> nonConflicting = new HashSet<>();
-            Set<Integer> conflicts;
-
-            for (Integer turn: possiblePhaseSet) {
-                conflicts = new CopyOnWriteArraySet( conflictMap.get(turn) );
-
-                // Do set intersection of conflicts and nonconflicting turns
-                conflicts.retainAll(nonConflicting);
-
-                // if there is no conflict, our current turn is nonconflicting with
-                // previous turns
-                if (conflicts.size() == 0) {
-                    nonConflicting.add(turn);
-                } else { // we have a conflict, must end
-                    hasConflict = true;
-                    break;
-                }
-            }
-
-
-
-            if (hasConflict) {
-                continue;
-                // conflictPhases.add(possiblePhase);
-            } else {
-                feasiblePhaseSets.add(possiblePhaseSet);
-            }
-
-        }
-        return feasiblePhaseSets;
-    }
+//    public Set<Set<Integer>> filterFeasiblePhaseSets(Set<Set<Integer>> possiblePhaseSets) {
+//        Set<Set<Integer>> feasiblePhaseSets = new HashSet<>();
+//
+//        // Filter possiblePhases using conflictMap
+//        for (Set<Integer> possiblePhaseSet : possiblePhaseSets) {
+//            // if this phase has a conflict, ignore it
+//            // (1) check for conflict
+//            boolean hasConflict = false;
+//
+//            Set<Integer> nonConflicting = new HashSet<>();
+//            Set<Integer> conflicts;
+//
+//            for (Integer turn: possiblePhaseSet) {
+//                conflicts = new CopyOnWriteArraySet( conflictMap.get(turn) );
+//
+//                // Do set intersection of conflicts and nonconflicting turns
+//                conflicts.retainAll(nonConflicting);
+//
+//                // if there is no conflict, our current turn is nonconflicting with
+//                // previous turns
+//                if (conflicts.size() == 0) {
+//                    nonConflicting.add(turn);
+//                } else { // we have a conflict, must end
+//                    hasConflict = true;
+//                    break;
+//                }
+//            }
+//
+//
+//
+//            if (hasConflict) {
+//                continue;
+//                // conflictPhases.add(possiblePhase);
+//            } else {
+//                feasiblePhaseSets.add(possiblePhaseSet);
+//            }
+//
+//        }
+//        return feasiblePhaseSets;
+//    }
 
     public Set<Set<Phase>> convertIntToPhase(Set<Set<Integer>> feasibleIntsSets) {
         Set<Set<Phase>> feasiblePhaseSets = new HashSet<>();

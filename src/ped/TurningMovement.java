@@ -47,10 +47,20 @@ public class TurningMovement {
         return weight;
     }
 
+    //
     public boolean intersects(TurningMovement rhs) {
-        // TODO: implement
-        return i.intersects(rhs.i) || i.intersects(rhs.j) ||
-                j.intersects(rhs.i) || j.intersects(rhs.j) ;
+        // TODO: this is a simplified model
+        // if i = rhs.i , there is no conflict
+        // if j = rhs.j , there is conflict
+        // we ignore tip touching
+        // TODO: verify this satisfies SF
+        // TODO: (maybe) add a better intersection/conflict definition
+
+        return  (i.intersects(rhs.i) && !i.equals(rhs.i)) ||
+                (i.intersects(rhs.j) && !i.getDestination().equals(rhs.j.getStart())) ||
+                (j.intersects(rhs.i) && !rhs.i.getDestination().equals(j.getStart())) ||
+                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ;
+
     }
 
     public double getQueueLength() {
