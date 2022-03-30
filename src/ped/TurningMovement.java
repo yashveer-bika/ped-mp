@@ -56,10 +56,13 @@ public class TurningMovement {
         // TODO: verify this satisfies SF
         // TODO: (maybe) add a better intersection/conflict definition
 
+        // we can't have two tms go to the same node
         return  (i.intersects(rhs.i) && !i.equals(rhs.i)) ||
                 (i.intersects(rhs.j) && !i.getDestination().equals(rhs.j.getStart())) ||
                 (j.intersects(rhs.i) && !rhs.i.getDestination().equals(j.getStart())) ||
-                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ;
+                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ||
+                j.getDestination().equals(rhs.j.getDestination())
+                ;
 
     }
 

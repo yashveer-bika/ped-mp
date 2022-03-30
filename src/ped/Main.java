@@ -26,18 +26,40 @@ public class Main
 //         // Network sf_net = new Network(sf_net_file);
 //         System.out.println( sf_net2.getNodes() );
 
-        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
-        File pq3_links_f = new File("data/PQ3/links.txt");
-        // TODO: implement a robust veh-2-veh conflict solution
+        File pq3_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
+        File pq3_links_f = new File("data/SiouxFalls/network/links.txt");
+//        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
+//        File pq3_links_f = new File("data/PQ3/links.txt");
+        // TODO: verify the veh-2-veh conflict solution
         Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false);
 
+//        // Print out the pedNodes and incoming/outgoing to verify the connectivity
+//        System.out.println("pedNodes: " + pq3_net.getPedNodes());
+//        for (PedNode n : pq3_net.getPedNodes()) {
+//            System.out.println("pedNode: " + n);
+//            System.out.println("\t incoming: " +  n.getIncomingLinks());
+//            System.out.println("\t outgoing: " +  n.getOutgoingLinks());
+//        }
 
-
-
-        // run iterate on all intersections
+        //
+        System.out.println("VERIFYING THE TURNING MOVEMENTS");
         for (Intersection i : pq3_net.getIntersectionSet()) {
-            i.iterateTimeStep();
+            System.out.println("Intersection: " + i);
+            System.out.println("\t veh turningMovements: " + i.getVehicleTurningMovements());
+//            System.out.println("\t ped turningMovements: " + i.getPedestrianTurningMovements());
+//            System.out.println("\t all TMs: " + i.getAllTurningMovements());
+
         }
+
+//        System.out.println("\n\nVERIFYING THE TURNING MOVEMENTS\n");
+//        // run iterate on all intersections
+//        for (Intersection i : pq3_net.getIntersectionSet()) {
+//            System.out.println(i.getId());
+//            for (Phase2 phase: i.getFeasiblePhases() ) {
+//                System.out.println("\t" + phase);
+//            }
+//            // i.iterateTimeStep();
+//        }
 
 
 //        for (Node n : pq3_net.getNodeSet()) {

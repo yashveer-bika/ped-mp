@@ -9,4 +9,8 @@ public class Phase2 {
     public Phase2(Set<TurningMovement> turningMovements) {
         this.turningMovements = turningMovements;
     }
+
+    public String toString() {
+        return turningMovements.toString();
+    }
 }

@@ -82,10 +82,17 @@ public class Network {
 //        for(Map.Entry<Integer, VehIntersection> entry : vehInts.entrySet()){
 //            vehInt_to_id.put(entry.getValue(), entry.getKey());
 //        }
+
+        this.finishLoading();
     }
 
     /** CONSTRUCTOR HELPERS **/
-    
+
+    public void finishLoading() {
+        for (Intersection i : this.getIntersectionSet()) {
+            i.finishLoading();
+        }
+    }
 
     public Set<PedNode> getPedNodes() {
         return pedNodes;
@@ -128,18 +135,18 @@ public class Network {
             // max_lat - min_lat cross max_long - min_long
             // shift values by the min, so (min_lat, min_long) is (0,0)
 
-            int max_long = Integer.MIN_VALUE;
-            int max_lat = Integer.MIN_VALUE;
-            int min_long = Integer.MAX_VALUE;
-            int min_lat = Integer.MAX_VALUE;
-            int cur_lat;
-            int cur_long;
+            double max_long = Double.MIN_VALUE;
+            double max_lat = Double.MIN_VALUE;
+            double min_long = Double.MAX_VALUE;
+            double min_lat = Double.MAX_VALUE;
+            double cur_lat;
+            double cur_long;
 
             for (String[] row : node_rows) {
                 // System.out.println("Row length: " + row.length);
                 // System.out.println("Row[0]: " + row[0]);
 
-                cur_long = Integer.parseInt(row[2]);
+                cur_long = Double.parseDouble(row[2]);
                 if (cur_long > max_long) {
                     max_long = cur_long;
                 }
@@ -148,7 +155,7 @@ public class Network {
                 }
 //                System.out.print("Cur long: " + cur_long);
 
-                cur_lat = Integer.parseInt(row[3]);
+                cur_lat = Double.parseDouble(row[3]);
 //                System.out.print("  Cur lat: " + cur_lat + "\n");
                 if (cur_lat > max_lat) {
                     max_lat = cur_lat;
@@ -166,8 +173,8 @@ public class Network {
 //            System.out.println("Lat range: " + (max_lat - min_lat + 1));
 //            System.out.println("Long range: " + (max_long - min_long + 1));
 
-            this.vehIntGrid = new VehIntersection[max_lat - min_lat + 1][max_long - min_long + 1];
-            this.intersectionGrid = new Intersection[max_lat - min_lat + 1][max_long - min_long + 1];
+            this.vehIntGrid = new VehIntersection[(int) (max_lat - min_lat + 1)][(int) (max_long - min_long + 1)];
+            this.intersectionGrid = new Intersection[(int) (max_lat - min_lat + 1)][(int) (max_long - min_long + 1)];
 
             /*
             // print header
@@ -226,19 +233,19 @@ public class Network {
                 this.entryLinks.put(nodeId, entry_link);
                 this.vehInts.put(nodeId, node);
                 // put into temp grid to see location
-                int rowPos = (int) (latitude) - min_lat; // shift by min_lat in case we have negative lat
-                int colPos = (int) (longitude) - min_long; // shift by min_long in case we have negative long
+                double rowPos = (latitude) - min_lat; // shift by min_lat in case we have negative lat
+                double colPos = (longitude) - min_long; // shift by min_long in case we have negative long
                 // System.out.println("id: " + nodeId + " latitude: " + latitude + " longitude: " + longitude);
                 // System.out.println(rowPos);
-                node.setRowPosition(rowPos);
-                node.setColPosition(colPos);
+                node.setRowPosition((int) rowPos);
+                node.setColPosition((int) colPos);
                 node.setLocation(new Location(longitude, latitude));
 
                 this.nodeSet.add(node);
 
 //                this.grid[rowPos][colPos] = nodeId;
-                this.vehIntGrid[rowPos][colPos] = node;
-                this.intersectionGrid[rowPos][colPos] = null;
+                this.vehIntGrid[(int) rowPos][(int) colPos] = node;
+                this.intersectionGrid[(int) rowPos][(int) colPos] = null;
             }
             // print grid
             // /*
@@ -691,10 +698,14 @@ public class Network {
     }
 
 
-    // TODO: network level calculate conflicts within each intersection
-    private void generateConflicts() {
-        // for each Intersection i, call i.generateConflicts()
-    }
+//    // TODO: network level calculate conflicts within each intersection
+//    private void generateConflicts() {
+//        // for each Intersection i, call i.generateConflicts()
+//        for (Intersection i : intersectionSet) {
+//            i.setVehPedConflicts();
+//            i.generateV2Vconflicts();
+//        }
+//    }
 
 //    public void drawAllNodes() {
 //        System.out.println("-------------------------------------------");
