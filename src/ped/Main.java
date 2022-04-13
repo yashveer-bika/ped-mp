@@ -42,25 +42,52 @@ public class Main
 //        }
 
         //
-        System.out.println("VERIFYING THE TURNING MOVEMENTS");
-        for (Intersection i : pq3_net.getIntersectionSet()) {
-            System.out.println("Intersection: " + i);
-            System.out.println("\t veh turningMovements: " + i.getVehicleTurningMovements());
-//            System.out.println("\t ped turningMovements: " + i.getPedestrianTurningMovements());
-//            System.out.println("\t all TMs: " + i.getAllTurningMovements());
-
-        }
-
-//        System.out.println("\n\nVERIFYING THE TURNING MOVEMENTS\n");
-//        // run iterate on all intersections
+//        System.out.println("VERIFYING THE TURNING MOVEMENTS");
 //        for (Intersection i : pq3_net.getIntersectionSet()) {
-//            System.out.println(i.getId());
-//            for (Phase2 phase: i.getFeasiblePhases() ) {
-//                System.out.println("\t" + phase);
-//            }
-//            // i.iterateTimeStep();
+//            System.out.println("Intersection: " + i.getId());
+//            System.out.println("\t veh turningMovements: " + i.getVehicleTurningMovements());
+////            System.out.println("\t ped turningMovements: " + i.getPedestrianTurningMovements());
+////            System.out.println("\t all TMs: " + i.getAllTurningMovements());
+//
 //        }
 
+        /*
+Works on
+1,2,3,4,5,6,7,8,9,,11,12,13,14,15,16,17,18,19,20,21,22,23,24
+
+Need to test
+10, 22
+
+Fails on
+20
+    ([Turn : [19, 22], Turn : [21, 19], Turn : [22, 21], Turn : [19, 18]] is built,
+     Turn : [21, 19] conflicts with Turn : [19, 18])
+
+         */
+        System.out.println("\n\nVERIFYING THE PHASES\n");
+        // run iterate on all intersections
+        for (Intersection i : pq3_net.getIntersectionSet()) {
+            if (i.getId() != 22) {
+                continue;
+            }
+
+            System.out.println("Intersection:"+i.getId()+" ");
+            // System.out.println("TMs:"+i.getAllTurningMovements()+" ");
+            System.out.println("\t" + i.getFeasiblePhases().size());
+
+            for (Phase2 phase: i.getFeasiblePhases() ) {
+                System.out.println("\t" + phase);
+            }
+
+            // i.iterateTimeStep();
+        }
+
+//        // playing with PowerSet to see how things get generated
+//        Set<Integer> ints = new HashSet<>();
+//        ints.add(1);
+//        ints.add(2);
+//        ints.add(3);
+//        PowerSet.powerSet(ints);
 
 //        for (Node n : pq3_net.getNodeSet()) {
 //            System.out.println("node : " + n.getId() + ", " + n.getLocation());

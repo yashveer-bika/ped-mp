@@ -354,6 +354,7 @@ public class Network {
         }
     }
 
+
     private void createIntersectionGraph_constructor() {
         // create intersection graph
         for (Intersection intersection_ : this.intersectionSet) {
@@ -428,13 +429,13 @@ public class Network {
             for (Link l : vehInt.getOutgoingLinks()) {
                 neighs.add( l.getDestination() );
             }
-            int num_neighs = neighs.size();
+            int num_forks = neighs.size();
 
-            // based on the num_neighs (forks),
+            // based on the num_forks (forks),
             // determine the pedNode locations
             // if we only have 1 neighboring intersection
             // no pedInts are needed but we want some pedNodes to allow sidewalk connections
-            if (num_neighs == 1) {
+            if (num_forks == 1) {
                 // find the single link and get the link's angle
                 Link singleLink = null;
                 double angle = -69.0 ; //
@@ -467,7 +468,7 @@ public class Network {
                 this.pedNodes.add(pednode2);
             }
 
-            else if (num_neighs == 2) {
+            else if (num_forks == 2) {
                 // find the 2 links
                 Set<Double> two_angles = new HashSet<>();
                 Set<Link> two_links = new HashSet<>();
@@ -511,17 +512,17 @@ public class Network {
             }
 
             else {
-                // CASE: num_neighs == 3,4,5
+                // CASE: num_forks == 3,4,5
                 // we make vehIntersections since 3 neighbors means 3 roads
                 // let's analyze the angles of the vehLinks with relation to vehInt
 
                 double max_angle = maxAngle(vehInt);
-                double threshold_angle = thresholdAngle(num_neighs);
+                double threshold_angle = thresholdAngle(num_forks);
                 int num_ped_ints;
                 // extra pedInt case
                 if (max_angle > threshold_angle) {
                     List<PedIntersection> pedIntList = new ArrayList<>();
-                    num_ped_ints = num_neighs + 1;
+                    num_ped_ints = num_forks + 1;
                     Location locTmp;
                     PedIntersection pedIntTmp;
 
@@ -617,7 +618,7 @@ public class Network {
                     List<PedIntersection> pedIntList = new ArrayList<>();
 
                     PedIntersection pedIntTmp;
-                    num_ped_ints = num_neighs;
+                    num_ped_ints = num_forks;
                     int i;
                     for (i = 0; i < angles_.size() - 1; i++) {
                         Location locTmp = vehIntLoc.spawnPedIntLoc(angles_.get(i), angles_.get(i+1), distanceFromVehLink);

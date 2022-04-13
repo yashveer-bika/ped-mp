@@ -73,17 +73,20 @@ public class Geometry {
      * Check if line segment first touches or crosses the line that is
      * defined by line segment second.
      *
-     * @param first line segment interpreted as line
-     * @param second line segment
+     * @param a line segment interpreted as line
+     * @param b line segment
      * @return <code>true</code> if line segment first touches or
      *                           crosses line second,
      *         <code>false</code> otherwise.
      */
     public static boolean lineSegmentTouchesOrCrossesLine(LineSegment a,
                                                           LineSegment b) {
-        return isPointOnLine(a, b.first)
-                || isPointOnLine(a, b.second)
-                || (isPointRightOfLine(a, b.first) ^ isPointRightOfLine(a,
+//        return isPointOnLine(a, b.first)
+//                || isPointOnLine(a, b.second)
+//                || (isPointRightOfLine(a, b.first) ^ isPointRightOfLine(a,
+//                b.second));
+
+        return (isPointRightOfLine(a, b.first) ^ isPointRightOfLine(a,
                 b.second));
     }
 

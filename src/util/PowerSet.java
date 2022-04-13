@@ -11,6 +11,7 @@ public class PowerSet {
         Set<Set<T>> sets = new HashSet<Set<T>>();
         if (originalSet.isEmpty()) {
             sets.add(new HashSet<T>());
+            System.out.println("Original set: " + originalSet);
             return sets;
         }
         List<T> list = new ArrayList<T>(originalSet);

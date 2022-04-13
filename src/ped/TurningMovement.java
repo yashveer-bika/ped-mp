@@ -56,13 +56,31 @@ public class TurningMovement {
         // TODO: verify this satisfies SF
         // TODO: (maybe) add a better intersection/conflict definition
 
-        // we can't have two tms go to the same node
-        return  (i.intersects(rhs.i) && !i.equals(rhs.i)) ||
-                (i.intersects(rhs.j) && !i.getDestination().equals(rhs.j.getStart())) ||
-                (j.intersects(rhs.i) && !rhs.i.getDestination().equals(j.getStart())) ||
-                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ||
-                j.getDestination().equals(rhs.j.getDestination())
-                ;
+        // no two flows can go to the same node
+        if (j.getDestination().equals(rhs.j.getDestination())) {
+            return true;
+        }
+        //
+        LineSegment l1 = new LineSegment(i.getStart().asPoint(), j.getDestination().asPoint());
+        LineSegment l2 = new LineSegment(rhs.i.getStart().asPoint(), rhs.j.getDestination().asPoint());
+        if (Geometry.doLinesIntersect(l1, l2)) {
+            return true;
+        }
+//        if ((i.intersects(rhs.i) && !i.equals(rhs.i))) {
+//            return true;
+//        }
+
+
+
+        return false;
+
+//        // we can't have two tms go to the same node
+//        return  (i.intersects(rhs.i) && !i.equals(rhs.i)) ||
+//                (i.intersects(rhs.j) && !i.getDestination().equals(rhs.j.getStart())) ||
+//                (j.intersects(rhs.i) && !rhs.i.getDestination().equals(j.getStart())) ||
+//                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ||
+//                j.getDestination().equals(rhs.j.getDestination())
+//                ;
 
     }
 
@@ -104,8 +122,15 @@ public class TurningMovement {
         network_time = newTime;
     }
 
-        public String toString() {
-        return "Turn : [" + i + ", " + j +
+//    public String toString() {
+//        return "Turn : [" + i + ", " + j +
+//                "]" +
+//                "" +
+//                "";
+//    }
+
+    public String toString() {
+        return "Turn : [" + i.getStart().getId() + ", " + j.getDestination().getId() +
                 "]" +
                 "" +
                 "";

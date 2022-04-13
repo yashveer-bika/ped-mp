@@ -46,6 +46,7 @@ public class Intersection {
     private HashMap<String, Integer> directionToNumMap;
     private HashMap<Phase, Integer> phaseToNumMap;
     private HashMap<Integer, Phase> numToPhaseMap;
+    private int num_forks;
 
 //    public Intersection() {
 //
@@ -185,9 +186,22 @@ public class Intersection {
 
     }
 
+    public void setNumForks() {
+        Set<Node> neighs = new HashSet<>();
+        for (Link l : vehInt.getIncomingLinks()) {
+            neighs.add( l.getStart() );
+        }
+        for (Link l : vehInt.getOutgoingLinks()) {
+            neighs.add( l.getDestination() );
+        }
+        num_forks = neighs.size();
+    }
+
     // makes sure that the phases are generated and code won't be redundantly called
     public void finishLoading() {
         this.loadingComplete = true;
+        setNumForks();
+
         if (ped) {
             setPedestrianTurningMovements();
         }
@@ -227,15 +241,31 @@ public class Intersection {
 
     }
 
+    private static <T> boolean isSubset(Set<T> setA, Set<T> setB) {
+        return setB.containsAll(setA);
+    }
+
     private boolean areConflicting(TurningMovement tm, Set<TurningMovement> tms) {
         Set<TurningMovement> conflictingTms = getConflicts(tm);
+//        System.out.println("Conflicting Tms: " + conflictingTms);
+//        System.out.println("tms: " + tms);
         Set<TurningMovement> intersection = new HashSet<TurningMovement>(conflictingTms);
         intersection.retainAll(tms);
+//        System.out.println("set intersection: " + intersection);
         if (intersection.size() == 0) {
             return false;
         } else {
             return true;
         }
+    }
+
+    private boolean hasConflicts(Set<TurningMovement> tms) {
+        for (TurningMovement tm1 : tms) {
+            if (areConflicting(tm1, tms)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // TODO: make sure it works for ped_tm and veh_tm's
@@ -252,7 +282,7 @@ public class Intersection {
                 conflicts.add(key);
             }
         }
-        Map<TurningMovement, Integer> conflicts_on_turn_v = getVehPedConflicts().get(tm);
+        Map<TurningMovement, Integer> conflicts_on_turn_v = getV2vConflicts().get(tm);
 
         for (TurningMovement key : conflicts_on_turn_v.keySet()) {
             if (conflicts_on_turn_v.get(key) == 0) { // 0 means intersections
@@ -298,6 +328,49 @@ public class Intersection {
         return feasiblePhases;
     }
 
+    // true if setA is a subset of setB
+    // setA: [C, D]
+    // setB: [C, D, E, F]
+    // isSubset: true
+
+
+    private Set<Phase2> removeRedundantPhases(Set<Set<TurningMovement>> tms) {
+        Set<Phase2> feasiblePhases = new HashSet<>();
+        for (Set<TurningMovement> t_phase : tms) {
+            feasiblePhases.add(new Phase2(t_phase));
+        }
+        ArrayList<Phase2> feasPhases = new ArrayList<>(feasiblePhases);
+
+        Collections.sort(feasPhases);
+        Collections.reverse(feasPhases);
+        for (Phase2 phase : feasPhases) {
+            for (Phase2 phase_ : feasPhases) {
+                if (phase.equals(phase_)) {
+                    continue;
+                } else {
+                    if (phase_.isSubset(phase)) {
+                        feasiblePhases.remove(phase);
+                        continue;
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        // TODO: update this shit
+        return feasiblePhases;
+    }
+
+    public <T> boolean existsSubset(Set<T> e, Set<Set<T>> set) {
+        for (Set<T> e_ : set) {
+            if (isSubset(e, e_)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public Set<Set<TurningMovement>> powerSetWFilter(Set<TurningMovement> originalSet) {
         Set<Set<TurningMovement>> sets = new HashSet<Set<TurningMovement>>();
         if (originalSet.isEmpty()) {
@@ -310,29 +383,71 @@ public class Intersection {
         for (Set<TurningMovement> set : powerSetWFilter(rest)) {
             Set<TurningMovement> newSet = new HashSet<>();
             // if head conflicts with anything in the set, we skip this case
-            if (areConflicting(head, set)) {
-                continue;
-            } else {
-                newSet.add(head);
-                newSet.addAll(set);
+            sets.add(set);
+            newSet.add(head);
+            newSet.addAll(set);
+            if (!areConflicting(head, set)) { // only add if non-conflicting
                 sets.add(newSet);
-                sets.add(set);
             }
+
         }
         return sets;
     }
 
+
+//    public Set<Set<TurningMovement>> powerSetTopDown(Set<TurningMovement> originalSet) {
+//        if (originalSet.size() == 1 || (!hasConflicts(originalSet))) {
+//            Set retset = new HashSet();
+//            retset.add(originalSet);
+//            return retset;
+//        } else {
+//            Set<TurningMovement> temp = new HashSet<>();
+//            temp.addAll(originalSet);
+//            Set<Set<TurningMovement>> validPhases = new HashSet<>();
+//            for (TurningMovement tm : originalSet) {
+//                temp.remove(tm);
+//                validPhases.addAll(powerSetTopDown(temp));
+//                temp.add(tm);
+//            }
+//            return validPhases;
+//        }
+//    }
 
     private void generatePhases() {
         // Set<Set<TurningMovement>> possiblePhases = PowerSet.powerSet(this.allTurningMovements);
         // this.feasiblePhases = filterFeasiblePhases(possiblePhases);
         // TODO: verify this alg.
         // create a power set that checks conflicts before adding to set
+        // System.out.println("Intersection: " + this.getId());
         Set<Set<TurningMovement>> tms = powerSetWFilter(this.allTurningMovements);
-        // create phase objects that
+
+        // remove any subsets of the largest sets (phases with less movements are a waste of time)
+        // very slow
+        // this.feasiblePhases = removeRedundantPhases(tms);
+
+        Set<Set<TurningMovement>> tms_copy = new HashSet<>();
+        tms_copy.addAll(tms);
+        // based on the number of forks, filter out tiny phases
+        for (Set<TurningMovement> phase : tms_copy) {
+            if (num_forks == 4 && phase.size() < 4) {
+                // only in SF case with vehicles only
+                tms.remove(phase);
+            }
+
+            else if (phase.size() < num_forks - 1) {
+                tms.remove(phase);
+            }
+        }
+
         for (Set<TurningMovement> t_phase : tms) {
             this.feasiblePhases.add(new Phase2(t_phase));
         }
+
+
+
+
+
+
 
     }
 
