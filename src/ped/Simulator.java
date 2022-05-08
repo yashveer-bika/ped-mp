@@ -15,14 +15,15 @@ public class Simulator extends Network {
 //    entrance node, destination node, time, demand_quantity
 //    private Map<Node, Map<Node, Map<Double, Double>>> demand;
 //    entrance node, start time, end time, demand_quantity
-    private Map<Node, Map<Double, Map<Double, Double>>> static_demand;
+    private Map<Node, double[]> static_demand;
 
-    public Simulator(File demandFile, File linksFile, boolean ped) {
-        super(demandFile, linksFile, ped);
+    public Simulator(File nodesFile, File linksFile, boolean ped) {
+        super(nodesFile, linksFile, ped);
         simTime = 0;
         timeStepSize = 0;
         toleranceTime = 0;
         this.ped = ped;
+        this.static_demand = new HashMap<Node, double[]>();
     }
 
     public void loadStaticDemand(File demandFile) {
@@ -53,24 +54,54 @@ public class Simulator extends Network {
                 int nodeId = Integer.parseInt(demand_data[0]);
                 double startTime = Double.parseDouble(demand_data[1]);
                 double endTime = Double.parseDouble(demand_data[2]);
-                double rate = Double.parseDouble(demand_data[3]);
+                double rate = Double.parseDouble(demand_data[3]); // assume (vph)
 
                 // TODO: put this demand data in some data structure
+                /*
+                *   {nodeId: [startTime, endTime, rate]}
+                */
+                double time_and_rate[] = {startTime, endTime, rate};
+                for (Node n : this.getNodeSet()) {
+                    if (n.getId() == nodeId) {
+                        static_demand.put(n, time_and_rate);
+                    }
+                }
 
             }
+            for (Node n : static_demand.keySet()) {
+                System.out.println(n.getId());
+                double[] arr = static_demand.get(n);
+                for (double d : arr) {
+                    System.out.print(d + " ");
+                }
+                System.out.println();
+            }
+//            System.out.println(static_demand);
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
     }
 
-    public void runSim(double timeStepSize, double toleranceTime) {
+    public void runSim(double timeStepSize, double totalRunTime, boolean ped, double toleranceTime) {
         this.toleranceTime = toleranceTime;
         this.timeStepSize = timeStepSize;
 
+        while (simTime <= totalRunTime) {
+            // load demand into network
+            this.addDemandToNodes(static_demand, simTime, timeStepSize);
+            this.splitDemandToTurns();
 
+            this.printNodeDemands();
+            // TODO: print out the queue lengths of the whole network
+            // this.printNetwork();
 
-        // update time
+            // run controller
+            // update the queues
+
+            System.out.println("Sim Time: " + simTime);
+            updateTime();
+        }
     }
 
 

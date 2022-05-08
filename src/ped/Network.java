@@ -927,9 +927,43 @@ public class Network {
         return vehInts;
     }
 
-    public void addDemand() {
+    public void addDemandToNodes(Map<Node, double[]> static_demand, double simTime, double timeStepSize) {
         // set demand values for each node by adding
         // peds/vehicles into the entry links
+
+        for (Node n : static_demand.keySet()) {
+            double start_time_end_time_rate[] = static_demand.get(n);
+            double start_time = start_time_end_time_rate[0];
+            double end_time = start_time_end_time_rate[1];
+            if (start_time <= simTime && simTime <= end_time) {
+                double rate = start_time_end_time_rate[2]; // in vehicles / hour
+                // convert to vehicles / timeStepSize (in seconds)
+                rate = rate / 60 / 60 * timeStepSize;
+                // TODO: add demand into the node
+                n.addDemand(rate);
+                // TODO: split demand in node into each turning movement???
+            }
+        }
+    }
+
+
+    public void splitDemandToTurns() {
+        
+    }
+
+    public void printNetwork() {
+        for (Intersection i : intersectionSet) {
+            System.out.println("Intersection: " + i.getId());
+            for (TurningMovement tm : i.getAllTurningMovements()) {
+                System.out.println("\t" + tm.getQueueLength());
+            }
+        }
+    }
+
+    public void printNodeDemands() {
+        for (Node n : nodeSet) {
+            System.out.println(n.getId() + ": " + n.getCurDemand());
+        }
     }
 
     /**

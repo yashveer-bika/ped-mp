@@ -26,12 +26,14 @@ public class Main
 //         // Network sf_net = new Network(sf_net_file);
 //         System.out.println( sf_net2.getNodes() );
 
-        File pq3_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
-        File pq3_links_f = new File("data/SiouxFalls/network/links.txt");
-//        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
-//        File pq3_links_f = new File("data/PQ3/links.txt");
+//        File pq3_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
+//        File pq3_links_f = new File("data/SiouxFalls/network/links.txt");
+        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
+        File pq3_links_f = new File("data/PQ3/links.txt");
         // TODO: verify the veh-2-veh conflict solution
         Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false);
+        pq3_net.loadStaticDemand(new File("data/PQ3/demand.txt"));
+        pq3_net.runSim(15, 300, true, 60);
 
 //        // Print out the pedNodes and incoming/outgoing to verify the connectivity
 //        System.out.println("pedNodes: " + pq3_net.getPedNodes());
@@ -53,10 +55,9 @@ public class Main
 
         /*
 Works on
-1,2,3,4,5,6,7,8,9,,11,12,13,14,15,16,17,18,19,20,21,22,23,24
+1,2,3,4,5,6,7,8,9,,11,12,13,14,15,16,17,18,19,20,21,22,23,24, 10, 22
 
 Need to test
-10, 22
 
 Fails on
 20
@@ -64,23 +65,23 @@ Fails on
      Turn : [21, 19] conflicts with Turn : [19, 18])
 
          */
-        System.out.println("\n\nVERIFYING THE PHASES\n");
+//        System.out.println("\n\nVERIFYING THE PHASES\n");
         // run iterate on all intersections
-        for (Intersection i : pq3_net.getIntersectionSet()) {
-            if (i.getId() != 22) {
-                continue;
-            }
+//        for (Intersection i : pq3_net.getIntersectionSet()) {
+//            if (i.getId() != 10) {
+//                continue;
+//            }
+//
+//            System.out.println("Intersection:"+i.getId()+" ");
+//            // System.out.println("TMs:"+i.getAllTurningMovements()+" ");
+//            System.out.println("\t" + i.getFeasiblePhases().size());
+//
+//            for (Phase2 phase: i.getFeasiblePhases() ) {
+//                System.out.println("\t" + phase);
+//            }
 
-            System.out.println("Intersection:"+i.getId()+" ");
-            // System.out.println("TMs:"+i.getAllTurningMovements()+" ");
-            System.out.println("\t" + i.getFeasiblePhases().size());
-
-            for (Phase2 phase: i.getFeasiblePhases() ) {
-                System.out.println("\t" + phase);
-            }
-
-            // i.iterateTimeStep();
-        }
+//            i.iterateTimeStep();
+//        }
 
 //        // playing with PowerSet to see how things get generated
 //        Set<Integer> ints = new HashSet<>();

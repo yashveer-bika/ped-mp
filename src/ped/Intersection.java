@@ -794,8 +794,10 @@ public class Intersection {
     public void updateTime(double newTime) {
         controller.updateTime(newTime);
         vehInt.updateTime(newTime);
-        for (PedIntersection pedInt : pedInts) {
-            pedInt.updateTime(newTime);
+        if (ped) {
+            for (PedIntersection pedInt : pedInts) {
+                pedInt.updateTime(newTime);
+            }
         }
     }
 

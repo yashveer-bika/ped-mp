@@ -32,6 +32,7 @@ public class Node
     private Set<Link> incomingLinks;
     private Set<Link> outgoingLinks;
     private Set<Link> allLinks;
+    private double curDemand = 0;
     // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
 
@@ -139,7 +140,13 @@ public class Node
         return id;
     }
 
+    public void addDemand(double d) {
+        this.curDemand += d;
+    }
 
+    public double getCurDemand() {
+        return curDemand;
+    }
 
     /*
     public void setIncomingLinks(Set<Link> incoming) {

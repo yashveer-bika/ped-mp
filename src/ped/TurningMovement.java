@@ -19,7 +19,7 @@ public class TurningMovement {
     private double network_time;
 
 
-    public TurningMovement(Link i, Link j) {
+    public TurningMovement(Link i, Link j)  {
         // need connectivity
         assert i.getDestination() == j.getStart();
         this.i = i;
@@ -36,6 +36,7 @@ public class TurningMovement {
         return j;
     }
 
+    // NOTE: THIS ONLY WORKS FOR VEHICLES RN
     public double getWeight() {
         double weight = this.getQueueLength();
         VehIntersection neigh = (VehIntersection) this.getOutgoingLink().getDestination();
@@ -46,6 +47,8 @@ public class TurningMovement {
 
         return weight;
     }
+
+
 
     //
     public boolean intersects(TurningMovement rhs) {
@@ -69,8 +72,6 @@ public class TurningMovement {
 //        if ((i.intersects(rhs.i) && !i.equals(rhs.i))) {
 //            return true;
 //        }
-
-
 
         return false;
 
@@ -134,6 +135,11 @@ public class TurningMovement {
                 "]" +
                 "" +
                 "";
+    }
+
+    public void updateQueue(double entrance_time, double num_veh) {
+        double new_val[] = {num_veh, entrance_time};
+        queue.add(new_val);
     }
 
     public double getTurningProportion() {
