@@ -10,11 +10,14 @@ public class Intersection {
     private VehIntersection vehInt;
     private ArrayList<PedIntersection> pedInts;
     private Set<PedNode> pedNodes;
+    private Set<Node> allNodes;
 
     private HashSet<Link> allLinks;
     private Set<TurningMovement> vehicleTurns;
     private Set<TurningMovement> pedestrianTurningMovements;
     private Set<TurningMovement> allTurningMovements;
+
+    private HashMap<Node, Set<TurningMovement>> node_to_tms;
 
     private Set<Crosswalk> crosswalks;
     // private Set<Set<Phase>> setOfFeasiblePhaseGrouping; // a set of a set of phase that can run at once
@@ -53,6 +56,8 @@ public class Intersection {
 //    }
 
     public Intersection(VehIntersection vehInt) {
+        this.allNodes = new HashSet<>();
+        this.node_to_tms = new HashMap<>();
         this.feasiblePhases = new HashSet<>();
         this.vehInt = vehInt;
         this.vehicleTurns = new HashSet<>();
@@ -92,6 +97,8 @@ public class Intersection {
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
                         Set<Crosswalk> crosswalks, Set<PedNode> pedNodes) {
+        this.allNodes = new HashSet<>();
+        this.node_to_tms = new HashMap<>();
         this.feasiblePhases = new HashSet<>();
         this.pedNodes = pedNodes;
         this.vehInt = vehInt;
@@ -197,6 +204,25 @@ public class Intersection {
         num_forks = neighs.size();
     }
 
+    public void initializeNodeTMs() {
+
+        // add nodes
+        allNodes.addAll(this.getPedNodes());
+        allNodes.add(this.vehInt);
+
+        for (Node n : allNodes) {
+            node_to_tms.put(n, new HashSet<>());
+        }
+
+        for (TurningMovement tm : this.getAllTurningMovements()) {
+            Node n = tm.getIncomingLink().getDestination();
+            // see if
+            Set<TurningMovement> tms = node_to_tms.get(n);
+            tms.add(tm);
+            node_to_tms.put(n, tms);
+        }
+    }
+
     // makes sure that the phases are generated and code won't be redundantly called
     public void finishLoading() {
         this.loadingComplete = true;
@@ -207,6 +233,8 @@ public class Intersection {
         }
         allTurningMovements.addAll(vehicleTurns);
         allTurningMovements.addAll(pedestrianTurningMovements);
+        this.initializeNodeTMs();
+
 //        System.out.println(this.getId());
 //        System.out.println("\tallTurningMovements: " + allTurningMovements);
         generatePhases();
@@ -442,13 +470,6 @@ public class Intersection {
         for (Set<TurningMovement> t_phase : tms) {
             this.feasiblePhases.add(new Phase2(t_phase));
         }
-
-
-
-
-
-
-
     }
 
     public Set<Phase2> getFeasiblePhases() {

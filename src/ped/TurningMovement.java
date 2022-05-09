@@ -8,6 +8,7 @@ import java.util.*;
 public class TurningMovement {
     private Link i,j;
     private double capacity; // Q_{ij}
+    private double turning_proportion;
 
     // [
     //  [number of vehicles that entered at time t, entrance time t]
@@ -26,6 +27,17 @@ public class TurningMovement {
         this.j = j;
         setCapacity();
         queue = new LinkedList<>();
+        turning_proportion = 0;
+    }
+
+    public TurningMovement(Link i, Link j, double turning_proportion)  {
+        // need connectivity
+        assert i.getDestination() == j.getStart();
+        this.i = i;
+        this.j = j;
+        setCapacity();
+        queue = new LinkedList<>();
+        this.turning_proportion = turning_proportion;
     }
 
     public Link getIncomingLink(){

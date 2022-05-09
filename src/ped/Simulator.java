@@ -97,6 +97,9 @@ public class Simulator extends Network {
             // this.printNetwork();
 
             // run controller
+//            for (Intersection i : this.getIntersectionSet()) {
+//                i.iterateTimeStep();
+//            }
             // update the queues
 
             System.out.println("Sim Time: " + simTime);

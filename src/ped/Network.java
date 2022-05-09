@@ -10,7 +10,6 @@ public class Network {
     private Set<Intersection> intersectionSet;
     private Set<Link> linkSet;
     private Set<Node> nodeSet;
-    private Set<Integer> nodeIds;
     // private int[][] grid;
     private VehIntersection[][] vehIntGrid;
     private Intersection[][] intersectionGrid;
@@ -24,6 +23,9 @@ public class Network {
     private HashMap<PedNode, Set<Double>> pedNodesRoadAngles;
     private HashMap<PedNode, Set<Link>> pedNodeRoads;
 
+    // vehNode1, [(2,1,3), (4,1,2)]
+    private HashMap<Node, Set<TurningMovement>> turningMovements;
+
     private double networkTime; // total network time (time in simulation)
     private double cycleTime; // time within a cycle of the simulation
     private double toleranceTime; // pedestrian tolerance time
@@ -32,12 +34,12 @@ public class Network {
 
 
     public Network(File nodesFile, File linksFile, boolean ped) {
+        this.turningMovements = new HashMap<>();
         this.pedNodeRoads = new HashMap<>();
         this.pedNodesRoadAngles = new HashMap<>();
         this.intersectionSet = new HashSet<>();
         this.linkSet = new HashSet<>();
         this.nodeSet = new HashSet<>();
-        this.nodeIds = new HashSet<>();
         this.vehInts = new HashMap<>();
         this.entryLinks = new HashMap<>();
         this.intersectionGraph = new HashMap<>();
@@ -92,6 +94,7 @@ public class Network {
         for (Intersection i : this.getIntersectionSet()) {
             i.finishLoading();
         }
+        // put turning movements into this network
     }
 
     public Set<PedNode> getPedNodes() {
@@ -911,10 +914,6 @@ public class Network {
         return intersectionSet;
     }
 
-    public Set<Integer> getNodeIds() {
-        return nodeIds;
-    }
-
     public Set<Node> getNodeSet() {
         return nodeSet;
     }
@@ -942,6 +941,8 @@ public class Network {
                 // TODO: add demand into the node
                 n.addDemand(rate);
                 // TODO: split demand in node into each turning movement???
+                // a turning movement is a pair of links, which is equivalent to 3 nodes
+                // the middle node is the same as 'n'.
             }
         }
     }
