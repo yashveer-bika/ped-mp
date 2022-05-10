@@ -1,103 +1,46 @@
 package ped;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-/**
+import java.util.Set;
 
-A phase is a particular action that can occur at a traffic light.
-For example: activated a crosswalk, or activating a particular turn is
-    the same as activating a phase
+public class Phase implements Comparable<Phase> {
+    private Set<TurningMovement> turningMovements;
 
-direction: "NS", "NW", "NE", "EN", "ES", "EW", "SN", "SW", "SE", "WN", "WS", "WE"
-             0     1     2     3    4      5     6     7    8     9     10    11
-direction: "LEFT", "RIGHT", "TOP", "BOTTOM"
-             12      13       14      15
-
- */
-public class Phase {
-    protected Link i, j;
-    protected String direction;
-    protected int id;
-    private HashMap<Integer, String> numToDirectionMap;
-    private HashMap<String, Integer> directionToNumMap;
-    protected int queue_length;
-
-    public Phase() {
-        // create numToDirectionMap
-        numToDirectionMap = new HashMap<>();
-        numToDirectionMap.put(0, "NS");
-        numToDirectionMap.put(1, "NW");
-        numToDirectionMap.put(2, "NE");
-        numToDirectionMap.put(3, "EN");
-        numToDirectionMap.put(4, "ES");
-        numToDirectionMap.put(5, "EW");
-        numToDirectionMap.put(6, "SN");
-        numToDirectionMap.put(7, "SW");
-        numToDirectionMap.put(8, "SE");
-        numToDirectionMap.put(9, "WN");
-        numToDirectionMap.put(10, "WS");
-        numToDirectionMap.put(11, "WE");
-        numToDirectionMap.put(12, "LEFT"); // The crosswalk on the left side
-        numToDirectionMap.put(13, "RIGHT"); // The crosswalk on the right side
-        numToDirectionMap.put(14, "TOP"); // The crosswalk on the top side
-        numToDirectionMap.put(15, "BOTTOM"); // The crosswalk on the bottom side
-        numToDirectionMap.put(16, "N");
-        numToDirectionMap.put(17, "S");
-        numToDirectionMap.put(18, "E");
-        numToDirectionMap.put(19, "W");
-
-        numToDirectionMap.put(-1, "SS");
-        numToDirectionMap.put(-2, "NN");
-        numToDirectionMap.put(-3, "EE");
-        numToDirectionMap.put(-4, "WW");
-
-        // create directionToNumMap
-        directionToNumMap = new HashMap<>();
-        for(Map.Entry<Integer, String> entry : numToDirectionMap.entrySet()){
-            directionToNumMap.put(entry.getValue(), entry.getKey());
-        }
-
+    public Phase(Set<TurningMovement> turningMovements) {
+        this.turningMovements = turningMovements;
     }
 
-    public void setId() {
-//        System.out.println("DIRECTION");
-//        System.out.println(this.direction);
-//        System.out.println(directionToNumMap.get(this.direction));
-        this.id = directionToNumMap.get(this.direction);
+    public int size() {
+        return this.turningMovements.size();
     }
 
-    public int getId() {
-        return id;
+    public Set<TurningMovement> getTurningMovements() {
+        return turningMovements;
     }
 
-    public String getDirection() {
-        return direction;
+    public String toString() {
+        return turningMovements.toString();
     }
 
-    public void setDirection(String direction) {
-        this.direction = direction;
+    private static <T> boolean isSubset(Set<T> setA, Set<T> setB) {
+        return setB.containsAll(setA);
+    }
+
+    public boolean isSubset(Phase rhs) {
+        return turningMovements.containsAll(rhs.getTurningMovements());
+    }
+
+    public boolean equals(Phase rhs) {
+        return turningMovements.equals(rhs.getTurningMovements());
     }
 
     @Override
-    public String toString() {
-        return direction;
-        /*
-        return "Turn{" +
-                "i=" + i +
-                ", j=" + j +
-                ", direction='" + direction + '\'' +
-                '}';
-
-         */
-    }
-
-    public void activate() {
-        // TODO: turn links on???
-    }
-
-    public void deactivate() {
-        // TODO: turn links off???
+    public int compareTo(Phase rhs) {
+        if (this.size() == rhs.size()) {
+            return 0;
+        } else if (this.size() < rhs.size()) {
+            return -1;
+        } else {
+            return 1;
+        }
     }
 }

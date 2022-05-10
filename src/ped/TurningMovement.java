@@ -22,7 +22,7 @@ public class TurningMovement {
 
     public TurningMovement(Link i, Link j)  {
         // need connectivity
-        assert i.getDestination() == j.getStart();
+        assert i.getDest() == j.getSource();
         this.i = i;
         this.j = j;
         setCapacity();
@@ -32,7 +32,7 @@ public class TurningMovement {
 
     public TurningMovement(Link i, Link j, double turning_proportion)  {
         // need connectivity
-        assert i.getDestination() == j.getStart();
+        assert i.getDest() == j.getSource();
         this.i = i;
         this.j = j;
         setCapacity();
@@ -51,7 +51,7 @@ public class TurningMovement {
     // NOTE: THIS ONLY WORKS FOR VEHICLES RN
     public double getWeight() {
         double weight = this.getQueueLength();
-        VehIntersection neigh = (VehIntersection) this.getOutgoingLink().getDestination();
+        VehIntersection neigh = (VehIntersection) this.getOutgoingLink().getDest();
         Set<TurningMovement> downstream_turns = neigh.getVehicleTurns();
         for (TurningMovement downstream_turn : downstream_turns) {
             weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
@@ -72,12 +72,12 @@ public class TurningMovement {
         // TODO: (maybe) add a better intersection/conflict definition
 
         // no two flows can go to the same node
-        if (j.getDestination().equals(rhs.j.getDestination())) {
+        if (j.getDest().equals(rhs.j.getDest())) {
             return true;
         }
         //
-        LineSegment l1 = new LineSegment(i.getStart().asPoint(), j.getDestination().asPoint());
-        LineSegment l2 = new LineSegment(rhs.i.getStart().asPoint(), rhs.j.getDestination().asPoint());
+        LineSegment l1 = new LineSegment(i.getSource().asPoint(), j.getDest().asPoint());
+        LineSegment l2 = new LineSegment(rhs.i.getSource().asPoint(), rhs.j.getDest().asPoint());
         if (Geometry.doLinesIntersect(l1, l2)) {
             return true;
         }
@@ -89,10 +89,10 @@ public class TurningMovement {
 
 //        // we can't have two tms go to the same node
 //        return  (i.intersects(rhs.i) && !i.equals(rhs.i)) ||
-//                (i.intersects(rhs.j) && !i.getDestination().equals(rhs.j.getStart())) ||
-//                (j.intersects(rhs.i) && !rhs.i.getDestination().equals(j.getStart())) ||
-//                (j.intersects(rhs.j) && !j.getStart().equals(rhs.j.getStart())) ||
-//                j.getDestination().equals(rhs.j.getDestination())
+//                (i.intersects(rhs.j) && !i.getDest().equals(rhs.j.getSource())) ||
+//                (j.intersects(rhs.i) && !rhs.i.getDest().equals(j.getSource())) ||
+//                (j.intersects(rhs.j) && !j.getSource().equals(rhs.j.getSource())) ||
+//                j.getDest().equals(rhs.j.getDest())
 //                ;
 
     }
@@ -143,7 +143,7 @@ public class TurningMovement {
 //    }
 
     public String toString() {
-        return "Turn : [" + i.getStart().getId() + ", " + j.getDestination().getId() +
+        return "Turn : [" + i.getSource().getId() + ", " + j.getDest().getId() +
                 "]" +
                 "" +
                 "";
@@ -160,7 +160,7 @@ public class TurningMovement {
         // allow for time-dependent data loading
         File pq3_nodes_f = new File("data/PQ3/turning_proportions.txt");
 
-        readTurningProps(pq3_nodes_f, this.i.getStart().getId(), this.i.getDestination().getId(), this.j.getDestination().getId());
+        readTurningProps(pq3_nodes_f, this.i.getSource().getId(), this.i.getDest().getId(), this.j.getDest().getId());
         return 0.5;
     }
 

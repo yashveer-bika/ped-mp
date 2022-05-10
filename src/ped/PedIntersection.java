@@ -10,7 +10,7 @@ public class PedIntersection extends PedNode {
 
     private Set<TurningMovement> pedestrianTurns;
 
-    private Map<PedLink, List<Pedestrian>> pedestrians;
+    private Map<Link, List<Pedestrian>> pedestrians;
 
     public PedIntersection() {
         super();
@@ -31,7 +31,7 @@ public class PedIntersection extends PedNode {
             for (Link out : this.getOutgoingLinks()) {
                 // prevent u-turns
                 // NOTE: adding u-turn logic will require a change of feasible states
-                if (in.getStart() == out.getDestination()) {
+                if (in.getSource() == out.getDest()) {
                     continue;
                 }
                 pedestrianTurns.add(new TurningMovement(in, out));

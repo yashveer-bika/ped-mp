@@ -4,240 +4,322 @@
  * and open the template in the editor.
  */
 package ped;
-import Geometry.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 /**
+ * This represents a Link in the network.
+ * This is an abstract class: key methods are not implemented, and must be implemented in subclasses. 
+ * These depend on the specific flow model.
  *
- * @author micha
+ * @author Michael Levin
  */
-public class Link 
+public abstract class Link implements Comparable<Link>
 {
-    // Says whether or not the link is part of the current phase
-    // i.e, is traffic allowed to move out of here?
-    private boolean activated;
+    // id used to reference the Link
+    private int id;
 
-    private boolean entry = false;
-    private double queue_length;
+    // stores the upstream and downstream nodes
+    private Node source, dest;
 
-    // parameters for travel time calculation. max_flow is the free flow time, C is the capacity
-    private double capacity;
+    // capacity per lane in veh/hr
+    private double capacityPerLane;
 
+    // number of lanes
+    private int numLanes;
 
-    // the start and end nodes of this link. Links are directed.
-    private Node start, destination;
-    // the angle between the start and destination node
+    // Link length in miles
+    private double length;
+
+    // free flow speed in mi/hr
+    private double ffspd;
+
+    // travel time information
+    private double avgTT;
+    private double totalFlow;
+
+    // during each DNL, update total entering flow and total time spent occupying the Link.
+    private double total_entering;
+    private double total_time_occ;
+
+    // YASHVEER's ADDITIONS
+    // suppose we plotted the source and dest. angle is the angle from source to dest
     private double angle;
-
-    private String direction;
-    // POSSIBLE values for direction:
-    // "NS", "EW", "SN", "WE", "entry"
+    private boolean sidewalk;
 
 
-    public Link(Node start, Node destination, double C)
+
+    /**
+     * Constructs a new {@Link Link} with the given parameters.
+     * Generally {@Link Link}s will be constructed in {@Link dnl.ReadNetwork}.
+     *
+     * Jam density is global and found in {@Link Params} TODO: add my own Params file type setup
+     * Backwards wave speed may or may not be calculated based on these parameters - depends on the flow model.
+     * @param id id of this {@Link Link}
+     * @param source start {@Link Node} of this {@Link Link}
+     * @param dest end {@Link Node} of this {@Link Link}
+     * @param length length in mi
+     * @param ffspd free flow speed in mi/hr
+     * @param capacityPerLane capacity (per lane) in veh/hr
+     * @param numLanes number of lanes
+     */
+    public Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
     {
-        this.start = start;
-        this.destination = destination;
-        this.capacity = C;
+        // store Link parameters
+        this.id = id;
+        this.source = source;
+        this.dest = dest;
+        this.capacityPerLane = capacityPerLane;
+        this.ffspd = ffspd;
+        this.length = length;
+        this.numLanes = numLanes;
 
-        if(start != null)
+        // update incoming/outgoing sets of Links in the Node class
+        if(source != null)
         {
-            start.addOutgoingLink(this);
+            source.addLink(this);
         }
-        if(destination != null)
+        if(dest != null)
         {
-            destination.addIncomingLink(this);
+            dest.addLink(this);
         }
+
+        total_time_occ = 0.0;
+        total_entering = 0.0;
     }
 
-    // construct this Link with the given parameters
-    public Link(Node start, Node destination, double C, boolean entry)
+    /**
+     * Resets this {@Link Link} to start a new dynamic network loading
+     */
+    public abstract void reset();
+
+    /**
+     * @return the free flow speed in mi/hr
+     */
+    public double getFFSpeed()
     {
-        this.start = start;
-        this.destination = destination;
-        this.capacity = C;
-        this.entry = entry;
-        
-        if(start != null)
-        {
-            start.addOutgoingLink(this);
-        }
-        if(entry && destination == null)
-        {
-            throw new IllegalArgumentException("if entry link, then there must be a destination");
-        }
-
-        if (entry) {
-            this.direction = "entry";
-            this.destination.addEntryLink(this);
-        } else {
-            throw new IllegalArgumentException("the entry parameter should only ever be true");
-        }
+        return ffspd;
     }
 
-    // construct this Link with the given parameters
-    public Link(Node start, Node destination, double C, String direction)
+    /**
+     * @return the free flow travel time in s.
+     */
+    public double getFFTime()
     {
-        this.start = start;
-        this.destination = destination;
-        this.capacity = C;
-        this.direction = direction;
-        // this.type = type;
-
-
-        if(start != null)
-        {
-            start.addOutgoingLink(this);
-        }
-        if(destination != null)
-        {
-            destination.addIncomingLink(this);
-        }
+        return getLength() / getFFSpeed() * 3600.0;
     }
 
-    // construct this Link with the given parameters
-    public Link(Node start, Node destination, double C, String direction, double angle)
+    /**
+     * @return the travel time when entering at the given time (in s).
+     */
+    public double getAvgTT()
     {
-        this.start = start;
-        this.destination = destination;
-        this.capacity = C;
-        this.direction = direction;
-        this.angle = angle;
-        // this.type = type;
+        return Math.max(avgTT, getFFTime());
+    }
+
+    /**
+     * @return the total time spent traveling on this Link (in s)
+     */
+    public double getTotalTT()
+    {
+        return getAvgTT() * totalFlow;
+    }
 
 
-        if(start != null)
+//    /**
+//     * @return the average grade (change in elevation) in percent vertical change in ft per horizontal distance
+//     */
+//    public double getAvgGrade()
+//    {
+//        return (dest.getElevation() - source.getElevation()) / (getLength() * 5280);
+//    }
+
+    /**
+     * @return the length in mi
+     */
+    public double getLength()
+    {
+        return length;
+    }
+
+    /**
+     * @return the capacity per lane in veh/hr
+     */
+    public double getCapacityPerLane()
+    {
+        return capacityPerLane;
+    }
+
+    /**
+     * @return the total capacity in veh/hr
+     */
+    public double getCapacity()
+    {
+        return capacityPerLane * numLanes;
+    }
+
+    /**
+     * @return the number of lanes
+     */
+    public double getNumLanes()
+    {
+        return numLanes;
+    }
+
+
+
+    /**
+     * @return the upstream {@Link Node} for this {@Link Link}
+     */
+    public Node getSource()
+    {
+        return source;
+    }
+
+    /**
+     * @return the downstream {@Link Node} for this {@Link Link}
+     */
+    public Node getDest()
+    {
+        return dest;
+    }
+
+
+    /**
+     * @return the id for this {@Link Link}
+     */
+    public int getId()
+    {
+        return id;
+    }
+
+    /**
+     * @return the number of vehicles currently on this {@Link Link}.
+     */
+    public abstract double getOccupancy();
+
+    /**
+     * This is called every time step. 
+     * For the {@Link Link} class, {@Link #step()} should propagate flow along the Link.
+     */
+    public abstract void step();
+
+    /**
+     * This is called every time step, after {@Link #step()} has been called for all {@Link Node}s and {@Link Link}s.
+     * It can be used to finish any updating work that could not occur during {@Link #step()}.
+     */
+    public abstract void update();
+
+    /**
+     * Adds the given flow (in veh, for a single time step) to the upstream end of the Link.
+     * This method is called when vehicles enter the Link!
+     * This is usually called by the {@Link Node#step()} method.
+     * Subclasses of Link need to call {@Link #logEnteringFlow(double)} to update the average travel times.
+     */
+    public abstract void addFlow(double y);
+
+
+    /**
+     * This is used to track the total number of vehicles entering this Link.
+     * The number of vehicles is used to calculate the average travel time.
+     * This method is usually called by {@Link #addFlow(double)}.
+     * Subclasses of {@Link Link} should call this method as part of the {@Link #addFlow(double)} method.
+     */
+    public void logEnteringFlow(double y)
+    {
+        total_entering += y;
+    }
+
+
+//    // TODO: update once I understand the purpose
+//    /**
+//     * This method is used to calculate the average travel time.
+//     * It should be called once per time step by the {@Link dnl.Network} class.
+//     */
+//    public void logOccupancyTime()
+//    {
+//        total_time_occ += Params.dt * getOccupancy();
+//    }
+
+    /**
+     * This method is used to calculate the total travel time at the end of the dynamic network loading.
+     * The result can be accessed by {@Link #getAvgTT()}. 
+     * This method is called in {@Link dnl.Network#simulate()}.
+     */
+    public void calculateTravelTime()
+    {
+        if(total_entering > 0)
         {
-            start.addOutgoingLink(this);
+            avgTT = total_time_occ / total_entering;
         }
-        if(destination != null)
+        else
         {
-            destination.addIncomingLink(this);
+            avgTT = getFFTime();
         }
+
+        totalFlow = total_entering;
+
+        // now reset total_time_occ and total_entering for the next dynamic network loading.
+        total_time_occ = 0.0;
+        total_entering = 0.0;
     }
 
-    public LineSegment asLineSegment() {
-        return new LineSegment(start.asPoint(), getDestination().asPoint());
+
+    /**
+     * Removes the given flow (in veh, for a single time step) from the downstream end of the Link.
+     * This method is called when vehicles exit the Link! 
+     * This is usually called by the {@Link Node#step()} method.
+     * @param y the flow to be removed
+     */
+    public abstract void removeFlow(double y);
+
+    /**
+     * @return the maximum flow that could exit the Link in the next time step (in veh)
+     */
+    public abstract double getSendingFlow();
+
+
+    /**
+     * @return the maximum flow that could enter the Link in the next time step (in veh)
+     */
+    public abstract double getReceivingFlow();
+
+
+    /**
+     * Used to sort {@Link Link} by id.
+     */
+    public int compareTo(Link rhs)
+    {
+        return id - rhs.id;
     }
 
-    public boolean intersects(Link rhs) {
-        LineSegment a = this.asLineSegment();
-        LineSegment b = rhs.asLineSegment();
-        return Geometry.doLinesIntersect(a, b);
+
+    /**
+     * Used for hashing. You can ignore it.
+     */
+    public int hashCode()
+    {
+        return id;
     }
 
+    /**
+     * @return the id of this {@Link Link}
+     */
+    public String toString()
+    {
+        return ""+id;
+    }
+
+
+    /** YASHVEER's ADDITIONS ***/
+    // TODO: javadoc
+    public abstract boolean isEntry();
+
+    // TODO: make my new methods follow good design practice
     public double getAngle() {
         return this.angle;
     }
 
-    public String getDirection() {
-        return direction;
-    }
-
-    public Node getDestination() {
-        return this.destination;
-    }
-
-    public boolean getIfEntry() {
-        return this.entry;
-    }
-
-
-//    public HashMap<String, Integer> getSignals() {
-//        HashMap<String, Integer> all_signals = destination.getSignals();
-//        HashMap<String, Integer> desired_signals = new HashMap<String, Integer>();
-//
-//        // filter out the signals that come from this.start
-//        for (String key: all_signals.keySet()) {
-//            // parse key into start and destination
-//            String[] arrOfStr = key.split("::"); // keys' incoming and outgoing are separated by ::
-//            if (arrOfStr[0].equals(this.toString())) {
-//                desired_signals.put(key, all_signals.get(key));
-//            }
-//            // System.out.println("Signal's start link: " + arrOfStr[0]);
-//            // System.out.println("This link:           " + this.toString());
-//            // for (String a: arrOfStr)
-//            //     System.out.println(a);
-//        }
-//
-//        return desired_signals; // TODO: edit return
-//    }
-//
-//    public void setSignal(Link in, Link out, int new_phase) {
-//        destination.setSignal(in, out, new_phase);
-//    }
-//
-//    public void setSignal(String key, int new_phase) {
-//        destination.setSignal(key, new_phase);
-//    }
-//
-//    public Set<Link> getOutgoing() {
-//        return destination.getOutgoing();
-//    }
-
-//    // move num_cars from this to destination_link
-//    public void moveCars(Link destination_link, double num_cars) {
-//        if (num_cars > this.queue_length) {
-//            return; // TODO: throw an error for moving more cars than I have
-//        } else {
-//            this.setQueueLength(this.queue_length - num_cars);
-//            destination_link.setQueueLength(destination_link.queue_length + num_cars);
-//        }
-//    }
-
-
-    public double getCapacity() {
-        return capacity;
-    }
-
-    // updates the flow on this link
-    public void setQueueLength(double cur_queue_length)
-    {
-        if (cur_queue_length > capacity) {
-            throw new IllegalArgumentException("New queue length is too large, must be less than capacity");
-        }
-        this.queue_length = cur_queue_length;
-    }
-
-    /*
-    public int hashCode()
-    {
-        return getStart().getId()+getdestination().getId()*10000;
-    }
-
-     */
-
-    public Node getStart()
-    {
-        return start;
-    }
-
-    
-    /* **********
-    Exercise 3(c)
-    ********** */
-
-    public boolean equals(Object o) {
-        Link rhs = (Link) o;
-        return start.equals(rhs.getStart()) && destination.equals(rhs.getDestination());
-    }
-
-    public String toString()
-    {
-        if (this.entry) {
-            return "(" + this.destination.getId() + " : entry)";
-        }
-        else {
-            return "(" + this.start.getId() +
-                    ", " +
-                    this.destination.getId() +
-                    " " +
-                    this.direction +
-                    " " +
-                    this.angle / (2 * Math.PI) + ")";
-        }
+    public boolean isSidewalk() {
+        return sidewalk;
     }
 }

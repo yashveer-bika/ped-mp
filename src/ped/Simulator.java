@@ -17,8 +17,8 @@ public class Simulator extends Network {
 //    entrance node, start time, end time, demand_quantity
     private Map<Node, double[]> static_demand;
 
-    public Simulator(File nodesFile, File linksFile, boolean ped) {
-        super(nodesFile, linksFile, ped);
+    public Simulator(File nodesFile, File linksFile, boolean ped, String controllerType) {
+        super(nodesFile, linksFile, ped, controllerType);
         simTime = 0;
         timeStepSize = 0;
         toleranceTime = 0;

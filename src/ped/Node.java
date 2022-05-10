@@ -73,10 +73,10 @@ public class Node
     public Set<Node> getNeighbors() {
         Set<Node> neighs = new HashSet<>();
         for (Link l : this.getIncomingLinks()) {
-            neighs.add( l.getStart() );
+            neighs.add( l.getSource() );
         }
         for (Link l : this.getOutgoingLinks()) {
-            neighs.add( l.getDestination() );
+            neighs.add( l.getDest() );
         }
         return neighs;
     }
@@ -206,6 +206,10 @@ public class Node
      {
          return "Node{location=" + location + ", id=" + id + "}";
      }
+
+    public void addLink(Link link) {
+        allLinks.add(link);
+    }
     
     
     

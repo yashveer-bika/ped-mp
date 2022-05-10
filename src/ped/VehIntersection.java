@@ -91,7 +91,7 @@ public class VehIntersection extends VehNode {
             for (Link out : this.getOutgoingLinks()) {
                 // prevent u-turns
                 // NOTE: adding u-turn logic will require a change of feasible states
-                if (in.getStart() == out.getDestination()) {
+                if (in.getSource() == out.getDest()) {
                     continue;
                 }
                 vehicleTurns.add(new TurningMovement(in, out));
