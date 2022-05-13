@@ -32,7 +32,7 @@ public class Network {
 
     public Network(File nodesFile, File linksFile, boolean ped, String controllerType) {
         this.controllerType = controllerType;
-        // this.turningMovements = new HashMap<>();
+//        this.turningMovements = new HashMap<>();
         this.pedNodeRoads = new HashMap<>();
         this.pedNodesRoadAngles = new HashMap<>();
         this.intersectionSet = new HashSet<>();
@@ -357,7 +357,6 @@ public class Network {
             e.printStackTrace();
         }
     }
-
 
     private void createIntersectionGraph_constructor() {
         // create intersection graph
@@ -954,6 +953,7 @@ public class Network {
                 rate = rate / 60 / 60 * timeStepSize;
                 // TODO: add demand into the node
                 n.addDemand(rate);
+
                 // TODO: split demand in node into each turning movement???
                 // a turning movement is a pair of links, which is equivalent to 3 nodes
                 // the middle node is the same as 'n'.
@@ -961,9 +961,15 @@ public class Network {
         }
     }
 
-
-    public void splitDemandToTurns() {
-        
+    // TODO: split demand to turns
+    public void splitDemandToLinks() {
+        for (Intersection i : getIntersectionSet()) {
+            i.getAllTurningMovements();
+            Set<Node> allNodes = i.getAllNodes();
+//            for (TurningMovement tm : i.getAllTurningMovements()) {
+//                System.out.println(tm.get);
+//            }
+        }
     }
 
     public void printNodeDemands() {

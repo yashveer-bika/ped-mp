@@ -1,5 +1,8 @@
 package ped;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,9 +37,14 @@ public class pedMPcontroller implements Controller {
 
         try {
             IloCplex cplex = new IloCplex();
+            File f = new File(Params.cplex_out_filepath);
+            FileOutputStream f_out = new FileOutputStream(f);
+//            cplex.setOut(f_out);
+            cplex.setOut(null);
+            cplex.setWarning(null);
 
             // for every pedestrian movement \hat{phi}_{mn}(t)
-            double max_ped_tolerance_time = 10.0;
+            double max_ped_tolerance_time = Params.tolerance_time;
 
             // constants
             // NEED r_ij (turning ratios)
@@ -185,16 +193,11 @@ public class pedMPcontroller implements Controller {
 
             // solve and retrieve optimal solution
             if (cplex.solve()) {
-                System.out.println("Optimal value = " + cplex.getObjValue());
+//                System.out.println("Optimal value = " + cplex.getObjValue());
                 for (TurningMovement turn : v_signals.keySet()) {
                     IloIntVar v_sig = v_signals.get(turn);
-                    System.out.println("vehicle signal @ " + turn + " = " + cplex.getValue(v_sig));
+//                    System.out.println("vehicle signal @ " + turn + " = " + cplex.getValue(v_sig));
                 }
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
             }
 
 
@@ -252,6 +255,8 @@ public class pedMPcontroller implements Controller {
 
              */
         } catch (IloException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 

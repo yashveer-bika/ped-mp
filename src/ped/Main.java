@@ -33,9 +33,9 @@ public class Main
         String controllerType = "vehMP";
 
         // TODO: verify the veh-2-veh conflict solution
-        Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, true, controllerType);
+        Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false, controllerType);
         pq3_net.loadStaticDemand(new File("data/PQ3/demand.txt"));
-        pq3_net.runSim(15, 300, true, 60);
+        pq3_net.runSim(15, 30, Params.tolerance_time);
 
     }
 }

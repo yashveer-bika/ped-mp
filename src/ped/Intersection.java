@@ -8,15 +8,15 @@ public class Intersection {
     private final Set<PedNode> pedNodes;
     private final Set<Node> allNodes;
 
-    private final HashSet<Link> allLinks;
+//    private final HashSet<Link> allLinks;
     private Set<TurningMovement> vehicleTurns;
-    private Set<TurningMovement> pedestrianTurningMovements;
+    private final Set<TurningMovement> pedestrianTurningMovements;
     private final Set<TurningMovement> allTurningMovements;
 
     private final HashMap<Node, Set<TurningMovement>> node_to_tms;
 
-    private final Set<Crosswalk> crosswalks;
-    private final Set<Phase> feasiblePhases;
+    // private final Set<Crosswalk> crosswalks;
+    // private final Set<Phase> feasiblePhases;
     private final Controller controller;
     // vehicle tm, pedestrian tm, 0/1
     private final Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
@@ -24,7 +24,7 @@ public class Intersection {
     private final HashMap<TurningMovement, Double> vehQueueLengths;
     private final HashMap<TurningMovement, Double> pedQueueLengths;
     private final HashMap<TurningMovement, Double> pedTurnMovCaps;
-    private boolean loadingComplete = false;
+//    private boolean loadingComplete = false;
     private boolean ped; // says whether or not we allow pedestrians in this intersection
     // this is the Q_c defined in the paper
     private double capacityConflictRegion_Qc;
@@ -35,7 +35,7 @@ public class Intersection {
         this.pedNodes = new HashSet<>();
         this.allNodes = new HashSet<>();
         this.node_to_tms = new HashMap<>();
-        this.feasiblePhases = new HashSet<>();
+//        this.feasiblePhases = new HashSet<>();
         this.vehInt = vehInt;
         this.vehicleTurns = new HashSet<>();
         vehInt.generateVehicleTurns();
@@ -47,9 +47,10 @@ public class Intersection {
         this.vehQueueLengths = new HashMap<>();
         this.pedQueueLengths = new HashMap<>();
         this.pedTurnMovCaps = new HashMap<>();
-        this.crosswalks = new HashSet<>();
+        this.ped = false;
+//        this.crosswalks = new HashSet<>();
         // this.conflictMap = new HashMap<Integer, Set<Integer>>();
-        this.allLinks = new HashSet<>();
+//        this.allLinks = new HashSet<>();
 
         if (controllerType.equals("vehMP")) {
             this.controller = new vehMPcontroller(this);
@@ -59,9 +60,9 @@ public class Intersection {
         }
 
 
-        // get all vehicle links
-        allLinks.addAll(vehInt.getIncomingLinks());
-        allLinks.addAll(vehInt.getOutgoingLinks());
+//        // get all vehicle links
+//        allLinks.addAll(vehInt.getIncomingLinks());
+//        allLinks.addAll(vehInt.getOutgoingLinks());
 
         // TODO: verify the purpose of the code below
         // find the capacity of the conflict region
@@ -83,7 +84,7 @@ public class Intersection {
                         Set<Crosswalk> crosswalks, Set<PedNode> pedNodes, String controllerType) {
         this.allNodes = new HashSet<>();
         this.node_to_tms = new HashMap<>();
-        this.feasiblePhases = new HashSet<>();
+//        this.feasiblePhases = new HashSet<>();
         this.pedNodes = pedNodes;
         this.vehInt = vehInt;
         assert pedInts.size() == 4;
@@ -98,8 +99,8 @@ public class Intersection {
         this.vehQueueLengths = new HashMap<>();
         this.pedQueueLengths = new HashMap<>();
         this.pedTurnMovCaps = new HashMap<>();
-        this.crosswalks = crosswalks;
-        this.allLinks = new HashSet<>();
+//        this.crosswalks = crosswalks;
+//        this.allLinks = new HashSet<>();
         if (controllerType.equals("vehMP")) {
             this.controller = new vehMPcontroller(this);
         } else {
@@ -107,15 +108,15 @@ public class Intersection {
             this.controller = new vehMPcontroller(this);
         }
 
-        // get all the pedestrian links
-        for (PedIntersection pedInt : pedInts) {
-            allLinks.addAll(pedInt.getIncomingLinks());
-            allLinks.addAll(pedInt.getOutgoingLinks());
-        }
+//        // get all the pedestrian links
+//        for (PedIntersection pedInt : pedInts) {
+//            allLinks.addAll(pedInt.getIncomingLinks());
+//            allLinks.addAll(pedInt.getOutgoingLinks());
+//        }
 
-        // get all vehicle links
-        allLinks.addAll(vehInt.getIncomingLinks());
-        allLinks.addAll(vehInt.getOutgoingLinks());
+//        // get all vehicle links
+//        allLinks.addAll(vehInt.getIncomingLinks());
+//        allLinks.addAll(vehInt.getOutgoingLinks());
 
         // TODO: verify the purpose of the code below
         // find the capacity of the conflict region
@@ -128,6 +129,10 @@ public class Intersection {
                 maxTurn = temp;
             }
         }
+    }
+
+    public Set<Node> getAllNodes() {
+        return this.allNodes;
     }
 
     public void setNumForks() {
@@ -143,8 +148,8 @@ public class Intersection {
 
     public void initializeNodeTMs() {
         // add nodes
-        System.out.println("this.getPedNodes(): " + this.getPedNodes());
-        System.out.println("this.vehInt: " + this.vehInt);
+//        System.out.println("this.getPedNodes(): " + this.getPedNodes());
+//        System.out.println("this.vehInt: " + this.vehInt);
         allNodes.addAll(this.getPedNodes());
         allNodes.add(this.vehInt);
 
@@ -163,7 +168,7 @@ public class Intersection {
 
     // makes sure that the phases are generated and code won't be redundantly called
     public void finishLoading() {
-        this.loadingComplete = true;
+//        this.loadingComplete = true;
         setNumForks();
 
         if (ped) {
@@ -268,25 +273,6 @@ public class Intersection {
         return sets;
     }
 
-
-//    public Set<Set<TurningMovement>> powerSetTopDown(Set<TurningMovement> originalSet) {
-//        if (originalSet.size() == 1 || (!hasConflicts(originalSet))) {
-//            Set retset = new HashSet();
-//            retset.add(originalSet);
-//            return retset;
-//        } else {
-//            Set<TurningMovement> temp = new HashSet<>();
-//            temp.addAll(originalSet);
-//            Set<Set<TurningMovement>> validPhases = new HashSet<>();
-//            for (TurningMovement tm : originalSet) {
-//                temp.remove(tm);
-//                validPhases.addAll(powerSetTopDown(temp));
-//                temp.add(tm);
-//            }
-//            return validPhases;
-//        }
-//    }
-
     private void generatePhases() {
         // Set<Set<TurningMovement>> possiblePhases = PowerSet.powerSet(this.allTurningMovements);
         // this.feasiblePhases = filterFeasiblePhases(possiblePhases);
@@ -312,9 +298,9 @@ public class Intersection {
             }
         }
 
-        for (Set<TurningMovement> t_phase : tms) {
-            this.feasiblePhases.add(new Phase(t_phase));
-        }
+//        for (Set<TurningMovement> t_phase : tms) {
+//            this.feasiblePhases.add(new Phase(t_phase));
+//        }
     }
 
 
@@ -405,6 +391,10 @@ public class Intersection {
                 pedInt.updateTime(newTime);
             }
         }
+    }
+
+    public void iterateTimeStep() {
+        Set<Phase> best_phase_set = controller.selectBestPhaseSet();
     }
 
     public int getId() {

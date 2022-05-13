@@ -6,6 +6,9 @@ import ilog.concert.IloLinearNumExpr;
 import ilog.concert.IloNumVar;
 import ilog.cplex.IloCplex;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,9 +36,15 @@ public class vehMPcontroller implements Controller {
 
         // TODO: generate all phases
 
+        System.out.println("Intersection: " + this.intersection.getId());
 
         try {
             IloCplex cplex = new IloCplex();
+            File f = new File(Params.cplex_out_filepath);
+            FileOutputStream f_out = new FileOutputStream(f);
+//            cplex.setOut(f_out);
+            cplex.setOut(null);
+            // cplex.setWarning(null);
 
             // constants
             // NEED r_ij (turning ratios)
@@ -52,7 +61,10 @@ public class vehMPcontroller implements Controller {
             // CREATE VEHICLE SIGNALS
             Map<TurningMovement, IloIntVar> v_signals = new HashMap<>();
             for (TurningMovement turn : intersection.getVehicleTurningMovements()) {
-                IloIntVar v_signal_ij = cplex.intVar(0, 1, "s_ij");
+                int i = turn.getIncomingLink().getId();
+                int j = turn.getOutgoingLink().getId();
+                String name = "s_{" +  + i + "," + j + "}";
+                IloIntVar v_signal_ij = cplex.intVar(0, 1, name);
                 v_signals.put(turn, v_signal_ij);
             }
 
@@ -89,23 +101,22 @@ public class vehMPcontroller implements Controller {
             IloLinearNumExpr objExpr = cplex.linearNumExpr();
             for (TurningMovement turn : intersection.getVehicleTurns()) {
                 double v_turn_mov_cap = turn.getCapacity();
+                System.out.println("v_turn_mov_cap: " + v_turn_mov_cap);
                 double v_weight_ij = turn.getWeight();
+                System.out.println("v_weight_ij: " + v_weight_ij);
                 objExpr.addTerm(v_turn_mov_cap * v_weight_ij, v_signals.get(turn));
             }
             cplex.addMaximize(objExpr);
 
             // solve and retrieve optimal solution
             if (cplex.solve()) {
-                System.out.println("Optimal value = " + cplex.getObjValue());
-                for (TurningMovement turn : v_signals.keySet()) {
-                    IloIntVar v_sig = v_signals.get(turn);
-                    System.out.println("vehicle signal @ " + turn + " = " + cplex.getValue(v_sig));
-                }
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
+                System.out.println("PRINTS decision var");
+                System.out.println(cplex);
+//                System.out.println("Optimal value = " + cplex.getObjValue());
+//                for (TurningMovement turn : v_signals.keySet()) {
+//                    IloIntVar v_sig = v_signals.get(turn);
+//                    System.out.println("vehicle signal @ " + turn + " = " + cplex.getValue(v_sig));
+//                }
             }
 
 
@@ -135,10 +146,6 @@ public class vehMPcontroller implements Controller {
                  decision var.
            phi_{mn}(t) = The pedestrians waiting time for cross movement (m, n) at time step t
                             decision var < \hat{phi}_{mn}(t)
-           \hat{phi}_{mn}(t) = maximum tolerance time at pedLink m to pedLink j at time t
-                               we manually set this parameter
-           \alpha_{ij}^{n} = 0/1 to indicator to check whether vehicle movements
-                                (i,j) intersect with crosswalk n or ij or not
 
            y_{ij}^v(t) = the flow of vehicles from i to j at time t, which is controlled by traffic signal.
                 decision variable
@@ -163,6 +170,8 @@ public class vehMPcontroller implements Controller {
 
              */
         } catch (IloException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 

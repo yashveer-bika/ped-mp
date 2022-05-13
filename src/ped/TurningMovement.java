@@ -54,9 +54,13 @@ public class TurningMovement {
         VehIntersection neigh = (VehIntersection) this.getOutgoingLink().getDest();
         Set<TurningMovement> downstream_turns = neigh.getVehicleTurns();
         for (TurningMovement downstream_turn : downstream_turns) {
+            System.out.println("\tweight: " + weight);
+//            System.out.println("\tdownstream_turn.getTurningProportion(): " + downstream_turn.getTurningProportion());
+            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
+
             weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
         }
-
+        System.out.println("\tweight: " + weight);
         return weight;
     }
 

@@ -5,63 +5,88 @@
  */
 package ped;
 
+import java.util.LinkedList;
+
 /**
  * This class propagates flow according to the point queue model (no spatial constraints).
  *
- * @author: Yashveer Bika, Michael W. Levin
+ * @author: Michael W. Levin
  */
 public class PointQueue extends Link
 {
+    private LinkedList<Double> demand; // list of vehicles that entered, size is free flow tim/dt - 1
+
+    private double n; // number of vehicles in point queue
+    private double exiting; // number of vehicles exiting this time step
+    private double entering; // number of vehicles entering this time step
 
     public PointQueue(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
     {
         super(id, source, dest, length, ffspd, capacityPerLane, numLanes);
 
+        reset();
     }
-
 
     public void reset()
     {
-        // fill this in
+        demand = new LinkedList<Double>();
+        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-1; i++)
+        {
+            demand.add(0.0);
+        }
+
+        n = 0;
+        exiting = 0;
+        entering = 0;
+
     }
 
     public double getOccupancy()
     {
-        // fill this in
-        return 0.0;
+        double output = 0.0;
+
+        for(double x : demand)
+        {
+            output += x;
+        }
+
+        output += n;
+        return output;
     }
 
 
     public void step()
     {
-        // fill this in
+        // nothing to do here
     }
 
     public void update()
     {
-        // fill this in
+        n = n - exiting + demand.removeFirst();
+        demand.add(entering);
+        entering = 0;
+        exiting = 0;
     }
 
     public double getSendingFlow()
     {
-        // fill this in
-        return 0.0;
+        return Math.min(n, getCapacity() * Params.dt/3600.0);
     }
 
     public double getReceivingFlow()
     {
-        // fill this in
-        return 0.0;
+        return getCapacity() * Params.dt/3600.0;
     }
 
     public void addFlow(double y)
     {
-        // fill this in
+        entering += y;
+        // logEnteringFlow(y);
     }
 
     public void removeFlow(double y)
     {
-        // fill this in
+        exiting += y;
     }
 
     public boolean isEntry() {

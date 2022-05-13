@@ -2,10 +2,7 @@ package ped;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class Simulator extends Network {
     private double simTime; // total network time (time in simulation)
@@ -56,7 +53,6 @@ public class Simulator extends Network {
                 double endTime = Double.parseDouble(demand_data[2]);
                 double rate = Double.parseDouble(demand_data[3]); // assume (vph)
 
-                // TODO: put this demand data in some data structure
                 /*
                 *   {nodeId: [startTime, endTime, rate]}
                 */
@@ -83,26 +79,28 @@ public class Simulator extends Network {
         }
     }
 
-    public void runSim(double timeStepSize, double totalRunTime, boolean ped, double toleranceTime) {
+    public void runSim(double timeStepSize, double totalRunTime, double toleranceTime) {
         this.toleranceTime = toleranceTime;
         this.timeStepSize = timeStepSize;
 
         while (simTime <= totalRunTime) {
+            System.out.println("Sim Time: " + simTime);
+
             // load demand into network
             this.addDemandToNodes(static_demand, simTime, timeStepSize);
-            this.splitDemandToTurns();
-
+            this.splitDemandToLinks();
             this.printNodeDemands();
+
+
+
             // TODO: print out the queue lengths of the whole network
             // this.printNetwork();
 
             // run controller
-//            for (Intersection i : this.getIntersectionSet()) {
-//                i.iterateTimeStep();
-//            }
+            for (Intersection i : this.getIntersectionSet()) {
+                i.iterateTimeStep();
+            }
             // update the queues
-
-            System.out.println("Sim Time: " + simTime);
             updateTime();
         }
     }
