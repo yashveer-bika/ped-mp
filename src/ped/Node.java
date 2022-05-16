@@ -33,38 +33,74 @@ public class Node
     private Set<Link> outgoingLinks;
     private Set<Link> allLinks;
     private double curDemand = 0;
+    private List<Vehicle> vehicles;
     // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
-
     // private boolean thruNode;
+
+    //for calculating shortest path
+    private Node pi = null;
+    private double cost = Double.POSITIVE_INFINITY;
+
+    //for calculating shortest paths
+    private ArrayList<Node> parents = new ArrayList<>();
+    private boolean explored = false;
 
     public Node() {
         this.outgoingLinks = new HashSet<>();
         this.incomingLinks = new HashSet<>();
         this.allLinks = new HashSet<>();
+        this.vehicles = new ArrayList<>();
 //        signals = new HashMap<>();
     }
 
     public Node(int id)
     {
+        this();
         this.id = id;
-        this.outgoingLinks = new HashSet<>();
-        this.incomingLinks = new HashSet<>();
-        this.allLinks = new HashSet<>();
 
 //        signals = new HashMap<>();
     }
 
     public Node(int id, int row, int col)
     {
+        this(id);
         this.rowPosition = row;
         this.colPosition = col;
-        this.id = id;
-        this.outgoingLinks = new HashSet<>();
-        this.incomingLinks = new HashSet<>();
-        this.allLinks = new HashSet<>();
 
     }
+
+    public Link getOutgoingLink(Node rhs) {
+//        System.out.println("n1 id: " + getId());
+//        System.out.println("n2 id: " + rhs.getId());
+        for (Link l : outgoingLinks) {
+            Node r = l.getDest();
+            if (r == rhs) {
+//                String n1id = String.valueOf(getId());
+//                String n2id = String.valueOf(rhs.getId());
+//                int linkid = Integer.parseInt(n1id + n2id);
+//                System.out.println(n1id + n2id);
+//                System.out.println(linkid);
+                // assert linkid == rhs.getId();
+                return l;
+            }
+        }
+        return null;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public void addVehicle(Vehicle v) {
+        vehicles.add(v);
+    }
+
+
 
     public Point asPoint() {
         return new Point(location.getX(), location.getY());
@@ -148,6 +184,42 @@ public class Node
         return curDemand;
     }
 
+    public Node getPi() {
+        return pi;
+    }
+
+    public void setPi(Node pi) {
+        this.pi = pi;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
+    }
+
+    public ArrayList<Node> getParents() {
+        return parents;
+    }
+
+    public void setParents(ArrayList<Node> parents) {
+        this.parents = parents;
+    }
+
+    public boolean isExplored() {
+        return explored;
+    }
+
+    public void setExplored(boolean explored) {
+        this.explored = explored;
+    }
+
+    public void clearVehicles() {
+        vehicles = new ArrayList<>();
+    }
+
     /*
     public void setIncomingLinks(Set<Link> incoming) {
         this.incoming = incoming;
@@ -197,9 +269,17 @@ public class Node
     // }
 
 
+//    public boolean equals(Object o) {
+//        Node rhs = (Node) o;
+//        return location.equals(rhs.getLocation());
+//    }
+
     public boolean equals(Object o) {
         Node rhs = (Node) o;
-        return location.equals(rhs.getLocation());
+        if (rhs == null || this == null) {
+            return false;
+        }
+        return rhs.getId() == this.getId();
     }
 
      public String toString()

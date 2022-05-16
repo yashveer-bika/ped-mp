@@ -16,21 +16,28 @@ public class Network {
     private HashMap<Integer, VehIntersection> vehInts;
     private HashMap<Integer, Link> entryLinks;
     private Set<PedNode> pedNodes;
+    private Set<VehNode> vehNodes;
+
     // the doubles are the angles w.r.t to the vehInt corresponding to the PedNode
     private HashMap<PedNode, Set<Double>> pedNodesRoadAngles;
     private HashMap<PedNode, Set<Link>> pedNodeRoads;
 
+    private Map<Node, Map<Node, List<ArrayList<Node>>>> vehiclePaths;
+    private Set<Vehicle> vehicles;
+
     private String controllerType;
 
-    private double networkTime; // total network time (time in simulation)
-    private double cycleTime; // time within a cycle of the simulation
-    private double toleranceTime; // pedestrian tolerance time
+    public double networkTime; // total network time (time in simulation)
+    public double cycleTime; // time within a cycle of the simulation
+    public double toleranceTime; // pedestrian tolerance time
     private boolean ped; // says whether we load the network with pedestrians
 
 
 
 
     public Network(File nodesFile, File linksFile, boolean ped, String controllerType) {
+        this.vehicles = new HashSet<>();
+        this.vehiclePaths = new HashMap<>();
         this.controllerType = controllerType;
 //        this.turningMovements = new HashMap<>();
         this.pedNodeRoads = new HashMap<>();
@@ -43,6 +50,7 @@ public class Network {
         this.intersectionGraph = new HashMap<>();
         this.pedNodes = new HashSet<>();
         this.ped = ped;
+        this.vehNodes = new HashSet<>();
 
         // load vehicle intersections
         this.loadNodes_constructor(nodesFile);
@@ -75,6 +83,10 @@ public class Network {
         if (ped) {
             this.loadSidewalks_constructor();
         }
+
+        setVehiclePaths();
+
+//        printVehiclePaths();
 
         this.finishLoading();
     }
@@ -125,10 +137,10 @@ public class Network {
             // max_lat - min_lat cross max_long - min_long
             // shift values by the min, so (min_lat, min_long) is (0,0)
 
-            double max_long = Double.MIN_VALUE;
-            double max_lat = Double.MIN_VALUE;
-            double min_long = Double.MAX_VALUE;
-            double min_lat = Double.MAX_VALUE;
+            double max_long = Double.NEGATIVE_INFINITY;
+            double max_lat = Double.NEGATIVE_INFINITY;
+            double min_long = Double.POSITIVE_INFINITY;
+            double min_lat = Double.POSITIVE_INFINITY;
             double cur_lat;
             double cur_long;
 
@@ -212,6 +224,7 @@ public class Network {
                 // make node
 
                 node = new VehIntersection(nodeId);
+
                 // set up entry link for the new node
                 // EntryLink(int id, Node source, Node dest)
 
@@ -225,7 +238,7 @@ public class Network {
                 assert nodeId == entry_link.getDest().getId();
 
                 node.addEntryLink(entry_link);
-                this.linkSet.add(entry_link);
+                // this.linkSet.add(entry_link);
                 this.entryLinks.put(nodeId, entry_link);
                 this.vehInts.put(nodeId, node);
                 // put into temp grid to see location
@@ -237,6 +250,7 @@ public class Network {
                 node.setColPosition((int) colPos);
                 node.setLocation(new Location(longitude, latitude));
 
+                vehNodes.add(node);
                 this.nodeSet.add(node);
 
 //                this.grid[rowPos][colPos] = nodeId;
@@ -373,9 +387,7 @@ public class Network {
                 int rowPos = outVehInt.getRowPosition();
                 int colPos = outVehInt.getColPosition();
                 Intersection int_ =  intersectionGrid[rowPos][colPos];
-                if (int_ == null) {
-
-                } else {
+                if (int_ != null) {
                     neighbors.add(int_);
                 }
             }
@@ -389,9 +401,7 @@ public class Network {
                 int rowPos = inVehInt.getRowPosition();
                 int colPos = inVehInt.getColPosition();
                 Intersection int_ =  intersectionGrid[rowPos][colPos];
-                if (int_ == null) {
-
-                } else {
+                if (int_ != null) {
                     neighbors.add(int_);
                 }
             }
@@ -491,8 +501,7 @@ public class Network {
                     }
                 }
                 assert two_angles.size() == 2;
-                List<Double> two_angles_l = new ArrayList<>();
-                two_angles_l.addAll(two_angles);
+                List<Double> two_angles_l = new ArrayList<>(two_angles);
                 Collections.sort(two_angles_l);
 //                System.out.println("Two Links: " + two_angles);
                 // get the bisecting angle on both sides (angle1, angle2)
@@ -542,7 +551,7 @@ public class Network {
                     pedInts.add(ped1);
 
                     pedIntList.add(ped1);
-                    int i = 0;
+                    int i;
                     // spawn locations based on the angles
                     for (i = 1; i < angles_.size() - 1; i++) {
                         locTmp = vehIntLoc.spawnPedIntLoc(angles_.get(i), angles_.get(i + 1),
@@ -601,7 +610,7 @@ public class Network {
                     // TODO: write a length function
                     double length = 0;
                     double ffspd = 0;
-                    double capacityPerLane = 0;
+                    int capacityPerLane = 0;
                     int numLanes = 0;
                     Link sidewalk = new PointQueue(id, ped1, ped2, length, ffspd, capacityPerLane, numLanes);
                     Link sidewalk_ = new PointQueue(id, ped2, ped1, length, ffspd, capacityPerLane, numLanes);
@@ -736,6 +745,139 @@ public class Network {
             intersectionSet.add(int_sec);
         }
     }
+
+
+
+    public void setVehiclePaths() {
+        double pathCount = 0;
+        double pathLength = 0;
+        vehiclePaths = new HashMap<>();
+        for (Node source : vehNodes) {
+            vehiclePaths.put(source, new HashMap<>());
+            for (VehNode dest: vehNodes) {
+//                //don't want to calculate paths for centroids that are adjacent to each other.
+//                if (Math.abs(dest.getRowPosition() - source.getRowPosition()) < 2 && Math.abs(dest.getColPosition() - source.getColPosition()) < 2) {
+//                    continue;
+//                }
+                if (source == dest) {
+                    continue;
+                }
+
+                HashSet<ArrayList<Node>> paths = getAllShortestVehPaths(source, dest);
+                if (paths == null) {
+                    continue;
+                }
+
+                vehiclePaths.get(source).put(dest, new ArrayList<>());
+
+                for (ArrayList<Node> path : paths) {
+
+                    pathLength += path.size();
+                    pathCount++;
+                    vehiclePaths.get(source).get(dest).add(path);
+                }
+            }
+        }
+//        System.out.println("total paths: " + pathCount);
+//        System.out.println("average vehpath length: " + pathLength/pathCount);
+    }
+
+    //returns a set of all possible shortest paths between source and dest
+    public HashSet<ArrayList<Node>> getAllShortestVehPaths(Node source, Node dest) {
+        //runs modified BFS to set all node's parents
+        modifiedBFS(source, dest);
+
+        // if dest has no parents, there is no path
+        if (dest.getParents().size() == 0) {
+            return null;
+        }
+
+        HashSet<ArrayList<Node>> shortestPaths = new HashSet<>();
+
+        //one stack stores nodes, one stack stores paths
+        Stack<Node> nodeStack = new Stack<>();
+        Stack<ArrayList<Node>> pathStack = new Stack<>();
+
+        pathStack.push(new ArrayList<>());
+        pathStack.peek().add(dest);
+        nodeStack.push(dest);
+
+        while (!nodeStack.empty()) {
+            Node current = nodeStack.pop();
+            ArrayList<Node> path = pathStack.peek();
+
+            if (current == source) {
+                shortestPaths.add(pathStack.pop());
+            } else {
+                //if we are at a split, then pop the current path and push clones on with their respective parent nodes.
+                if (current.getParents().size() > 1) {
+                    path = pathStack.pop();
+                    for (Node n : current.getParents()) {
+                        //copies list, but doesn't copy the objects in the list - pointers remain the same.
+                        ArrayList<Node> clonedPath = (ArrayList<Node>) path.clone();
+                        clonedPath.add( n);
+
+                        nodeStack.push( n);
+                        pathStack.push(clonedPath);
+                    }
+                } else {
+//                    System.out.println("current.getParents(): " + current.getParents());
+//                    System.out.println("current.getId(): " + current.getId());
+                    Node parent = current.getParents().get(0);
+                    path.add(parent);
+                    nodeStack.push(parent);
+                }
+            }
+        }
+
+        for (ArrayList<Node> path : shortestPaths) {
+            Collections.reverse(path);
+        }
+
+        return shortestPaths;
+    }
+
+
+
+    //BFS algorithm used to find multiple shortest paths - each node has an array of parents with the same cost as each other
+    public void modifiedBFS(Node source, Node dest) {
+        for (Node n : vehNodes) {
+            n.setCost(Double.POSITIVE_INFINITY);
+            n.setExplored(false);
+            n.setParents(new ArrayList<>());
+        }
+
+        source.setCost(0);
+        source.getParents().add(source);
+
+        LinkedList<Node> queue = new LinkedList<>();
+        queue.add(source);
+
+        while (queue.size() > 0) {
+            Node current = queue.remove();
+            if (current == dest) {
+                break;
+            }
+
+            HashSet<Node> nextNodes = new HashSet<>();
+            for (Link l : current.getOutgoingLinks()) {
+                nextNodes.add(l.getDest());
+            }
+
+            for (Node next : nextNodes) {
+                if (!next.isExplored()) {
+                    next.setCost(current.getCost() + 1);
+                    next.getParents().add(current);
+                    next.setExplored(true);
+                    queue.add(next);
+                } else if (next.getCost() == current.getCost() + 1) {
+                    next.getParents().add(current);
+                }
+            }
+
+        }
+    }
+
 
     // helper function
     // function to sort hashmap by values
@@ -898,7 +1040,7 @@ public class Network {
                     int id = 0;
                     double length = 0;
                     double ffspd = 0;
-                    double capacityPerLane = Double.MAX_VALUE;
+                    int capacityPerLane = Integer.MAX_VALUE;
                     int numLanes = 0;
                     Link side_walk = new PointQueue(id, srcPed, nearestDest, length, ffspd, capacityPerLane, numLanes);
                     this.linkSet.add(side_walk);
@@ -939,44 +1081,74 @@ public class Network {
         return vehInts;
     }
 
-    public void addDemandToNodes(Map<Node, double[]> static_demand, double simTime, double timeStepSize) {
-        // set demand values for each node by adding
-        // peds/vehicles into the entry links
 
-        for (Node n : static_demand.keySet()) {
-            double[] start_time_end_time_rate = static_demand.get(n);
-            double start_time = start_time_end_time_rate[0];
-            double end_time = start_time_end_time_rate[1];
-            if (start_time <= simTime && simTime <= end_time) {
-                double rate = start_time_end_time_rate[2]; // in vehicles / hour
-                // convert to vehicles / timeStepSize (in seconds)
-                rate = rate / 60 / 60 * timeStepSize;
-                // TODO: add demand into the node
-                n.addDemand(rate);
 
-                // TODO: split demand in node into each turning movement???
-                // a turning movement is a pair of links, which is equivalent to 3 nodes
-                // the middle node is the same as 'n'.
-            }
+    public void createVehicle(Node origin, Node dest) {
+        // make round(n) vehicles that have a path to dest
+//        System.out.println("Origin: "+ origin);
+//        System.out.println("Dest: "+ dest);
+        List<ArrayList<Node>> paths = vehiclePaths.get(origin).get(dest);
+        // if no path exists, we do nothing
+        if (paths != null) {
+            // printVehiclePaths();
+            // select a random path
+            Random ran = new Random(123);
+            List<Node> random_path = paths.get(ran.nextInt(paths.size()));
+            Vehicle v = new Vehicle(random_path);
+            vehicles.add(v);
+
+            Node next_step = v.getNextNode(1);
+//            assert nodeSet.contains(next_step);
+            Link l = origin.getOutgoingLink(next_step);
+//            assert linkSet.contains(l);
+//            int prev_size = l.getVehs().size();
+//            System.out.println("\tlink: " + l);
+            l.addVehicle(v);
+//            int updated_size = l.getVehs().size();
+//            System.out.println("\tupdated: " + l.getVehs());
+//            assert updated_size == prev_size + 1;
         }
     }
 
-    // TODO: split demand to turns
-    public void splitDemandToLinks() {
-        for (Intersection i : getIntersectionSet()) {
-            i.getAllTurningMovements();
-            Set<Node> allNodes = i.getAllNodes();
-//            for (TurningMovement tm : i.getAllTurningMovements()) {
-//                System.out.println(tm.get);
+
+//    public void addDemandToNodes(Map<Node, double[]> static_demand, double simTime, double timeStepSize) {
+//        // set demand values for each node by adding
+//        // peds/vehicles into the entry links
+//
+//        for (Node n : static_demand.keySet()) {
+//            double[] start_time_end_time_rate = static_demand.get(n);
+//            double start_time = start_time_end_time_rate[0];
+//            double end_time = start_time_end_time_rate[1];
+//            if (start_time <= simTime && simTime <= end_time) {
+//                double rate = start_time_end_time_rate[2]; // in vehicles / hour
+//                // convert to vehicles / timeStepSize (in seconds)
+//                rate = rate / 60 / 60 * timeStepSize;
+//                // TODO:  demand into the node
+//                n.addDemand(rate);
+//
+//                // TODO: split demand in node into each turning movement???
+//                // a turning movement is a pair of links, which is equivalent to 3 nodes
+//                // the middle node is the same as 'n'.
 //            }
-        }
-    }
+//        }
+//    }
 
-    public void printNodeDemands() {
-        for (Node n : nodeSet) {
-            System.out.println(n.getId() + ": " + n.getCurDemand());
-        }
-    }
+//    // TODO: split demand to turns
+//    public void splitDemandToLinks() {
+//        for (Intersection i : getIntersectionSet()) {
+//            i.getAllTurningMovements();
+//            Set<Node> allNodes = i.getAllNodes();
+////            for (TurningMovement tm : i.getAllTurningMovements()) {
+////                System.out.println(tm.get);
+////            }
+//        }
+//    }
+
+//    public void printNodeDemands() {
+//        for (Node n : nodeSet) {
+//            System.out.println(n.getId() + ": " + n.getCurDemand());
+//        }
+//    }
 
     /**
      * method: runSimulation(int time_steps)
@@ -1021,5 +1193,28 @@ public class Network {
          */
 
     }
+
+    // Map<Integer, Map<Integer, List<ArrayList<Integer>>>> vehiclePaths
+//    public void printVehiclePaths() {
+//        System.out.println("src_id\tdest_id\tpath");
+//        for (Integer src_id : vehiclePaths.keySet()) {
+//            for (Integer dest_id : vehiclePaths.get(src_id).keySet()) {
+//                for (ArrayList<Integer> path : vehiclePaths.get(src_id).get(dest_id)) {
+//                    String out_string = src_id + "\t" + dest_id + "\t" + path.toString();
+//                    System.out.println(out_string);
+//                }
+//            }
+//        }
+//    }
+
+    public Node getNode(Integer id) {
+        for (Node n : getNodeSet()) {
+            if (n.getId() == id) {
+                return n;
+            }
+        }
+        return null;
+    }
+
 
 }

@@ -1,5 +1,8 @@
 package ped;
 
+import ilog.concert.IloIntVar;
+import util.Tuple;
+
 import java.util.*;
 
 public class Intersection {
@@ -16,8 +19,11 @@ public class Intersection {
     private final HashMap<Node, Set<TurningMovement>> node_to_tms;
 
     // private final Set<Crosswalk> crosswalks;
-    // private final Set<Phase> feasiblePhases;
+    private final Set<Phase> feasiblePhases;
     private final Controller controller;
+    private Phase currentPhase;
+    private Map<TurningMovement, Integer> newFlowVals;
+
     // vehicle tm, pedestrian tm, 0/1
     private final Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
     private final Map<TurningMovement, Map<TurningMovement, Integer>> v2vConflicts;
@@ -32,10 +38,12 @@ public class Intersection {
 
 
     public Intersection(VehIntersection vehInt, String controllerType) {
+        this.currentPhase = new Phase();
+        this.newFlowVals = new HashMap<>();
         this.pedNodes = new HashSet<>();
         this.allNodes = new HashSet<>();
         this.node_to_tms = new HashMap<>();
-//        this.feasiblePhases = new HashSet<>();
+        this.feasiblePhases = new HashSet<>();
         this.vehInt = vehInt;
         this.vehicleTurns = new HashSet<>();
         vehInt.generateVehicleTurns();
@@ -82,9 +90,10 @@ public class Intersection {
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
                         Set<Crosswalk> crosswalks, Set<PedNode> pedNodes, String controllerType) {
+
         this.allNodes = new HashSet<>();
         this.node_to_tms = new HashMap<>();
-//        this.feasiblePhases = new HashSet<>();
+        this.feasiblePhases = new HashSet<>();
         this.pedNodes = pedNodes;
         this.vehInt = vehInt;
         assert pedInts.size() == 4;
@@ -298,9 +307,9 @@ public class Intersection {
             }
         }
 
-//        for (Set<TurningMovement> t_phase : tms) {
-//            this.feasiblePhases.add(new Phase(t_phase));
-//        }
+        for (Set<TurningMovement> t_phase : tms) {
+            feasiblePhases.add(new Phase(t_phase));
+        }
     }
 
 
@@ -394,11 +403,82 @@ public class Intersection {
     }
 
     public void iterateTimeStep() {
-        Set<Phase> best_phase_set = controller.selectBestPhaseSet();
+
+    }
+
+    public void runController() {
+        Tuple<Phase, Map<TurningMovement, Integer>> out = controller.run();
+        currentPhase = out.getX();
+        newFlowVals = out.getY();
     }
 
     public int getId() {
         return this.getVehInt().getId();
+    }
+
+    public Set<Phase> getFeasiblePhases() {
+        return feasiblePhases;
+    }
+
+    public void setCurrentPhase(Phase currentPhase) {
+        this.currentPhase = currentPhase;
+    }
+
+    public void setNewFlowVals(Map<TurningMovement, Integer> newFlowVals) {
+        this.newFlowVals = newFlowVals;
+    }
+
+    public Phase getCurrentPhase() {
+        return currentPhase;
+    }
+
+    public Map<TurningMovement, Integer> getNewFlowVals() {
+        return newFlowVals;
+    }
+
+    public void moveVehicles() {
+//        System.out.println("\tMOVING VEHICLES");
+//        System.out.println("\tID: " + getId());
+//        System.out.println("\tphase: " + getCurrentPhase());
+//        System.out.println("\tflow vals: " + getNewFlowVals());
+
+//        System.out.println("tms: " + getNewFlowVals().keySet().size());
+        for (TurningMovement tm : getNewFlowVals().keySet()) {
+            System.out.println("tm: " + tm);
+//            System.out.println("vehs: " + tm.getVehicles().size());
+            int x_ij = tm.getVehicles().size();
+            int y_ij = getNewFlowVals().get(tm);
+//            System.out.println("x_ij: " + x_ij);
+//            System.out.println("y_ij: " + y_ij);
+            // ensure that y_ij <= x_ij
+//            if (y_ij.compareTo(x_ij) > 0) {
+//                assert false;
+//            }
+            assert y_ij <= x_ij;
+
+
+            Link i = tm.getIncomingLink();
+            Link j = tm.getOutgoingLink();
+            int idx = 0;
+            for (Vehicle v : tm.getVehicles()) {
+//                System.out.println(v);
+//                System.out.println(v.getCurrentNode().getId());
+                if (idx >= y_ij) {
+                    break;
+                }
+//                System.out.println(v);
+//                System.out.println(v.getCurrentNode().getId());
+                Node n = v.moveVehicle();
+                if (n != null) {
+                    j.addVehicle(v);
+                }
+                i.removeVehicle(v);
+
+//                System.out.println(v.getCurrentNode().getId());
+                idx += 1;
+            }
+
+        }
     }
 
     @Override

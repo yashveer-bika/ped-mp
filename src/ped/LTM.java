@@ -19,7 +19,7 @@ public class LTM extends Link
 
     private double yin, yout;
 
-    public LTM(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
+    public LTM(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
     {
         super(id, source, dest, length, ffspd, capacityPerLane, numLanes);
 

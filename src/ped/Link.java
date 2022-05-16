@@ -6,6 +6,9 @@
 package ped;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This represents a Link in the network.
  * This is an abstract class: key methods are not implemented, and must be implemented in subclasses. 
@@ -15,6 +18,8 @@ package ped;
  */
 public abstract class Link implements Comparable<Link>
 {
+    private List<Vehicle> vehs; // TODO: see if we need this
+
     // id used to reference the Link
     private int id;
 
@@ -22,7 +27,7 @@ public abstract class Link implements Comparable<Link>
     private Node source, dest;
 
     // capacity per lane in veh/hr
-    private double capacityPerLane;
+    private int capacityPerLane;
 
     // number of lanes
     private int numLanes;
@@ -32,6 +37,8 @@ public abstract class Link implements Comparable<Link>
 
     // free flow speed in mi/hr
     private double ffspd;
+
+    private double free_flow_time;
 
     // travel time information
     private double avgTT;
@@ -62,7 +69,7 @@ public abstract class Link implements Comparable<Link>
      * @param capacityPerLane capacity (per lane) in veh/hr
      * @param numLanes number of lanes
      */
-    public Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
+    public Link(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
     {
         // store Link parameters
         this.id = id;
@@ -72,6 +79,8 @@ public abstract class Link implements Comparable<Link>
         this.ffspd = ffspd;
         this.length = length;
         this.numLanes = numLanes;
+        this.free_flow_time = ffspd / length;
+        this.vehs = new ArrayList<>();
 
         // update incoming/outgoing sets of Links in the Node class
         if(source != null)
@@ -152,7 +161,7 @@ public abstract class Link implements Comparable<Link>
     /**
      * @return the total capacity in veh/hr
      */
-    public double getCapacity()
+    public int getCapacity()
     {
         return capacityPerLane * numLanes;
     }
@@ -322,4 +331,23 @@ public abstract class Link implements Comparable<Link>
     public boolean isSidewalk() {
         return sidewalk;
     }
+
+//    public double getTravelTime()
+//    {
+//        // fill this in
+//        double t_ij = 0;
+//
+//        t_ij = ffspd * (1 + alpha * Math.pow(xf/capacityPerLane, beta));
+//
+//        return t_ij;
+//    }
+
+
+    public List<Vehicle> getVehs() {
+        return vehs;
+    }
+
+    public void addVehicle(Vehicle v) {}
+
+    public void removeVehicle(Vehicle v) {}
 }

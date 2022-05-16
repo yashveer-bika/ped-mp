@@ -5,7 +5,9 @@
  */
 package ped;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class propagates flow according to the point queue model (no spatial constraints).
@@ -17,14 +19,24 @@ public class PointQueue extends Link
     private LinkedList<Double> demand; // list of vehicles that entered, size is free flow tim/dt - 1
 
     private double n; // number of vehicles in point queue
+    private List<Vehicle> vehs;
     private double exiting; // number of vehicles exiting this time step
+    private List<Vehicle> exiting_vehs;
     private double entering; // number of vehicles entering this time step
+    private List<Vehicle> entering_vehs;
 
-    public PointQueue(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
+    public PointQueue(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
     {
         super(id, source, dest, length, ffspd, capacityPerLane, numLanes);
+        vehs = new ArrayList<>();
+        exiting_vehs = new ArrayList<>();
+        entering_vehs = new ArrayList<>();
 
         reset();
+    }
+
+    public List<Vehicle> getVehs() {
+        return vehs;
     }
 
     public void reset()
@@ -92,4 +104,25 @@ public class PointQueue extends Link
     public boolean isEntry() {
         return false;
     }
+
+    public void addVehicle(Vehicle v) {
+//        System.out.println("Previous size: " + vehs.size());
+//        System.out.println("v.getCurrentNode(): " + v.getCurrentNode().getId());
+//        System.out.println("this.getSource(): " + this.getSource().getId());
+
+        assert v.getCurrentNode() == this.getSource();
+//        v.moveVehicle();
+        int v_size = vehs.size();
+        vehs.add(v);
+        assert v_size + 1 == this.vehs.size();
+        assert vehs.contains(v);
+//        System.out.println("Current size: " + vehs.size());
+
+    }
+
+    public void removeVehicle(Vehicle v) {
+        vehs.remove(v);
+    }
+
+
 }

@@ -1,10 +1,14 @@
 package ped;
 
 
+import ilog.concert.IloIntVar;
+import util.Tuple;
+
+import java.util.Map;
 import java.util.Set;
 
 interface Controller {
-    Set<Phase> selectBestPhaseSet();
+    Tuple<Phase, Map<TurningMovement, Integer>> run();
 
     void updateTime(double newTime);
 }

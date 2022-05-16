@@ -7,7 +7,7 @@ import java.util.*;
 
 public class TurningMovement {
     private Link i,j;
-    private double capacity; // Q_{ij}
+    private int capacity; // Q_{ij}
     private double turning_proportion;
 
     // [
@@ -16,8 +16,10 @@ public class TurningMovement {
     //  [number of vehicles that entered at time t, entrance time t]
     //  [number of vehicles that entered at time t, entrance time t]
     // ]
-    private LinkedList<double[]> queue;
+    // private LinkedList<double[]> queue;
     private double network_time;
+
+    // private List<Vehicle> vehicleQueue;
 
 
     public TurningMovement(Link i, Link j)  {
@@ -26,18 +28,28 @@ public class TurningMovement {
         this.i = i;
         this.j = j;
         setCapacity();
-        queue = new LinkedList<>();
-        turning_proportion = 0;
+        // queue = new LinkedList<>();
+        // vehicleQueue = new ArrayList<>();
+        // turning_proportion = 0;
     }
 
     public TurningMovement(Link i, Link j, double turning_proportion)  {
-        // need connectivity
-        assert i.getDest() == j.getSource();
-        this.i = i;
-        this.j = j;
-        setCapacity();
-        queue = new LinkedList<>();
+        this(i,j);
         this.turning_proportion = turning_proportion;
+    }
+
+    public List<Vehicle> getVehicles() {
+        List<Vehicle> vehs = new ArrayList<>();
+        for (Vehicle v : i.getVehs()) {
+            Node d3_ = j.getDest();
+            Node d2_ = j.getSource();
+            Node d2 = v.getNextNode(1);
+            Node d3 = v.getNextNode(2);
+            if (d2.equals(d2_) && d3.equals(d3_)) {
+                vehs.add(v);
+            }
+        }
+        return vehs;
     }
 
     public Link getIncomingLink(){
@@ -48,23 +60,26 @@ public class TurningMovement {
         return j;
     }
 
-    // NOTE: THIS ONLY WORKS FOR VEHICLES RN
+    // NOTE: THIS ONLY (supposedly) WORKS FOR VEHICLES RN
     public double getWeight() {
-        double weight = this.getQueueLength();
-        VehIntersection neigh = (VehIntersection) this.getOutgoingLink().getDest();
+        double weight = getQueueLength();
+        VehIntersection neigh = (VehIntersection) getOutgoingLink().getDest();
         Set<TurningMovement> downstream_turns = neigh.getVehicleTurns();
         for (TurningMovement downstream_turn : downstream_turns) {
-            System.out.println("\tweight: " + weight);
+//            System.out.println("\tweight: " + weight);
 //            System.out.println("\tdownstream_turn.getTurningProportion(): " + downstream_turn.getTurningProportion());
-            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
+//            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
 
             weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
         }
-        System.out.println("\tweight: " + weight);
+//        System.out.println("\tweight: " + weight);
         return weight;
     }
 
 
+    public void moveVehicles() {
+
+    }
 
     //
     public boolean intersects(TurningMovement rhs) {
@@ -101,13 +116,35 @@ public class TurningMovement {
 
     }
 
-    public double getQueueLength() {
-        double q_length = 0;
-        for (double[] veh_time_pair : queue) {
-            q_length += veh_time_pair[0];
-        }
-        return q_length;
+//    public double getQueueLength() {
+//        double q_length = 0;
+//        for (double[] veh_time_pair : queue) {
+//            q_length += veh_time_pair[0];
+//        }
+//        return q_length;
+//    }
+
+    public int getQueueLength() {
+//        // let a turning movement be seen as three nodes (n1,n2,n3)
+//        // number of vehicles on link i who want will go to link j
+//        int ql = 0;
+////        System.out.println(getIncomingLink().getVehs());
+//        for (Vehicle v : getIncomingLink().getVehs()) {
+//            Node n2 = v.getNextNode(1);
+//            Node n3 = v.getNextNode(2);
+//            if (n2 != null && n3 != null) {
+//                ql++;
+//            }
+//        }
+//
+//        return ql;
+        return getVehicles().size();
     }
+
+//    public void addToQueue(Vehicle v) {
+//        vehicleQueue.add(v);
+//
+//    }
 
     /** Capacity as defined in ped-AIM by Rongsheng and Jeffery :
      * Section 3 : Network model **/
@@ -115,25 +152,25 @@ public class TurningMovement {
         this.capacity = Math.min(i.getCapacity(), j.getCapacity());
     }
 
-    public void setCapacity(double capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
-    public double getCapacity() {
-        return this.capacity;
+    public int getCapacity() {
+        return Math.min(i.getCapacity(), j.getCapacity());
     }
 
-    // get wait time (how long the first entity to enter the queue has been in the queue)
-    public double getWaiting_time() throws EmptyQueueException {
-        try {
-            double[] front = queue.removeFirst();
-            return network_time - front[1];
-        } catch (NoSuchElementException e) {
-            // Case of empty queue, we want the turning movement to be off, so set waiting time to inf.
-            // this forces the controller to turn the turning movement off
-            throw new EmptyQueueException("empty queue, so there is no waiting time");
-        }
-    }
+//    // get wait time (how long the first entity to enter the queue has been in the queue)
+//    public double getWaiting_time() throws EmptyQueueException {
+//        try {
+//            double[] front = queue.removeFirst();
+//            return network_time - front[1];
+//        } catch (NoSuchElementException e) {
+//            // Case of empty queue, we want the turning movement to be off, so set waiting time to inf.
+//            // this forces the controller to turn the turning movement off
+//            throw new EmptyQueueException("empty queue, so there is no waiting time");
+//        }
+//    }
 
     public void updateTime(double newTime) {
         network_time = newTime;
@@ -147,16 +184,20 @@ public class TurningMovement {
 //    }
 
     public String toString() {
-        return "Turn : [" + i.getSource().getId() + ", " + j.getDest().getId() +
+        return "Turn : [" + i.getSource().getId() + ", " + i.getDest().getId() + ", " + j.getDest().getId() +
                 "]" +
                 "" +
                 "";
     }
 
-    public void updateQueue(double entrance_time, double num_veh) {
-        double new_val[] = {num_veh, entrance_time};
-        queue.add(new_val);
-    }
+//    public void updateQueue(double entrance_time, double num_veh) {
+//        double new_val[] = {num_veh, entrance_time};
+//        queue.add(new_val);
+//    }
+
+//    public void addVehicles(List<Vehicle> vs) {
+//        vehicleQueue.addAll(vs);
+//    }
 
     public double getTurningProportion() {
         // TODO: note the data setup of the file

@@ -1,12 +1,20 @@
 package ped;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class Phase implements Comparable<Phase> {
     private Set<TurningMovement> turningMovements;
 
+    public Phase() {
+        this.turningMovements = new HashSet<>();
+    }
+
     public Phase(Set<TurningMovement> turningMovements) {
         this.turningMovements = turningMovements;
+        // TODO: make the Set<Set<TurningMovement>> to define each conflict region
+        // our code allows diverging turns, but only so much capacity can go through each region
+
     }
 
     public int size() {
