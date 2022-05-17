@@ -45,7 +45,7 @@ public class TurningMovement {
             Node d2_ = j.getSource();
             Node d2 = v.getNextNode(1);
             Node d3 = v.getNextNode(2);
-            if (d2.equals(d2_) && d3.equals(d3_)) {
+            if (d2_.equals(d2) && d3_.equals(d3)) {
                 vehs.add(v);
             }
         }

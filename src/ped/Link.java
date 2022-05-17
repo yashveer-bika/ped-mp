@@ -342,7 +342,6 @@ public abstract class Link implements Comparable<Link>
 //        return t_ij;
 //    }
 
-
     public List<Vehicle> getVehs() {
         return vehs;
     }

@@ -283,6 +283,9 @@ public class Intersection {
     }
 
     private void generatePhases() {
+        if (this.getId() == 5) {
+            System.out.println("Turning movements: " + getAllTurningMovements());
+        }
         // Set<Set<TurningMovement>> possiblePhases = PowerSet.powerSet(this.allTurningMovements);
         // this.feasiblePhases = filterFeasiblePhases(possiblePhases);
         // TODO: verify this alg.
@@ -448,6 +451,7 @@ public class Intersection {
 //            System.out.println("vehs: " + tm.getVehicles().size());
             int x_ij = tm.getVehicles().size();
             int y_ij = getNewFlowVals().get(tm);
+            double turn_prop = tm.getTurningProportion();
 //            System.out.println("x_ij: " + x_ij);
 //            System.out.println("y_ij: " + y_ij);
             // ensure that y_ij <= x_ij
@@ -463,7 +467,7 @@ public class Intersection {
             for (Vehicle v : tm.getVehicles()) {
 //                System.out.println(v);
 //                System.out.println(v.getCurrentNode().getId());
-                if (idx >= y_ij) {
+                if (idx >= y_ij * turn_prop) {
                     break;
                 }
 //                System.out.println(v);

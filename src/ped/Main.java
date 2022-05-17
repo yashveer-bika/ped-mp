@@ -19,16 +19,6 @@ public class Main
 {
     public static void main(String[] args)
     {
-//         File sf_net_file = new File("data/SiouxFalls/net.txt");
-//         File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
-//         File sf_links_f = new File("data/SiouxFalls/network/links.txt");
-//         Network sf_net2 = new Network(sf_nodes_f, sf_links_f);
-//         // Network sf_net = new Network(sf_net_file);
-//         System.out.println( sf_net2.getNodes() );
-
-//        File pq3_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
-//        File pq3_links_f = new File("data/SiouxFalls/network/links.txt");
-
         TestVehicle tv = new TestVehicle();
         tv.testGetNextNode();
         TestTurningMovement ttm = new TestTurningMovement();
@@ -36,16 +26,22 @@ public class Main
         TestPointQueue tpq = new TestPointQueue();
         tpq.testGetVehicles();
 
-        // assert 1 == 2;
+        // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
+
+//        File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
+//        File sf_links_f = new File("data/SiouxFalls/network/links.txt");
+//        String controllerType = "vehMP";
+//        Simulator sf_net = new Simulator(sf_nodes_f, sf_links_f, false, controllerType);
+//        sf_net.loadStaticDemand(new File("data/SiouxFalls/trips_static_od_demand.txt"));
+//        sf_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
         File pq3_nodes_f = new File("data/PQ3/nodes.txt");
         File pq3_links_f = new File("data/PQ3/links.txt");
         String controllerType = "vehMP";
-
-        // TODO: verify the veh-2-veh conflict solution
+        // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
         Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false, controllerType);
         pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
-        pq3_net.runSim(60*60, 60*60*1, Params.tolerance_time);
+        pq3_net.runSim(60*60, 60*60*10, Params.tolerance_time);
 
     }
 }

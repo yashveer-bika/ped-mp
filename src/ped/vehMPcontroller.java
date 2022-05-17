@@ -34,6 +34,12 @@ public class vehMPcontroller implements Controller {
         Map<TurningMovement, Integer> flowVals = new HashMap<>();
         double max_value = Double.NEGATIVE_INFINITY;
 
+        if (intersection.getId() == 5) {
+            System.out.println("Intersection 5");
+            System.out.println("feasible phases: " + intersection.getFeasiblePhases());
+
+        }
+
         // iterate over each feasible phase
         for (Phase candidatePhase : intersection.getFeasiblePhases()) {
 
@@ -60,11 +66,14 @@ public class vehMPcontroller implements Controller {
                 // IloLinearNumExpr expr68e = cplex.linearNumExpr();
                 // y^{v}_{ij} = min ( Q^{v}_{ij} * s^{v}_{ij}, x^{v}_{ij} )
                 // but we forced the signal on and only look at non-conflicting turns
-//                System.out.println("tm: " + turn);
-//                System.out.println("Q_ij: " + turn.getCapacity());
-//                System.out.println("x_ij: " + turn.getQueueLength());
+
 
                 vehMoveNums.put(turn, Math.min(turn.getCapacity(), turn.getQueueLength()) );
+                if (intersection.getId() == 5) {
+                    System.out.println("tm: " + turn);
+                    System.out.println("Q_ij: " + turn.getCapacity());
+                    System.out.println("x_ij: " + turn.getQueueLength());
+                }
             }
 
 
