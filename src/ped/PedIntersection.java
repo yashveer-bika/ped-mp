@@ -12,17 +12,14 @@ public class PedIntersection extends PedNode {
 
     private Map<Link, List<Pedestrian>> pedestrians;
 
-    public PedIntersection() {
-        super();
+    public PedIntersection(double x, double y) {
+        super(x, y);
         this.id = curr_id++;
         pedestrianTurns = new HashSet<>();
     }
 
     public PedIntersection(Location lcn) {
-        super();
-        this.id = curr_id++;
-        this.setLocation(lcn);
-        pedestrianTurns = new HashSet<>();
+        this(lcn.getX(), lcn.getY());
     }
 
     public void generatePedestrianTurns() {

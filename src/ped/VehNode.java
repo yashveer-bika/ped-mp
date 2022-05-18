@@ -10,8 +10,8 @@ public class VehNode extends Node {
 //    protected HashSet<Vehicle> outgoingVehicles;
 //    public OldNetwork engine;
 
-    public VehNode(int id) {
-        super(id);
+    public VehNode(int id, double x, double y) {
+        super(id, x, y);
 //        vehOutgoing = new HashSet<>();
 //        vehIncoming = new HashSet<>();
     }

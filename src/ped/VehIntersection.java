@@ -22,18 +22,18 @@ public class VehIntersection extends VehNode {
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
     // public OldNetwork engine;
 
-    public VehIntersection(int id) {
-        super(id);
+    public VehIntersection(int id, double x, double y) {
+        super(id, x, y);
         vehicleTurns = new HashSet<>();
 //        incomingVehLinks = new HashSet<>();
 //        outgoingVehLinks = new HashSet<>();
 //        this.vehLinks = new HashSet<>();
     }
 
-    public VehIntersection(int id, int row, int col) {
-        super(id, row, col);
-        vehicleTurns = new HashSet<>();
-    }
+//    public VehIntersection(int id, int row, int col) {
+//        super(id, row, col);
+//        vehicleTurns = new HashSet<>();
+//    }
 
 //    public void setVehLinks() {
 //        vehLinks = new HashSet<VehLink>();

@@ -223,7 +223,7 @@ public class Network {
 
                 // make node
 
-                node = new VehIntersection(nodeId);
+                node = new VehIntersection(nodeId, longitude, latitude);
 
                 // set up entry link for the new node
                 // EntryLink(int id, Node source, Node dest)
@@ -232,12 +232,14 @@ public class Network {
                 // TODO: maybe we update this to be same id as node???
                 int default_entry_link_id = -999;
                 Link entry_link = new EntryLink(default_entry_link_id, node);
-
+                int default_exit_link_id = -990;
+                Link exit_link = new ExitLink(default_exit_link_id, node);
 
                 assert nodeId == node.getId();
                 assert nodeId == entry_link.getDest().getId();
 
                 node.addEntryLink(entry_link);
+                node.addExitLink(exit_link);
                 // this.linkSet.add(entry_link);
                 this.entryLinks.put(nodeId, entry_link);
                 this.vehInts.put(nodeId, node);
@@ -330,13 +332,13 @@ public class Network {
                 startNode = vehInts.get(srcId);
                 endNode = vehInts.get(destId);
                 // vehicleGraph.get(startNode).add((VehIntersection) endNode);T
-                Location src = startNode.getLocation();
-                Location dest = endNode.getLocation();
+//                Location src = startNode.getLocation();
+//                Location dest = endNode.getLocation();
 
 
                 // TODO: do something about the direction code
                 String direction = null;
-                double angle = Location.angle(src, dest);
+                double angle = startNode.angleTo(endNode);
 
                 // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
                 Link link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane, numLanes);
@@ -989,7 +991,7 @@ public class Network {
         // get the angles to neighbors using getAngles(vehInt)
         // iterate over the pedNodes
 
-        assert (this.intersectionSet == intersectionGraph.keySet());
+        assert (this.intersectionSet.equals(intersectionGraph.keySet()));
 
         for (Intersection inter : this.intersectionSet) {
             Set<Intersection> neighs = intersectionGraph.get(inter);
@@ -997,7 +999,7 @@ public class Network {
             Location curLoc = vehInt.getLocation();
 
             for (PedNode srcPed : inter.getPedNodes()) {
-                Location srcPedLoc = srcPed.getLocation();
+                // Location srcPedLoc = srcPed.getLocation();
                 Set<Node> validNeighs = getValidNeighs(srcPed, vehInt);
 
                 for (Intersection nei : neighs) {
@@ -1008,12 +1010,12 @@ public class Network {
                     Set<PedNode> pnodes = nei.getPedNodes();
 
                     // get angle from vehInt to nei
-                    double vehLinkAngle = Location.angle( curLoc, nei.getVehInt().getLocation() );
+                    double vehLinkAngle = vehInt.angleTo( nei.getVehInt() );
 
                     // find nearest neighbor on the angle
                     List<PedNode> potentialDests = new ArrayList<>();
                     for (PedNode destPed : pnodes) {
-                        double pedLinkAngle = Location.angle( srcPedLoc, destPed.getLocation() );
+                        double pedLinkAngle = srcPed.angleTo( destPed );
                         pedLinkAngle = Angle.bound(pedLinkAngle);
                         if (Angle.closeEnough(pedLinkAngle, vehLinkAngle)) {
                             potentialDests.add(destPed);
@@ -1025,11 +1027,11 @@ public class Network {
                     }
 
                     PedNode nearestDest = potentialDests.get(0);
-                    double minDist = srcPedLoc.euclideanDist(nearestDest.getLocation());
+                    double minDist = srcPed.euclideanDist(nearestDest);
                     double tmpDist;
                     for (int i = 1; i < potentialDests.size() ; i++) {
                         PedNode tmpDest = potentialDests.get(i);
-                        tmpDist = srcPedLoc.euclideanDist(tmpDest.getLocation());
+                        tmpDist = srcPed.euclideanDist(tmpDest);
                         if (tmpDist < minDist) {
                             minDist = tmpDist;
                             nearestDest = tmpDest;

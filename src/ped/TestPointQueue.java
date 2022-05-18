@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestPointQueue {
-    Node n1 = new Node(1);
-    Node n2 = new Node(2);
-    Node n3 = new Node(3);
-    Node n4 = new Node(4);
-    Node n5 = new Node(5);
+    Node n1 = new Node(1, 0, 0);
+    Node n2 = new Node(2, 1, 0);
+    Node n3 = new Node(3, 2, -1);
+    Node n4 = new Node(4, 2, 1);
+    Node n5 = new Node(5, 3, 0);
 
     Link l1 = new PointQueue(12, n1, n2, 120, 2, 800, 1);
     Link l2 = new PointQueue(23, n2, n3, 120, 2, 800, 1);

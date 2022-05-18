@@ -9,6 +9,7 @@ public class TurningMovement {
     private Link i,j;
     private int capacity; // Q_{ij}
     private double turning_proportion;
+    private Set<ConflictRegion> conflictRegions;
 
     // [
     //  [number of vehicles that entered at time t, entrance time t]
@@ -21,6 +22,9 @@ public class TurningMovement {
 
     // private List<Vehicle> vehicleQueue;
 
+//    public TurningMovement() {
+//
+//    }
 
     public TurningMovement(Link i, Link j)  {
         // need connectivity
@@ -28,6 +32,7 @@ public class TurningMovement {
         this.i = i;
         this.j = j;
         setCapacity();
+        conflictRegions = new HashSet<>();
         // queue = new LinkedList<>();
         // vehicleQueue = new ArrayList<>();
         // turning_proportion = 0;
@@ -36,6 +41,14 @@ public class TurningMovement {
     public TurningMovement(Link i, Link j, double turning_proportion)  {
         this(i,j);
         this.turning_proportion = turning_proportion;
+    }
+
+    public Set<ConflictRegion> getConflictRegions() {
+        return conflictRegions;
+    }
+
+    public void addConflictRegion(ConflictRegion cr)  {
+        conflictRegions.add(cr);
     }
 
     public List<Vehicle> getVehicles() {
@@ -79,6 +92,23 @@ public class TurningMovement {
 
     public void moveVehicles() {
 
+    }
+
+    protected Set<Link> getLinks() {
+        Set<Link> thislinks = new HashSet<>();
+        thislinks.add(i);
+        thislinks.add(j);
+        return thislinks;
+    }
+
+    public boolean shareLinks(TurningMovement rhs) {
+        Set<Link> intersection = new HashSet<>(getLinks());
+        intersection.retainAll(rhs.getLinks());
+        if (intersection.size() == 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     //
@@ -184,8 +214,7 @@ public class TurningMovement {
 //    }
 
     public String toString() {
-        return "Turn : [" + i.getSource().getId() + ", " + i.getDest().getId() + ", " + j.getDest().getId() +
-                "]" +
+        return "Turn:" + i.getSource().getId() +","+ i.getDest().getId() +","+ j.getDest().getId() +
                 "" +
                 "";
     }

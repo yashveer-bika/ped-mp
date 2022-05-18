@@ -21,7 +21,7 @@ import java.util.HashSet;
 
 
 
-public class Node 
+public class Node extends Location
 {
     // static int cur_id = 0;
     protected int rowPosition;
@@ -32,6 +32,9 @@ public class Node
     private Set<Link> incomingLinks;
     private Set<Link> outgoingLinks;
     private Set<Link> allLinks;
+    private Link exitLink;
+    private Link entryLink;
+
     private double curDemand = 0;
     private List<Vehicle> vehicles;
     // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
@@ -46,25 +49,29 @@ public class Node
     private ArrayList<Node> parents = new ArrayList<>();
     private boolean explored = false;
 
-    public Node() {
+    public Node(double x, double y) {
+        super(x,y);
         this.outgoingLinks = new HashSet<>();
         this.incomingLinks = new HashSet<>();
         this.allLinks = new HashSet<>();
         this.vehicles = new ArrayList<>();
+        entryLink = new EntryLink();
+        exitLink = new ExitLink();
+
 //        signals = new HashMap<>();
     }
 
-    public Node(int id)
+    public Node(int id, double x, double y)
     {
-        this();
+        this(x,y);
         this.id = id;
 
 //        signals = new HashMap<>();
     }
 
-    public Node(int id, int row, int col)
+    public Node(int id, int row, int col, double x, double y)
     {
-        this(id);
+        this(id, x, y);
         this.rowPosition = row;
         this.colPosition = col;
 
@@ -152,7 +159,11 @@ public class Node
     }
 
     public void addEntryLink(Link l) {
-        this.allLinks.add(l);
+        addLink(l);
+    }
+
+    public void addExitLink(Link l) {
+        addLink(l);
     }
 
     public int getRowPosition() {

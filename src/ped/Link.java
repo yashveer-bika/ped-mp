@@ -174,6 +174,10 @@ public abstract class Link implements Comparable<Link>
         return numLanes;
     }
 
+    // TODO: verify this is what we want
+    public double getDsLanes() {
+        return getNumLanes();
+    }
 
 
     /**
@@ -326,6 +330,10 @@ public abstract class Link implements Comparable<Link>
     // TODO: make my new methods follow good design practice
     public double getAngle() {
         return this.angle;
+    }
+
+    public double getDirection() {
+        return getAngle();
     }
 
     public boolean isSidewalk() {

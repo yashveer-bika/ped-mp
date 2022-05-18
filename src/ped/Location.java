@@ -63,29 +63,46 @@ public class Location
         return x == rhs.x && y == rhs.y;
     }
 
-    public static double angle(Location src, Location dest) {
+//    public static double angle(Location src, Location dest) {
+//
+//        double dy = dest.getY() - src.getY();
+//        double dx = dest.getX() - src.getX();
+//
+//        double ang = Math.atan( dy / dx );
+//
+//        // figure out which quadrant I'm pointing to, since that effects the value
+//        // 1 : dx (+) dy (+) (nothing)
+//        // 2 : dx (-) dy (+) (+ pi)
+//        // 3 : dx (-) dy (-) (+ pi)
+//        // 4 : dx (+) dy (-) (+ 2pi)
+//
+//        if (dx >= 0 && dy >= 0) { // quadrant 1
+//
+//        } else if (dx < 0 && dy >= 0) { // quadrant 2
+//            ang = ang + Math.PI;
+//        } else if (dx < 0 && dy < 0) { // quadrant 3
+//            ang = ang + Math.PI;
+//        } else { // quadrant 4
+//            ang = ang + 2 * Math.PI;
+//        }
+//        return ang;
+//    }
 
-        double dy = dest.getY() - src.getY();
-        double dx = dest.getX() - src.getX();
+    /**
+     * Calculates the angle between this {@link Location} and another
+     * @param rhs the other {@link Location}
+     * @return the angle to {@link Location} {@code rhs} in radians
+     */
+    public double angleTo(Location rhs)
+    {
+        double output = Math.atan2(rhs.getY() - getY(), rhs.getX() - getX());
 
-        double ang = Math.atan( dy / dx );
-
-        // figure out which quadrant I'm pointing to, since that effects the value
-        // 1 : dx (+) dy (+) (nothing)
-        // 2 : dx (-) dy (+) (+ pi)
-        // 3 : dx (-) dy (-) (+ pi)
-        // 4 : dx (+) dy (-) (+ 2pi)
-
-        if (dx >= 0 && dy >= 0) { // quadrant 1
-
-        } else if (dx < 0 && dy >= 0) { // quadrant 2
-            ang = ang + Math.PI;
-        } else if (dx < 0 && dy < 0) { // quadrant 3
-            ang = ang + Math.PI;
-        } else { // quadrant 4
-            ang = ang + 2 * Math.PI;
+        if(output < 0)
+        {
+            output += 2*Math.PI;
         }
-        return ang;
+
+        return output;
     }
 
     // use trigonometry to calculate the coordinates of the new location

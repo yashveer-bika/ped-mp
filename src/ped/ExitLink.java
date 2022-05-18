@@ -12,18 +12,22 @@ import java.util.LinkedList;
  *
  * @author: Yashveer Bika, Michael W. Levin
  */
-public class EntryLink extends Link
+public class ExitLink extends Link
 {
 
     private LinkedList<Vehicle> queue;
 
-    public EntryLink() {
+    public ExitLink()
+    {
         super(0, null, null, 0, 0, 0, 1);
+
+        queue = new LinkedList<Vehicle>();
+
     }
 
-    public EntryLink(int id, Node n)
+    public ExitLink(int id, Node n)
     {
-        super(id, null, n, 0, 0, 0, 1);
+        super(id, n, null, 0, 0, 0, 1);
 
         queue = new LinkedList<Vehicle>();
 
