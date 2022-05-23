@@ -26,7 +26,7 @@ public class Node extends Location
     // static int cur_id = 0;
     protected int rowPosition;
     protected int colPosition;
-    protected Location location;
+    // protected Location location;
     protected int id;
 
     private Set<Link> incomingLinks;
@@ -110,7 +110,7 @@ public class Node extends Location
 
 
     public Point asPoint() {
-        return new Point(location.getX(), location.getY());
+        return new Point(this.getX(), this.getY());
     }
 
     public Set<Node> getNeighbors() {
@@ -124,12 +124,12 @@ public class Node extends Location
         return neighs;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
+//    public void setLocation(Location location) {
+//        this.location = location;
+//    }
 
     public Location getLocation() {
-        return location;
+        return (Location) this;
     }
 
     public Set<Link> getOutgoingLinks()
@@ -295,7 +295,7 @@ public class Node extends Location
 
      public String toString()
      {
-         return "Node{location=" + location + ", id=" + id + "}";
+         return "Node{id=" + id + "}";
      }
 
     public void addLink(Link link) {

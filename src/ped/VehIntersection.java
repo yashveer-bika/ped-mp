@@ -189,9 +189,7 @@ public class VehIntersection extends VehNode {
     public String toString() {
         return "VehIntersection{" +
                 "vehicleTurns=" + vehicleTurns +
-                ", location=" + location +
                 " " +
-                super.toString() +
                 '}';
     }
 }

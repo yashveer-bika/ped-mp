@@ -194,7 +194,7 @@ public class Intersection {
 
 //        System.out.println(this.getId());
 //        System.out.println("\tallTurningMovements: " + allTurningMovements);
-//         generatePhases();
+         generatePhases();
 //        Map<Link, Map<Link, TurningMovement>> conflicts = ConflictFactory.generate(this);
 
 //        for (Link link_in : conflicts.keySet()) {
@@ -204,183 +204,182 @@ public class Intersection {
 //                System.out.println("\t" + tm.getConflictRegions());
 //            }
 //        }
-        initialize();
+        // initialize();
 //        System.out.println("Intersection: " + getId());
 //        System.out.println("\tFEASIBLE PHASES: " + feasiblePhases);
     }
 
-    public void initialize() {
-        // create possiblePhases
-        Set<Set<TurningMovement>> phases_ = PowerSet.powerSet(getAllTurningMovements());
-        for (Set<TurningMovement> ph_ : phases_) {
-            possiblePhases.add(new Phase(ph_));
-        }
-
-
-        // need to create phases here
-        Set<TurningMovement> matched = new HashSet<TurningMovement>();
-
-        Map<Link, Map<Link, TurningMovement>> conflicts = ConflictFactory.generate(this);
-
-
-        // feasiblePhases = new ArrayList<>();
-
-        // look for compatible combinations of 2 turns
-        // then add turns as feasible
-
-        // Set<TurningMovement> turns = getAllTurningMovements();
-        List<TurningMovement> turns = new ArrayList<>();
-        turns.addAll(getAllTurningMovements());
-
-        for (int i = 0; i < turns.size() - 1; i++) {
-            for (int j = i + 1; j < turns.size(); j++) {
-                if (this.getId() == 1) {
-                    System.out.println("turn 1: " + turns.get(i));
-                    System.out.println("turn 2: " + turns.get(j));
-                    System.out.println("are conflicting: " + hasConflicts(turns.get(i), turns.get(j), conflicts));
-                }
-                if (!hasConflicts(turns.get(i), turns.get(j), conflicts)) {
-
-                    List<TurningMovement> allowed = new ArrayList<>();
-                    allowed.add(turns.get(i));
-                    allowed.add(turns.get(j));
-
-                    outer:
-                    for (TurningMovement t : turns) {
-                        if (allowed.contains(t)) {
-                            continue;
-                        }
-
-                        for (TurningMovement t2 : allowed) {
-                            if (hasConflicts(t, t2, conflicts)) {
-                                continue outer;
-                            }
-                        }
-
-                        allowed.add(t);
-                    }
-
-                    for (TurningMovement t : allowed) {
-                        matched.add(t);
-                    }
-                    // Phase p = new Phase(0, allowed, Params.dt - LOST_TIME, 0, LOST_TIME);
-                    Set<TurningMovement> allowedTms = new HashSet<>();
-                    allowedTms.addAll(allowed);
-                    Phase p = new Phase(allowedTms);
-                    feasiblePhases.add(p);
-                }
-            }
-        }
-        for(TurningMovement t : turns)
-        {
-            if(!matched.contains(t))
-            {
-                Phase p = new Phase(new HashSet<>(){{add(t);}});
-                feasiblePhases.add(p);
-            }
-        }
-
-        // remove duplicate phases
-        List<Phase> duplicates = new ArrayList<>();
-        List<Phase> phases = new ArrayList<>();
-        phases.addAll(feasiblePhases);
-        for(int i = 0; i < phases.size()-1; i++)
-        {
-            for(int j = i+1; j < phases.size(); j++)
-            {
-                if(phases.get(i).equals(phases.get(j)))
-                {
-                    duplicates.add(phases.get(j));
-                }
-            }
-        }
-
-        for(Phase p : duplicates)
-        {
-            feasiblePhases.remove(p);
-        }
-    }
+//    public void initialize() {
+//        // create possiblePhases
+//        Set<Set<TurningMovement>> phases_ = PowerSet.powerSet(getAllTurningMovements());
+//        for (Set<TurningMovement> ph_ : phases_) {
+//            possiblePhases.add(new Phase(ph_));
+//        }
+//
+//
+//        // need to create phases here
+//        Set<TurningMovement> matched = new HashSet<TurningMovement>();
+//
+//        Map<Link, Map<Link, TurningMovement>> conflicts = ConflictFactory.generate(this);
+//
+//
+//        // feasiblePhases = new ArrayList<>();
+//
+//        // look for compatible combinations of 2 turns
+//        // then add turns as feasible
+//
+//        // Set<TurningMovement> turns = getAllTurningMovements();
+//        List<TurningMovement> turns = new ArrayList<>();
+//        turns.addAll(getAllTurningMovements());
+//
+//        for (int i = 0; i < turns.size() - 1; i++) {
+//            for (int j = i + 1; j < turns.size(); j++) {
+//                if (this.getId() == 1) {
+//                    System.out.println("turn 1: " + turns.get(i));
+//                    System.out.println("turn 2: " + turns.get(j));
+//                    System.out.println("are conflicting: " + hasConflicts(turns.get(i), turns.get(j), conflicts));
+//                }
+//                if (!hasConflicts(turns.get(i), turns.get(j), conflicts)) {
+//
+//                    List<TurningMovement> allowed = new ArrayList<>();
+//                    allowed.add(turns.get(i));
+//                    allowed.add(turns.get(j));
+//
+//                    outer:
+//                    for (TurningMovement t : turns) {
+//                        if (allowed.contains(t)) {
+//                            continue;
+//                        }
+//
+//                        for (TurningMovement t2 : allowed) {
+//                            if (hasConflicts(t, t2, conflicts)) {
+//                                continue outer;
+//                            }
+//                        }
+//
+//                        allowed.add(t);
+//                    }
+//
+//                    for (TurningMovement t : allowed) {
+//                        matched.add(t);
+//                    }
+//                    // Phase p = new Phase(0, allowed, Params.dt - LOST_TIME, 0, LOST_TIME);
+//                    Set<TurningMovement> allowedTms = new HashSet<>();
+//                    allowedTms.addAll(allowed);
+//                    Phase p = new Phase(allowedTms);
+//                    feasiblePhases.add(p);
+//                }
+//            }
+//        }
+//        for(TurningMovement t : turns)
+//        {
+//            if(!matched.contains(t))
+//            {
+//                Phase p = new Phase(new HashSet<>(){{add(t);}});
+//                feasiblePhases.add(p);
+//            }
+//        }
+//
+//        // remove duplicate phases
+//        List<Phase> duplicates = new ArrayList<>();
+//        List<Phase> phases = new ArrayList<>();
+//        phases.addAll(feasiblePhases);
+//        for(int i = 0; i < phases.size()-1; i++)
+//        {
+//            for(int j = i+1; j < phases.size(); j++)
+//            {
+//                if(phases.get(i).equals(phases.get(j)))
+//                {
+//                    duplicates.add(phases.get(j));
+//                }
+//            }
+//        }
+//
+//        for(Phase p : duplicates)
+//        {
+//            feasiblePhases.remove(p);
+//        }
+//    }
 
 
     public Set<Phase> getPossiblePhases() {
         return possiblePhases;
     }
 
-    // NOTE: FROM Michael's AVDTA code
-    // TODO: test this code
-    public boolean hasConflicts (TurningMovement t1, TurningMovement t2, Map<Link, Map<Link, TurningMovement>> conflicts)
-    {
-        if (getId() == 1) {
-
-        }
-
-        // diverge links don't conflict
-        if(t1.getIncomingLink() == t2.getIncomingLink())
-        {
-            return false;
-        }
-
-        // TODO: what does this case mean?
-//        if(t1.getOutgoingLink() == t2.getOutgoingLink() && getVehInt().getOutgoingLinks().size() == 2)
+//    // NOTE: FROM Michael's AVDTA code
+//    public boolean hasConflicts (TurningMovement t1, TurningMovement t2, Map<Link, Map<Link, TurningMovement>> conflicts)
+//    {
+//        if (getId() == 1) {
+//
+//        }
+//
+//        // diverge links don't conflict
+//        if(t1.getIncomingLink() == t2.getIncomingLink())
 //        {
 //            return false;
 //        }
-
-
-        Set<ConflictRegion> c1 = conflicts.get(t1.getIncomingLink()).get(t1.getOutgoingLink()).getConflictRegions();
-        if (getId() == 1) {
-            System.out.println("c1 from mapping: " + c1);
-            System.out.println("c1 from tm object: " + t1.getConflictRegions());
-        }
-//        assert c1.equals(t1.getConflictRegions());
-        Set<ConflictRegion> c2 = conflicts.get(t2.getIncomingLink()).get(t2.getOutgoingLink()).getConflictRegions();
-//        assert c2.equals(t2.getConflictRegions());
-
-        if (getId() == 1) {
-            System.out.println("c2 from mapping: " + c2);
-            System.out.println("c2 from tm object: " + t2.getConflictRegions());
-        }
-
+//
+//        // TODO: what does this case mean?
+////        if(t1.getOutgoingLink() == t2.getOutgoingLink() && getVehInt().getOutgoingLinks().size() == 2)
+////        {
+////            return false;
+////        }
+//
+//
+//        Set<ConflictRegion> c1 = conflicts.get(t1.getIncomingLink()).get(t1.getOutgoingLink()).getConflictRegions();
 //        if (getId() == 1) {
-//            System.out.println("t1 conflicts: " + c1);
-//            System.out.println("t2 conflicts: " + c2);
+//            System.out.println("c1 from mapping: " + c1);
+//            System.out.println("c1 from tm object: " + t1.getConflictRegions());
 //        }
-
-        Set<ConflictRegion> intersection = new HashSet<>();
-
-        for(ConflictRegion c : c1)
-        {
-            if(c2.contains(c))
-            {
-                intersection.add(c);
-            }
-        }
-
-        // no overlapping conflict regions
-        if(intersection.size() == 0)
-        {
-            return false;
-        }
-
-//        // if the two turning movements don't share links, they can't conflict
-//        if (!t1.shareLinks(t2)) {
+////        assert c1.equals(t1.getConflictRegions());
+//        Set<ConflictRegion> c2 = conflicts.get(t2.getIncomingLink()).get(t2.getOutgoingLink()).getConflictRegions();
+////        assert c2.equals(t2.getConflictRegions());
+//
+//        if (getId() == 1) {
+//            System.out.println("c2 from mapping: " + c2);
+//            System.out.println("c2 from tm object: " + t2.getConflictRegions());
+//        }
+//
+////        if (getId() == 1) {
+////            System.out.println("t1 conflicts: " + c1);
+////            System.out.println("t2 conflicts: " + c2);
+////        }
+//
+//        Set<ConflictRegion> intersection = new HashSet<>();
+//
+//        for(ConflictRegion c : c1)
+//        {
+//            if(c2.contains(c))
+//            {
+//                intersection.add(c);
+//            }
+//        }
+//
+//        // no overlapping conflict regions
+//        if(intersection.size() == 0)
+//        {
 //            return false;
 //        }
-
-        // 2 left turns that don't share links
-        if(c1.size() <= 3 && c2.size() <= 3 &&
-                t1.getIncomingLink() != t2.getIncomingLink() &&
-                t1.getOutgoingLink() != t2.getOutgoingLink() &&
-                t1.getIncomingLink().getSource() != t2.getOutgoingLink().getDest() &&
-                t1.getOutgoingLink().getDest() != t1.getIncomingLink().getSource()
-        )
-        {
-            return false;
-        }
-
-
-        return true;
-    }
+//
+////        // if the two turning movements don't share links, they can't conflict
+////        if (!t1.shareLinks(t2)) {
+////            return false;
+////        }
+//
+//        // 2 left turns that don't share links
+//        if(c1.size() <= 3 && c2.size() <= 3 &&
+//                t1.getIncomingLink() != t2.getIncomingLink() &&
+//                t1.getOutgoingLink() != t2.getOutgoingLink() &&
+//                t1.getIncomingLink().getSource() != t2.getOutgoingLink().getDest() &&
+//                t1.getOutgoingLink().getDest() != t1.getIncomingLink().getSource()
+//        )
+//        {
+//            return false;
+//        }
+//
+//
+//        return true;
+//    }
 
     public Map<TurningMovement, Map<TurningMovement, Integer>> getV2vConflicts() {
         return v2vConflicts;
@@ -393,9 +392,9 @@ public class Intersection {
             Map<TurningMovement, Integer> tmp = new HashMap<>();
             for (TurningMovement veh_tm2 : vehicleTurns) {
                 if (veh_tm.intersects(veh_tm2)) {
-                    tmp.put(veh_tm2, 0);
+                    tmp.put(veh_tm2, 0); // conflict
                 } else {
-                    tmp.put(veh_tm2, 1);
+                    tmp.put(veh_tm2, 1); // no-conflict (allowed)
                 }
             }
             v2vConflicts.put(veh_tm, tmp);
@@ -476,36 +475,75 @@ public class Intersection {
 //        if (this.getId() == 5) {
 //            System.out.println("Turning movements: " + getAllTurningMovements());
 //        }
-        System.out.println("Intersection: " + getId());
-        System.out.println("Turning movements: " + getAllTurningMovements());
+//        System.out.println("Intersection: " + getId());
+//        System.out.println("Turning movements: " + getAllTurningMovements());
 
         // Set<Set<TurningMovement>> possiblePhases = PowerSet.powerSet(this.allTurningMovements);
         // this.feasiblePhases = filterFeasiblePhases(possiblePhases);
         // TODO: verify this alg.
         // create a power set that checks conflicts before adding to set
         // System.out.println("Intersection: " + this.getId());
-        Set<Set<TurningMovement>> tms = powerSetWFilter(this.allTurningMovements);
+//         Set<Set<TurningMovement>> tms = powerSetWFilter(this.allTurningMovements);
+        List<Set<TurningMovement>> tms = new ArrayList<>();
+        for (Set<TurningMovement> posPhase : PowerSet.powerSet(this.allTurningMovements)) {
+            if (!containsConflicts(posPhase)) {
+                tms.add(posPhase);
+            }
+        }
+
+        class sortSetTM implements Comparator<Set<TurningMovement>>
+        {
+            // Used for sorting in ascending order of
+            // roll number
+            public int compare(Set<TurningMovement> a, Set<TurningMovement> b)
+            {
+                return a.size() - b.size();
+            }
+        }
+
+        Collections.sort(tms, new sortSetTM());
+
+
+
+
+
 
         // remove any subsets of the largest sets (phases with less movements are a waste of time)
         // very slow
-        // this.feasiblePhases = removeRedundantPhases(tms);
+//         this.feasiblePhases = removeRedundantPhases(tms);
 
-        Set<Set<TurningMovement>> tms_copy = new HashSet<>(tms);
-        // based on the number of forks, filter out tiny phases
-        for (Set<TurningMovement> phase : tms_copy) {
-            if (num_forks == 4 && phase.size() < 4) {
-                // only in SF case with vehicles only
-                tms.remove(phase);
-            }
-
-            else if (phase.size() < num_forks - 1) {
-                tms.remove(phase);
-            }
-        }
+//        Set<Set<TurningMovement>> tms_copy = new HashSet<>(tms);
+//        // based on the number of forks, filter out tiny phases
+//        for (Set<TurningMovement> phase : tms_copy) {
+//            if (num_forks == 4 && phase.size() < 4) {
+//                // only in SF case with vehicles only
+//                tms.remove(phase);
+//            }
+//
+//            else if (phase.size() < num_forks - 1) {
+//                tms.remove(phase);
+//            }
+//        }
 
         for (Set<TurningMovement> t_phase : tms) {
             feasiblePhases.add(new Phase(t_phase));
         }
+    }
+
+    public boolean containsConflicts(Set<TurningMovement> tms) {
+        List<TurningMovement> tms_copy = new ArrayList<>();
+        tms_copy.addAll(tms);
+        for (int i = 0; i < tms_copy.size(); i++) {
+            for (int j = i+1; j < tms_copy.size(); j++) {
+                TurningMovement tm1 = tms_copy.get(i);
+                TurningMovement tm2 = tms_copy.get(j);
+                if (v2vConflicts.get(tm1).get(tm2) == 0) {
+                    return true;
+                }
+                // TODO: incorporate pedestrians
+            }
+        }
+        return false;
     }
 
 
@@ -640,7 +678,7 @@ public class Intersection {
 
 //        System.out.println("tms: " + getNewFlowVals().keySet().size());
         for (TurningMovement tm : getNewFlowVals().keySet()) {
-            System.out.println("tm: " + tm);
+//            System.out.println("tm: " + tm);
 //            System.out.println("vehs: " + tm.getVehicles().size());
             int x_ij = tm.getVehicles().size();
             int y_ij = getNewFlowVals().get(tm);

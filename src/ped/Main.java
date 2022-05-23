@@ -31,8 +31,12 @@ public class Main
         TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
         tpq3.testVehFeasiblePhases();
 
-//        TestSFPhases test_sf = new TestSFPhases();
-//        test_sf.testVehFeasiblePhases();
+        System.out.println("");
+        System.out.println("TESTING SIOUX FALLS BB!");
+        System.out.println("");
+
+        TestSFPhases test_sf = new TestSFPhases();
+        test_sf.testVehFeasiblePhases();
 
         // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
 

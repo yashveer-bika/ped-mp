@@ -329,7 +329,7 @@ public abstract class Link implements Comparable<Link>
 
     // TODO: make my new methods follow good design practice
     public double getAngle() {
-        return this.angle;
+        return source.angleTo(dest);
     }
 
     public double getDirection() {
@@ -357,4 +357,10 @@ public abstract class Link implements Comparable<Link>
     public void addVehicle(Vehicle v) {}
 
     public void removeVehicle(Vehicle v) {}
+
+    public double getPositionalLength() {
+        double x_diff = source.getX() - dest.getX();
+        double y_diff = source.getY() - dest.getY();
+        return Math.sqrt(x_diff * x_diff + y_diff * y_diff);
+    }
 }

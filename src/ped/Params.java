@@ -14,6 +14,9 @@ package ped;
  */
 public class Params
 {
+
+
+
     /**
      * This is the time step, in seconds
      */

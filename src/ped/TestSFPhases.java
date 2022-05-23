@@ -1,6 +1,10 @@
 package ped;
 
+import util.Angle;
+
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TestSFPhases {
     File sf_nodes_f;
@@ -22,11 +26,12 @@ public class TestSFPhases {
     }
 
     public void testVehFeasiblePhases() {
+        // TODO: read for conflictGroundTruth file and make sure we are consistent
         System.out.println("\nTESTING : SiouxFalls FEASIBLE PHASES\n");
         for (Intersection i : sf_net_vehs.getIntersectionSet()) {
             int id = i.getId();
-            System.out.println("Intersection " + id + ":");
-//            System.out.println("\tTurning movements: " + i.getAllTurningMovements());
+//            System.out.println("Intersection " + id + ":");
+//            System.out.println("\tTurning movements: " + i.getVehicleTurningMovements());
             switch (id) {
 //                case 1:
 ////                    System.out.println("\tEXPECTED PHASES:  []");
@@ -60,16 +65,54 @@ public class TestSFPhases {
 ////                    System.out.println("\tEXPECTED PHASES:  []");
 //                    System.out.println("\tGENERATED PHASES: " + i.getFeasiblePhases());
 //                    break;
-                case 1:
+                default:
 //                    System.out.println("\t???what is this intersection???");
-                    System.out.println("\tALL POSSIBLE PHASES: ");
-                    for (Phase p : i.getPossiblePhases()) {
-                        System.out.println("\t\t" + p);
-                    }
-                    System.out.println("\tGENERATED PHASES: ");
-                    for (Phase p : i.getFeasiblePhases()) {
-                        System.out.println("\t\t" + p);
-                    }
+//                    System.out.println("\tALL POSSIBLE PHASES: ");
+//                    for (Phase p : i.getPossiblePhases()) {
+//                        System.out.println("\t\t" + p);
+//                    }
+//                    System.out.println("\tGENERATED PHASES: ");
+//                    for (Phase p : i.getFeasiblePhases()) {
+//                        System.out.println("\t\t" + p);
+//                    }
+
+                    // System.out.println(i.getV2vConflicts());
+//                    Set<TurningMovement> visited = new HashSet<>();
+//                    for (TurningMovement t1: i.getV2vConflicts().keySet())
+//                    {
+//                        for (TurningMovement t2 : i.getV2vConflicts().get(t1).keySet())
+//                        {
+////                            System.out.println("TM1: " + t1 + ", TM2: " + t2 + ", " + i.getV2vConflicts().get(t1).get(t2));
+//
+////                            if (visited.contains(t2)) {
+////                                continue;
+////                            }
+//
+//                            String type = "";
+//                            if (t1.getOutgoingLink().equals(t2.getOutgoingLink())) {
+//                                type = "merge"; // conflict
+////                                System.out.println(type);
+//                                assert i.getV2vConflicts().get(t1).get(t2) == 0;
+//                            } else if (t1.getIncomingLink().equals(t2.getIncomingLink())) {
+//                                type = "diverge"; // allowed
+////                                System.out.println(type);
+//                                assert i.getV2vConflicts().get(t1).get(t2) == 1;
+//                            } else if (t1.getOutgoingLink().getDest() == t2.getIncomingLink().getSource() && t2.getOutgoingLink().getDest() == t1.getIncomingLink().getSource()) {
+//                                type = "complementaryLR"; // allowed
+////                                System.out.println(type);
+////                                System.out.println("TM1: " + t1 + ", TM2: " + t2 + ", " + i.getV2vConflicts().get(t1).get(t2) + ", type: " + type);
+//                                assert i.getV2vConflicts().get(t1).get(t2) == 1;
+//                            } else {
+//                                System.out.println("TM1: " + t1 + ", TM2: " + t2 + ", " + i.getV2vConflicts().get(t1).get(t2));
+////                                System.out.println("\tTM1 incoming angle: " + Angle.bound(Math.PI*1 + t1.getIncomingLink().getAngle()) );
+////                                System.out.println("\tTM1 outgoing angle: " + Angle.bound(Math.PI*0 + t1.getOutgoingLink().getAngle()) );
+////                                System.out.println("\tTM2 incoming angle: " + Angle.bound(Math.PI*1 + t2.getIncomingLink().getAngle()) );
+////                                System.out.println("\tTM2 outgoing angle: " + Angle.bound(Math.PI*0 + t2.getOutgoingLink().getAngle()) );
+//                            }
+//                        }
+//                        visited.add(t1);
+//                    }
+
                     break;
             }
         }

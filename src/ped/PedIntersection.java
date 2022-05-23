@@ -155,7 +155,6 @@ public class PedIntersection extends PedNode {
     @Override
     public String toString() {
         return "PedIntersection{" +
-                "location=" + location +
                 ", id=" + id +
                 '}';
     }

@@ -250,7 +250,7 @@ public class Network {
                 // System.out.println(rowPos);
                 node.setRowPosition((int) rowPos);
                 node.setColPosition((int) colPos);
-                node.setLocation(new Location(longitude, latitude));
+                // node.setLocation(new Location(longitude, latitude));
 
                 vehNodes.add(node);
                 this.nodeSet.add(node);
