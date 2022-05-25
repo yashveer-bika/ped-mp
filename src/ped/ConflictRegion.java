@@ -15,14 +15,10 @@ import java.util.Set;
  * This class represents a single conflict region in the conflict region model of reservation-based intersection control.
  * @author Michael
  */
-public class ConflictRegion<addTm> implements Serializable
+public class ConflictRegion
 {
 
     public double capacity;
-
-    public double tempR;
-
-    public boolean blocked;
 
     Set<TurningMovement> tms;
 
@@ -31,23 +27,20 @@ public class ConflictRegion<addTm> implements Serializable
     private int id;
     private static int id_count = 0;
 
-    // IP
-    public IloLinearNumExpr capacityUseSum;
 
     /**
      * Constructs this {@link ConflictRegion} with the specified capacity
      */
-    public ConflictRegion(double capacity)
+    public ConflictRegion()
     {
-        this.capacity = capacity;
+        this.capacity = 0;
 
         this.id = id_count++;
-
-        blocked = false;
 
         tms = new HashSet<>();
 
     }
+
 
 
 
@@ -178,22 +171,28 @@ public class ConflictRegion<addTm> implements Serializable
      */
     public double getCapacity()
     {
-        return capacity;
+        double cap = Double.NEGATIVE_INFINITY;
+        if (tms.size() == 0) {
+            return Double.POSITIVE_INFINITY;
+        }
+        for (TurningMovement tm : tms) {
+            double c = tm.getCapacity();
+            if (c > cap) {
+                cap = c;
+            }
+        }
+        return cap;
     }
 
-    public void setCapacity(double capacity) {
-        this.capacity = capacity;
-    }
+//    public void setCapacity(double capacity) {
+//        this.capacity = capacity;
+//    }
 
 
 
     /**
      * Marked this {@link ConflictRegion} as blocked for the current time step
      */
-    public void setBlocked()
-    {
-        blocked = true;
-    }
 
     public void addTM(TurningMovement tm) {
         tms.add(tm);

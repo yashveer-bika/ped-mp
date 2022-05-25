@@ -1,0 +1,57 @@
+TESTING CONFLICT REGION GENERATION
+
+intersection 7
+	0
+		[]
+		cr capacity: Infinity
+intersection 2
+	0
+		[Turn:3,2,4, Turn:1,2,3, Turn:1,2,4, Turn:4,2,3, Turn:3,2,1]
+		cr capacity: 3600.0
+	1
+		[Turn:3,2,4, Turn:4,2,1, Turn:1,2,4, Turn:4,2,3, Turn:3,2,1]
+		cr capacity: 3600.0
+	2
+		[Turn:4,2,1, Turn:1,2,3, Turn:1,2,4, Turn:4,2,3, Turn:3,2,1]
+		cr capacity: 3600.0
+intersection 3
+	0
+		[Turn:5,3,4, Turn:2,3,5, Turn:4,3,5, Turn:2,3,4, Turn:5,3,2]
+		cr capacity: 1200.0
+	1
+		[Turn:5,3,4, Turn:4,3,2, Turn:4,3,5, Turn:2,3,4, Turn:5,3,2]
+		cr capacity: 1200.0
+	2
+		[Turn:2,3,5, Turn:4,3,2, Turn:4,3,5, Turn:2,3,4, Turn:5,3,2]
+		cr capacity: 1200.0
+intersection 1
+	0
+		[]
+		cr capacity: Infinity
+intersection 4
+	0
+		[Turn:5,4,2, Turn:5,4,3, Turn:2,4,5, Turn:3,4,2, Turn:3,4,5]
+		cr capacity: 2520.0
+	1
+		[Turn:5,4,2, Turn:5,4,3, Turn:2,4,5, Turn:3,4,2, Turn:2,4,3]
+		cr capacity: 2520.0
+	2
+		[Turn:5,4,3, Turn:2,4,5, Turn:3,4,2, Turn:3,4,5, Turn:2,4,3]
+		cr capacity: 2520.0
+intersection 6
+	0
+		[Turn:5,6,7, Turn:7,6,5]
+		cr capacity: 2400.0
+	1
+		[Turn:5,6,7, Turn:7,6,5]
+		cr capacity: 2400.0
+intersection 5
+	0
+		[Turn:4,5,6, Turn:6,5,4, Turn:6,5,3, Turn:3,5,4, Turn:3,5,6]
+		cr capacity: 2520.0
+	1
+		[Turn:4,5,6, Turn:6,5,4, Turn:6,5,3, Turn:3,5,4, Turn:4,5,3]
+		cr capacity: 2520.0
+	2
+		[Turn:4,5,6, Turn:6,5,3, Turn:3,5,4, Turn:4,5,3, Turn:3,5,6]
+		cr capacity: 2520.0

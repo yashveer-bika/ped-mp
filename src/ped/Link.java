@@ -86,10 +86,12 @@ public abstract class Link implements Comparable<Link>
         if(source != null)
         {
             source.addLink(this);
+//            source.addOutgoingLink(this);
         }
         if(dest != null)
         {
             dest.addLink(this);
+//            dest.addIncomingLink(this);
         }
 
         total_time_occ = 0.0;
@@ -319,7 +321,22 @@ public abstract class Link implements Comparable<Link>
      */
     public String toString()
     {
-        return ""+id;
+//        return ""+id;
+        String src_id;
+        try {
+            src_id = source.getId() + "";
+        } catch (NullPointerException e) {
+            src_id = "null";
+        }
+
+        String dest_id;
+        try {
+            dest_id = dest.getId() + "";
+        } catch (NullPointerException e) {
+            dest_id = "null";
+        }
+
+        return "(" + src_id + ", " + dest_id + ")";
     }
 
 

@@ -14,8 +14,28 @@ public class Simulator extends Network {
 //    entrance node, start time, end time, demand_quantity
     private Map<Node, Map<Node, Double>> static_demand;
 
-    public Simulator(File nodesFile, File linksFile, boolean ped, String controllerType) {
-        super(nodesFile, linksFile, ped, controllerType);
+    public Simulator(String path, boolean ped, String controllerType) {
+        this(
+                new File(path + "nodes.txt"),
+                new File(path + "links.txt"),
+                new File(path + "turning_proportions.txt"),
+                ped,
+                controllerType
+        );
+
+
+        File nodesFile = new File(path + "nodes.txt");
+        File linksFile = new File(path + "links.txt");
+        File demand_file = new File(path + "trips_static_od_demand.txt");
+        File turn_props_file = new File(path + "turning_proportions.txt");
+
+        loadStaticDemand(demand_file);
+
+
+    }
+
+    public Simulator(File nodesFile, File linksFile, File turnPropsFile, boolean ped, String controllerType) {
+        super(nodesFile, linksFile, turnPropsFile, ped, controllerType);
         simTime = 0;
         timeStepSize = 0;
         toleranceTime = 0;

@@ -15,11 +15,9 @@ public class TestSFPhases {
 
 
     public TestSFPhases() {
-        sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
-        sf_links_f = new File("data/SiouxFalls/network/links.txt");
+        String dataPath = "data/SiouxFalls/";
         controllerType = "vehMP";
-        // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
-        sf_net_vehs = new Simulator(sf_nodes_f, sf_links_f, false, controllerType);
+        sf_net_vehs = new Simulator(dataPath, false, controllerType);
 //        sf_net_vehs = new Simulator(sf_nodes_f, sf_links_f, true, controllerType);
         // sf_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
         // sf_net.runSim(60*60, 60*60*10, Params.tolerance_time);
@@ -27,7 +25,7 @@ public class TestSFPhases {
 
     public void testVehFeasiblePhases() {
         // TODO: read for conflictGroundTruth file and make sure we are consistent
-        System.out.println("\nTESTING : SiouxFalls FEASIBLE PHASES\n");
+        System.out.println("\nTESTING : SiouxFalls FEASIBLE VEHICLE PHASES\n");
         for (Intersection i : sf_net_vehs.getIntersectionSet()) {
             int id = i.getId();
 //            System.out.println("Intersection " + id + ":");

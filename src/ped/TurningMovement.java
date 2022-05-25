@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 public class TurningMovement {
+    private Network engine;
     private Link i,j;
     private int capacity; // Q_{ij}
     private double turning_proportion;
@@ -33,24 +34,28 @@ public class TurningMovement {
         assert i.getDest() == j.getSource();
         this.i = i;
         this.j = j;
-        setCapacity();
+        // setCapacity();
         conflictRegions = new HashSet<>();
         // queue = new LinkedList<>();
         // vehicleQueue = new ArrayList<>();
         // turning_proportion = 0;
     }
 
-    public TurningMovement(Link i, Link j, double turning_proportion)  {
-        this(i,j);
-        this.turning_proportion = turning_proportion;
+    public TurningMovement(Link i, Link j, Network engine)  {
+        // need connectivity
+        assert i.getDest() == j.getSource();
+        this.i = i;
+        this.j = j;
+        // setCapacity();
+        conflictRegions = new HashSet<>();
+        // queue = new LinkedList<>();
+        // vehicleQueue = new ArrayList<>();
+        // turning_proportion = 0;
+        this.engine = engine;
     }
 
     public Set<ConflictRegion> getConflictRegions() {
         return conflictRegions;
-    }
-
-    public void addConflictRegion(ConflictRegion cr)  {
-        conflictRegions.add(cr);
     }
 
     public List<Vehicle> getVehicles() {
@@ -367,14 +372,6 @@ public class TurningMovement {
 
     /** Capacity as defined in ped-AIM by Rongsheng and Jeffery :
      * Section 3 : Network model **/
-    public void setCapacity() {
-        this.capacity = Math.min(i.getCapacity(), j.getCapacity());
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
-
     public int getCapacity() {
         return Math.min(i.getCapacity(), j.getCapacity());
     }
@@ -419,13 +416,19 @@ public class TurningMovement {
         // TODO: note the data setup of the file
         // make the file loading more modular
         // allow for time-dependent data loading
-        File pq3_nodes_f = new File("data/PQ3/turning_proportions.txt");
 
-        readTurningProps(pq3_nodes_f, this.i.getSource().getId(), this.i.getDest().getId(), this.j.getDest().getId());
-        return 0.5;
+        double tp = readTurningProps(this.i.getId(), this.j.getId());
+//        System.out.println(this);
+//        System.out.println("\t: turningProportion: " + tp);
+
+        return tp;
     }
 
-    private double readTurningProps(File turn_props_file, int upstreamId, int curId, int downstreamId) {
+    private double readTurningProps(int upstreamId, int downstreamId) {
+
+//        File turn_props_file = new File("data/PQ3/turning_proportions.txt");
+        File turn_props_file = engine.getTurnPropsFile();
+
         try {
             String[] header = {};
             Scanner myReader = new Scanner(turn_props_file);
@@ -439,8 +442,8 @@ public class TurningMovement {
 //                    System.out.println("\t" + s);
 //                }
 
-                // at header
-                if (data.charAt(0) == 'u') {
+                // at header: src	dest	turning proportions
+                if (data.charAt(0) == 's') {
 //                    System.out.println("HEADER");
                     header = data.split("\t");
                 }
@@ -451,21 +454,19 @@ public class TurningMovement {
 //                        System.out.println("\t" + s);
 //                    }
                     int upstreamId_ = Integer.parseInt(turn_prop_data[0]);
-                    int curId_ = Integer.parseInt(turn_prop_data[1]);
-                    int downstreamId_ = Integer.parseInt(turn_prop_data[2]);
-                    if (upstreamId == upstreamId_ && curId == curId_ && downstreamId == downstreamId_) {
+                    int downstreamId_ = Integer.parseInt(turn_prop_data[1]);
+                    if (upstreamId == upstreamId_ && downstreamId == downstreamId_) {
                         double proportion = Double.parseDouble(turn_prop_data[2]);
                         return proportion;
                     }
-
                 }
             }
             myReader.close();
         } catch (FileNotFoundException e) {
             System.out.println("Cannot find turning proportions file");
             e.printStackTrace();
+            return -1;
         }
-        return -1;
+        return 0;
     }
-
 }

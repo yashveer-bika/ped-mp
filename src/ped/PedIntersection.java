@@ -4,6 +4,7 @@ import java.util.*;
 
 public class PedIntersection extends PedNode {
     static int curr_id = 900;
+    private Network engine;
 //    private Set<PedLink> pedLinks;
 //    private Set<PedLink> incomingLinks;
 //    private Set<PedLink> outgoingLinks;
@@ -23,6 +24,12 @@ public class PedIntersection extends PedNode {
     }
 
     public void generatePedestrianTurns() {
+        System.out.println("Generating ped turns bitch");
+        System.out.println("incoming links: " + getIncomingLinks());
+        System.out.println("outgoing links: " + getOutgoingLinks());
+        System.out.println("all links: " + getAllLinks());
+
+
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {
             for (Link out : this.getOutgoingLinks()) {
@@ -31,7 +38,7 @@ public class PedIntersection extends PedNode {
                 if (in.getSource() == out.getDest()) {
                     continue;
                 }
-                pedestrianTurns.add(new TurningMovement(in, out));
+                pedestrianTurns.add(new TurningMovement(in, out, engine));
             }
         }
     }

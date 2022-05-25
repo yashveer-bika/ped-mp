@@ -28,14 +28,9 @@ public class Angle {
         while (temp < 0) {
             temp += 2*Math.PI;
         }
-        while (temp >= 2*Math.PI) {
+        while (DoubleE.geq(temp, 2*Math.PI)) {
             temp -= 2*Math.PI;
         }
         return temp;
-    }
-
-    public static boolean closeEnough(double ang1, double ang2) {
-        double epsilon = Math.pow(10,-6.0);
-        return (Math.abs(ang1 - ang2) < epsilon) ;
     }
 }

@@ -1,6 +1,7 @@
 package ped;
 
 import util.Angle;
+import util.DoubleE;
 
 import java.util.*;
 import java.io.File;
@@ -26,6 +27,7 @@ public class Network {
     private Set<Vehicle> vehicles;
 
     private String controllerType;
+    private File turnPropsFile;
 
     public double networkTime; // total network time (time in simulation)
     public double cycleTime; // time within a cycle of the simulation
@@ -33,9 +35,12 @@ public class Network {
     private boolean ped; // says whether we load the network with pedestrians
 
 
+    public File getTurnPropsFile() {
+        return turnPropsFile;
+    }
 
-
-    public Network(File nodesFile, File linksFile, boolean ped, String controllerType) {
+    public Network(File nodesFile, File linksFile, File turnPropsFile, boolean ped, String controllerType) {
+        this.turnPropsFile = turnPropsFile;
         this.vehicles = new HashSet<>();
         this.vehiclePaths = new HashMap<>();
         this.controllerType = controllerType;
@@ -71,6 +76,7 @@ public class Network {
         // creates crosswalks within an intersection
         // creates Intersection objects
         if (ped) {
+            System.out.println("LOADING PED INTERSECTIONS");
             loadPedIntersections_constructor(controllerType);
         }
         else {
@@ -223,7 +229,7 @@ public class Network {
 
                 // make node
 
-                node = new VehIntersection(nodeId, longitude, latitude);
+                node = new VehIntersection(nodeId, longitude, latitude, this);
 
                 // set up entry link for the new node
                 // EntryLink(int id, Node source, Node dest)
@@ -349,8 +355,8 @@ public class Network {
 
                 this.linkSet.add(link);
                 // set incoming, outgoing links
-                endNode.addIncomingLink(link);
-                startNode.addOutgoingLink(link);
+                endNode.addLink(link);
+                startNode.addLink(link);
 
                 // Print out incoming links for each end node
 //                System.out.print(endNode.getId() + ": ");
@@ -1017,7 +1023,7 @@ public class Network {
                     for (PedNode destPed : pnodes) {
                         double pedLinkAngle = srcPed.angleTo( destPed );
                         pedLinkAngle = Angle.bound(pedLinkAngle);
-                        if (Angle.closeEnough(pedLinkAngle, vehLinkAngle)) {
+                        if (DoubleE.equals(pedLinkAngle, vehLinkAngle)) {
                             potentialDests.add(destPed);
                         }
                     }
@@ -1101,6 +1107,11 @@ public class Network {
 
             Node next_step = v.getNextNode(1);
 //            assert nodeSet.contains(next_step);
+//            System.out.println("ORIGIN: " + origin.getId());
+//            System.out.println("next_step: " + next_step.getId());
+//            System.out.println("origin outgoing links: " + origin.getOutgoingLinks());
+//            System.out.println("origin.getOutgoingLink(next_step): " + origin.getOutgoingLink(next_step));
+
             Link l = origin.getOutgoingLink(next_step);
 //            assert linkSet.contains(l);
 //            int prev_size = l.getVehs().size();

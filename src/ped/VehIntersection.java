@@ -5,6 +5,7 @@ import java.util.*;
 public class VehIntersection extends VehNode {
     // TODO: implement an IntersectionControl class
     public static boolean PRINT_STATUS = false;
+    private Network engine;
 
     // private Map<VehLink, List<VehLink>> vehTurns;
 
@@ -22,9 +23,10 @@ public class VehIntersection extends VehNode {
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
     // public OldNetwork engine;
 
-    public VehIntersection(int id, double x, double y) {
+    public VehIntersection(int id, double x, double y, Network engine) {
         super(id, x, y);
         vehicleTurns = new HashSet<>();
+        this.engine = engine;
 //        incomingVehLinks = new HashSet<>();
 //        outgoingVehLinks = new HashSet<>();
 //        this.vehLinks = new HashSet<>();
@@ -94,7 +96,7 @@ public class VehIntersection extends VehNode {
                 if (in.getSource() == out.getDest()) {
                     continue;
                 }
-                vehicleTurns.add(new TurningMovement(in, out));
+                vehicleTurns.add(new TurningMovement(in, out, engine));
             }
         }
     }

@@ -29,8 +29,6 @@ public class Node extends Location
     // protected Location location;
     protected int id;
 
-    private Set<Link> incomingLinks;
-    private Set<Link> outgoingLinks;
     private Set<Link> allLinks;
     private Link exitLink;
     private Link entryLink;
@@ -51,8 +49,6 @@ public class Node extends Location
 
     public Node(double x, double y) {
         super(x,y);
-        this.outgoingLinks = new HashSet<>();
-        this.incomingLinks = new HashSet<>();
         this.allLinks = new HashSet<>();
         this.vehicles = new ArrayList<>();
         entryLink = new EntryLink();
@@ -80,9 +76,9 @@ public class Node extends Location
     public Link getOutgoingLink(Node rhs) {
 //        System.out.println("n1 id: " + getId());
 //        System.out.println("n2 id: " + rhs.getId());
-        for (Link l : outgoingLinks) {
+        for (Link l : getOutgoingLinks()) {
             Node r = l.getDest();
-            if (r == rhs) {
+            if (r.equals(rhs)) {
 //                String n1id = String.valueOf(getId());
 //                String n2id = String.valueOf(rhs.getId());
 //                int linkid = Integer.parseInt(n1id + n2id);
@@ -134,28 +130,28 @@ public class Node extends Location
 
     public Set<Link> getOutgoingLinks()
     {
-        return this.outgoingLinks;
+        Set<Link> outgoingLinks = new HashSet<>();
+        for (Link l : allLinks) {
+            if (this.equals(l.getSource()) && l.getDest() != null) {
+                outgoingLinks.add(l);
+            }
+        }
+        return outgoingLinks;
     }
 
     public Set<Link> getIncomingLinks()
     {
-        return this.incomingLinks;
+        Set<Link> incomingLinks = new HashSet<>();
+        for (Link l : allLinks) {
+            if (this.equals(l.getDest()) && l.getSource() != null) {
+                incomingLinks.add(l);
+            }
+        }
+        return incomingLinks;
     }
 
     public Set<Link> getAllLinks() {
         return this.allLinks;
-    }
-
-    public void addOutgoingLink(Link l)
-    {
-        this.outgoingLinks.add(l);
-        this.allLinks.add(l);
-    }
-
-    public void addIncomingLink(Link l)
-    {
-        this.incomingLinks.add(l);
-        this.allLinks.add(l);
     }
 
     public void addEntryLink(Link l) {
@@ -290,7 +286,7 @@ public class Node extends Location
         if (rhs == null || this == null) {
             return false;
         }
-        return rhs.getId() == this.getId();
+        return (rhs.getId() == this.getId()) || (super.equals(o));
     }
 
      public String toString()

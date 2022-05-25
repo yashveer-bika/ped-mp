@@ -1,6 +1,8 @@
 package ped;
 
 import ilog.concert.IloIntVar;
+import util.Angle;
+import util.DoubleE;
 import util.PowerSet;
 import util.Tuple;
 
@@ -12,7 +14,10 @@ public class Intersection {
     private final Set<PedNode> pedNodes;
     private final Set<Node> allNodes;
 
-//    private final HashSet<Link> allLinks;
+    private List<ConflictRegion> conflictRegions;
+
+
+    //    private final HashSet<Link> allLinks;
     private Set<TurningMovement> vehicleTurns;
     private final Set<TurningMovement> pedestrianTurningMovements;
     private final Set<TurningMovement> allTurningMovements;
@@ -27,7 +32,7 @@ public class Intersection {
     private Phase currentPhase;
     private Map<TurningMovement, Integer> newFlowVals;
 
-    // vehicle tm, pedestrian tm, 0/1
+    // vehicle tm, pedestrian tm, 0/1 (0 if conflict, 1 if allowed)
     private final Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
     private final Map<TurningMovement, Map<TurningMovement, Integer>> v2vConflicts;
     private final HashMap<TurningMovement, Double> vehQueueLengths;
@@ -41,6 +46,7 @@ public class Intersection {
 
 
     public Intersection(VehIntersection vehInt, String controllerType) {
+        this.conflictRegions = new ArrayList<>();
         this.possiblePhases = new HashSet<>();
         this.currentPhase = new Phase();
         this.newFlowVals = new HashMap<>();
@@ -77,6 +83,7 @@ public class Intersection {
 //        allLinks.addAll(vehInt.getOutgoingLinks());
 
         // TODO: verify the purpose of the code below
+        // TODO: move this into the conflict region class
         // find the capacity of the conflict region
         // capacityConflictRegion_Qc
         // max Q_{ij} where ij is a turning movement
@@ -94,7 +101,8 @@ public class Intersection {
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
                         Set<Crosswalk> crosswalks, Set<PedNode> pedNodes, String controllerType) {
-
+        this.ped = true;
+        this.conflictRegions = new ArrayList<>();
         this.possiblePhases = new HashSet<>();
         this.allNodes = new HashSet<>();
         this.node_to_tms = new HashMap<>();
@@ -131,18 +139,10 @@ public class Intersection {
 //        // get all vehicle links
 //        allLinks.addAll(vehInt.getIncomingLinks());
 //        allLinks.addAll(vehInt.getOutgoingLinks());
+    }
 
-        // TODO: verify the purpose of the code below
-        // find the capacity of the conflict region
-        // capacityConflictRegion_Qc
-        // max Q_{ij} where ij is a turning movement
-        double maxTurn = Double.MIN_VALUE;
-        for (TurningMovement t : this.vehicleTurns) {
-            double temp = t.getCapacity();
-            if (temp > maxTurn) {
-                maxTurn = temp;
-            }
-        }
+    public List<ConflictRegion> getConflictRegions() {
+        return conflictRegions;
     }
 
     public Set<Node> getAllNodes() {
@@ -155,9 +155,16 @@ public class Intersection {
             neighs.add( l.getSource() );
         }
         for (Link l : vehInt.getOutgoingLinks()) {
-            neighs.add( l.getSource() );
+            neighs.add( l.getDest() );
+        }
+        if (getId() == 2) {
+            System.out.println("neighbors: " + neighs);
         }
         num_forks = neighs.size();
+    }
+
+    public int getNum_forks() {
+        return num_forks;
     }
 
     public void initializeNodeTMs() {
@@ -180,6 +187,150 @@ public class Intersection {
         }
     }
 
+    private List<Double> getAngles() {
+//        System.out.println("\tGETTING ANGLES");
+
+        List<Double> angles = new ArrayList<>();
+        double temp;
+        for (Link i : vehInt.getIncomingLinks()) {
+            temp = Angle.bound(Math.PI*1 + i.getAngle());
+//            System.out.println("\t\t" + temp);
+            boolean inSet = false;
+            for (double ang : angles) {
+                if (DoubleE.equals(ang, temp)) {
+                    inSet = true;
+                    break;
+                }
+            }
+            if (!inSet) {
+                angles.add(temp);
+            }
+        }
+        for (Link j : vehInt.getOutgoingLinks()) {
+            temp = Angle.bound(Math.PI*0 + j.getAngle());
+//            System.out.println("\t\t" + temp);
+            boolean inSet = false;
+            for (double ang : angles) {
+                if (DoubleE.equals(ang, temp)) {
+                    inSet = true;
+                    break;
+                }
+            }
+            if (!inSet) {
+                angles.add(temp);
+            }
+        }
+
+        Collections.sort(angles);
+        return angles;
+    }
+
+    // precondition: boundaryAngles is sorted from smallest to largest, boundaryAngles isn't empty (size >= 1)
+    // boundaryAngles' values and angle are bound by [0, 2*PI)
+    private int getConflictRegion(double angle, List<Double> boundaryAngles) {
+        assert boundaryAngles != null;
+        // TODO: return the integer associated with this angle given the boundary angles
+        int len = boundaryAngles.size();
+        assert len >= 1;
+
+//        System.out.println("boundary angles: " + boundaryAngles);
+//        System.out.println("input angle: " + angle);
+        for (int i = 0; i < len; i++) {
+            if (angle < boundaryAngles.get(i)) {
+                return i;
+            }
+        }
+        // TODO: put a picture and javadoc explaining why we pick id=0 after the largest angle
+        return 0;
+    }
+
+    private List<Double> bisectAngles(List<Double> linkAngles) {
+//        System.out.println("\tBISECTING ANGLES");
+//        System.out.println("\t\tinput angles" + linkAngles);
+
+        List<Double> bisectAngles = new ArrayList<>();
+        double temp;
+        int l = linkAngles.size();
+        for (int i=0 ; i < l-1 ; i++) {
+            temp = linkAngles.get(i) + linkAngles.get(i+1);
+            temp /= 2;
+            temp = Angle.bound(temp);
+            bisectAngles.add(temp);
+        }
+        temp = linkAngles.get(0) + Math.PI*2 + linkAngles.get(l-1);
+        temp /= 2;
+        temp = Angle.bound(temp);
+        bisectAngles.add(temp);
+
+         Collections.sort(bisectAngles);
+//        System.out.println("\t\tsplit angles" + bisectAngles);
+        return bisectAngles;
+    }
+
+    private List<Double> getBoundaryAngles() {
+        return bisectAngles(getAngles());
+    }
+
+    public void initializeConflictRegions() {
+//        System.out.println("Intersection " + getId());
+//        System.out.println("\tgetNum_forks " + getNum_forks());
+
+        // Precondition: assume that we have all of our vehicle turning movements
+        // stored in vehicleTurns
+        List<Double> boundaryAngles = getBoundaryAngles();
+
+        assert boundaryAngles.size() == getNum_forks();
+//        System.out.println("\tboundaryAngles " + boundaryAngles);
+
+        for (int i = 0; i < getNum_forks(); i++) {
+            conflictRegions.add(new ConflictRegion());
+        }
+        // assume boundaryAngles is already populated and sorted from smallest to largest
+        for (TurningMovement tm : vehicleTurns) {
+//            System.out.println("\ttm " + tm);
+//            System.out.println("\tboundaryAngles " + boundaryAngles);
+            double inAng = Angle.bound(tm.getIncomingLink().getAngle() + Math.PI);
+//            System.out.println("\tinAng " + inAng);
+
+            int inId = getConflictRegion(inAng, boundaryAngles);
+            double outAng = Angle.bound(tm.getOutgoingLink().getAngle());
+//            System.out.println("\toutAng " + outAng);
+
+            int outId = getConflictRegion(outAng, boundaryAngles);
+//            System.out.println("\tinId " + inId);
+//            System.out.println("\toutId " + outId);
+
+            if (outId < inId) {
+                for (int i = inId; i < conflictRegions.size(); i++) {
+                    conflictRegions.get(i).addTM(tm);
+//                    System.out.println("added a TM to CR");
+                }
+                for (int i = 0; i <= outId; i++) {
+                    conflictRegions.get(i).addTM(tm);
+//                    System.out.println("added a TM to CR");
+                }
+            } else {
+                for (int i = inId; i <= outId; i++) {
+                    conflictRegions.get(i).addTM(tm);
+//                    System.out.println("added a TM to CR");
+                }
+            }
+
+//            for (int i = inId; i <= outId; i++) {
+//                conflictRegions.get(i).addTM(tm);
+//                System.out.println("added a TM to CR");
+//            }
+
+//            for (int i = outId; i < inId; i++) {
+//                conflictRegions.get(i).addTM(tm);
+//                System.out.println("added a TM to CR");
+//            }
+        }
+        // Postcondition: We generate `numForks` numbers of conflict regions and each conflict region has a list of
+        // turning movements
+
+    }
+
     // makes sure that the phases are generated and code won't be redundantly called
     public void finishLoading() {
 //        this.loadingComplete = true;
@@ -187,10 +338,19 @@ public class Intersection {
 
         if (ped) {
             setPedestrianTurningMovements();
+            for (PedIntersection pi : pedInts) {
+                pi.generatePedestrianTurns();
+//                System.out.println("ped turns at " + pi.getId() + ": " + pi.getPedestrianTurns());
+                pedestrianTurningMovements.addAll(pi.getPedestrianTurns());
+            }
         }
+//        System.out.println("pedestrianTurningMovements: " + pedestrianTurningMovements);
         allTurningMovements.addAll(vehicleTurns);
         allTurningMovements.addAll(pedestrianTurningMovements);
-        this.initializeNodeTMs();
+        initializeNodeTMs();
+        initializeConflictRegions();
+
+
 
 //        System.out.println(this.getId());
 //        System.out.println("\tallTurningMovements: " + allTurningMovements);
@@ -428,20 +588,22 @@ public class Intersection {
         // get v2v conflicts
         // Map<TurningMovement, Map<TurningMovement, Integer>> getVehPedConflicts()
 
+//        System.out.println("v2p conflicts: " + getVehPedConflicts());
         Map<TurningMovement, Integer> conflicts_on_turn_p = getVehPedConflicts().get(tm);
-        for (TurningMovement key : conflicts_on_turn_p.keySet()) {
-            if (conflicts_on_turn_p.get(key) == 0) { // 0 means intersections
-                conflicts.add(key);
+//        System.out.println("V2P conflicts for intersection " + getId() + ": " + conflicts_on_turn_p);
+        if (conflicts_on_turn_p != null) {
+            for (TurningMovement key : conflicts_on_turn_p.keySet()) {
+                if (conflicts_on_turn_p.get(key) == 0) { // 0 means intersections
+                    conflicts.add(key);
+                }
             }
         }
         Map<TurningMovement, Integer> conflicts_on_turn_v = getV2vConflicts().get(tm);
-        if (conflicts_on_turn_v == null) {
-            return conflicts;
-        }
-
-        for (TurningMovement key : conflicts_on_turn_v.keySet()) {
-            if (conflicts_on_turn_v.get(key) == 0) { // 0 means intersections
-                conflicts.add(key);
+        if (conflicts_on_turn_v != null) {
+            for (TurningMovement key : conflicts_on_turn_v.keySet()) {
+                if (conflicts_on_turn_v.get(key) == 0) { // 0 means intersections
+                    conflicts.add(key);
+                }
             }
         }
 
@@ -485,8 +647,10 @@ public class Intersection {
         // System.out.println("Intersection: " + this.getId());
 //         Set<Set<TurningMovement>> tms = powerSetWFilter(this.allTurningMovements);
         List<Set<TurningMovement>> tms = new ArrayList<>();
-        for (Set<TurningMovement> posPhase : PowerSet.powerSet(this.allTurningMovements)) {
-            if (!containsConflicts(posPhase)) {
+//        for (Set<TurningMovement> posPhase : PowerSet.powerSet(this.allTurningMovements)) {
+        for (Set<TurningMovement> posPhase : powerSetWFilter(this.allTurningMovements)) {
+
+        if (!containsConflicts(posPhase)) {
                 tms.add(posPhase);
             }
         }
@@ -531,12 +695,19 @@ public class Intersection {
     }
 
     public boolean containsConflicts(Set<TurningMovement> tms) {
+//        System.out.println("Potential phase: " + tms);
+//        System.out.println("v2v conflicts: " + v2vConflicts);
         List<TurningMovement> tms_copy = new ArrayList<>();
         tms_copy.addAll(tms);
         for (int i = 0; i < tms_copy.size(); i++) {
             for (int j = i+1; j < tms_copy.size(); j++) {
                 TurningMovement tm1 = tms_copy.get(i);
                 TurningMovement tm2 = tms_copy.get(j);
+//                System.out.println(tm1);
+//                System.out.println(v2vConflicts.get(tm1));
+                if (v2vConflicts.get(tm1) == null) {
+                    return false;
+                }
                 if (v2vConflicts.get(tm1).get(tm2) == 0) {
                     return true;
                 }
@@ -672,9 +843,9 @@ public class Intersection {
 
     public void moveVehicles() {
 //        System.out.println("\tMOVING VEHICLES");
-//        System.out.println("\tID: " + getId());
+        System.out.println("\tID: " + getId());
 //        System.out.println("\tphase: " + getCurrentPhase());
-//        System.out.println("\tflow vals: " + getNewFlowVals());
+        System.out.println("\tflow vals: " + getNewFlowVals());
 
 //        System.out.println("tms: " + getNewFlowVals().keySet().size());
         for (TurningMovement tm : getNewFlowVals().keySet()) {
