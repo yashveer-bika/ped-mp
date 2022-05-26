@@ -116,7 +116,7 @@ public class TestPQ3Conflicts {
         double timeStepSize = 60*60;
         double totalRunTime = 60*60*2;
         double toleranceTime = 0;
-        pq3_net_way2_vehs.runSim( timeStepSize,  totalRunTime, toleranceTime);
+        pq3_net_vehs.runSim( timeStepSize,  totalRunTime, toleranceTime);
 
         System.out.println("\nFINISHED TESTING CONTROLLER\n");
 

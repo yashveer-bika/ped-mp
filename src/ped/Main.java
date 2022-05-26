@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import ilog.concert.IloException;
 import util.*;
 
 /**
@@ -19,31 +20,32 @@ import util.*;
  */
 public class Main 
 {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws IloException {
         String path = "data/PQ3/";
 
-        System.out.println(path);
-        File nodesFile = new File(path + "nodes.txt");
-        File linksFile = new File(path + "links.txt");
-        File demand_file = new File(path + "trips_static_od_demand.txt");
-        File turn_props_file = new File(path + "turning_proportions.txt");
+//        System.out.println(path);
+//        File nodesFile = new File(path + "nodes.txt");
+//        File linksFile = new File(path + "links.txt");
+//        File demand_file = new File(path + "trips_static_od_demand.txt");
+//        File turn_props_file = new File(path + "turning_proportions.txt");
+//
+//        Simulator test_net = new Simulator(path, false, "vehMP");
 
-        Simulator test_net = new Simulator(path, false, "vehMP");
-
-        TestVehicle tv = new TestVehicle();
-        tv.testGetNextNode();
-
-        TestTurningMovement ttm = new TestTurningMovement();
-        ttm.testGetVehicles();
-
-        TestPointQueue tpq = new TestPointQueue();
-        tpq.testGetVehicles();
-
+//        TestVehicle tv = new TestVehicle();
+//        tv.testGetNextNode();
+//
+//        TestTurningMovement ttm = new TestTurningMovement();
+//        ttm.testGetVehicles();
+//
+//        TestPointQueue tpq = new TestPointQueue();
+//        tpq.testGetVehicles();
+//
         TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
-        tpq3.testVehFeasiblePhases();
-        tpq3.testConflictRegions();
-        tpq3.testTurningProportions();
+//        tpq3.testVehFeasiblePhases();
+//        tpq3.testConflictRegions();
+//        tpq3.testTurningProportions();
+//
+//        TestCPLEX testCPLEX = new TestCPLEX();
         tpq3.testController();
 
 //        tpq3.testPedFeasiblePhases();

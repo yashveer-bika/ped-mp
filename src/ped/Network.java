@@ -1093,15 +1093,17 @@ public class Network {
 
     public void createVehicle(Node origin, Node dest) {
         // make round(n) vehicles that have a path to dest
-//        System.out.println("Origin: "+ origin);
-//        System.out.println("Dest: "+ dest);
+        System.out.println("Origin: "+ origin.getId());
+        System.out.println("Dest: "+ dest.getId());
         List<ArrayList<Node>> paths = vehiclePaths.get(origin).get(dest);
+        System.out.println("Paths.size(): " + paths.size());
         // if no path exists, we do nothing
         if (paths != null) {
             // printVehiclePaths();
             // select a random path
-            Random ran = new Random(123);
+            Random ran = new Random();
             List<Node> random_path = paths.get(ran.nextInt(paths.size()));
+//            System.out.println("Random path: " + random_path);
             Vehicle v = new Vehicle(random_path);
             vehicles.add(v);
 

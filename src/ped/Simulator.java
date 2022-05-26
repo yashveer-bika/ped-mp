@@ -162,10 +162,13 @@ public class Simulator extends Network {
     // run controller on each intersection in this network
     // this means we calculate the best phase [set of (s_ij)'s] and flow values [(y_ij)'s]
     public void runController() {
+        System.out.println("Running controller on simulator level");
         for (Intersection i : getIntersectionSet()) {
+            System.out.println("Running controller on intersection " + i.getId());
             i.runController();
         }
         for (Intersection i : getIntersectionSet()) {
+            System.out.println("Moving vehicles on intersection " + i.getId());
             i.moveVehicles();
         }
     }
