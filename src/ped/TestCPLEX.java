@@ -8,6 +8,7 @@ import ilog.cplex.IloCplex;
 public class TestCPLEX {
 
     public TestCPLEX() throws IloException {
+        System.out.println("TESTING CPLEX");
         IloCplex cplex = new IloCplex();
         // create decision variables
         IloNumVar x = cplex.numVar(0, Double.MAX_VALUE, "x");
@@ -31,5 +32,7 @@ public class TestCPLEX {
             System.out.println("x = " + cplex.getValue(x));
             System.out.println("y = " + cplex.getValue(y));
         }
+
+        System.out.println("DONE TESTING CPLEX\n");
     }
 }

@@ -26,10 +26,9 @@ public class LTM extends Link
         reset();
     }
 
-    @Override
-    public boolean isEntry() {
-        return false;
-    }
+//    public boolean isEntry() {
+//        return false;
+//    }
 
     public void reset()
     {

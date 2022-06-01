@@ -116,18 +116,33 @@ public class Simulator extends Network {
 
     public void addVehicleDemand(Map<Node, Map<Node, Double>> static_demand, double timeStepSize) {
 
+//        // if (simTime == 0) {
+//            for (Node src : static_demand.keySet()) {
+//                for (Node dest : static_demand.get(src).keySet()) {
+//                    // TODO: verify the units of num_vehs
+//                    Double num_vehs = static_demand.get(src).get(dest); // in vehs / hr
+//                    num_vehs = num_vehs * timeStepSize / 60 / 60;
+////                    for (int i = 0; i < num_vehs; i++) {
+////                        createVehicle(src, dest);
+////                    }
+//                }
+//            }
+//        // }
+
         // if (simTime == 0) {
             for (Node src : static_demand.keySet()) {
                 for (Node dest : static_demand.get(src).keySet()) {
                     // TODO: verify the units of num_vehs
                     Double num_vehs = static_demand.get(src).get(dest); // in vehs / hr
                     num_vehs = num_vehs * timeStepSize / 60 / 60;
-                    for (int i = 0; i < num_vehs; i++) {
-                        createVehicle(src, dest);
-                    }
+//                    for (int i = 0; i < num_vehs; i++) {
+//                        createVehicle(src, dest);
+//                    }
+                    // TODO: test the line below
+                    src.getEntryLink().addFlow(num_vehs);
                 }
             }
-        // }
+            // }
     }
 
 //    public void moveVehsToLinks() {
@@ -169,7 +184,12 @@ public class Simulator extends Network {
         }
         for (Intersection i : getIntersectionSet()) {
             System.out.println("Moving vehicles on intersection " + i.getId());
-            i.moveVehicles();
+            // TODO: move vehicles based on flow calculation
+             i.moveFlow();
+        }
+        for (Link l : getLinkSet()) {
+            // in point queue, we move the entering flow into n, and the exiting flow out of n at each link
+            l.update();
         }
     }
 
@@ -182,7 +202,7 @@ public class Simulator extends Network {
             addVehicleDemand(static_demand, timeStepSize);
             // print links
             for (Link l : getLinkSet()) {
-                System.out.println("Link ID: " + l.getId() + ", vehsOnLink: " + l.getVehs().size());
+                System.out.println("Link ID: " + l.getId() + ", vehsOnLink: " + l.getOccupancy());
             }
             // load demand onto links
             runController();

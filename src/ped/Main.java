@@ -28,25 +28,44 @@ public class Main
 //        File linksFile = new File(path + "links.txt");
 //        File demand_file = new File(path + "trips_static_od_demand.txt");
 //        File turn_props_file = new File(path + "turning_proportions.txt");
-//
+////
 //        Simulator test_net = new Simulator(path, false, "vehMP");
+//        System.out.println(test_net.getNodes().keySet());
+//
+//        System.out.println(test_net.getLinkSet());
+
+
+
+
 
 //        TestVehicle tv = new TestVehicle();
 //        tv.testGetNextNode();
-//
+
 //        TestTurningMovement ttm = new TestTurningMovement();
 //        ttm.testGetVehicles();
-//
+
 //        TestPointQueue tpq = new TestPointQueue();
 //        tpq.testGetVehicles();
 //
+
+//        TestCPLEX testCPLEX = new TestCPLEX();
+
         TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
+//        tpq3.testV2Pconflicts();
+//        tpq3.testControllerWPeds();
 //        tpq3.testVehFeasiblePhases();
+        // tpq3.testV2VConflicts();
+        tpq3.testV2PConflicts();
+//        tpq3.printAllLocations();
+//        tpq3.testVehMPControllerWPeds();
 //        tpq3.testConflictRegions();
 //        tpq3.testTurningProportions();
-//
-//        TestCPLEX testCPLEX = new TestCPLEX();
-        tpq3.testController();
+//        tpq3.testController();
+
+//        TestINT4 testINT4 = new TestINT4();
+//        testINT4.testController();
+
+//        TestSFPhases testSFPhases = new TestSFPhases();
 
 //        tpq3.testPedFeasiblePhases();
 
@@ -58,7 +77,6 @@ public class Main
 //        test_sf.testVehFeasiblePhases();
 
 
-        // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
 
 //        File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
 //        File sf_links_f = new File("data/SiouxFalls/network/links.txt");
@@ -70,7 +88,6 @@ public class Main
 //        File pq3_nodes_f = new File("data/PQ3/nodes.txt");
 //        File pq3_links_f = new File("data/PQ3/links.txt");
 //        String controllerType = "vehMP";
-//        // TODO: fix the veh-2-veh conflict solution on intersection 5 on PQ3
 //        Simulator pq3_net = new Simulator(pq3_nodes_f, pq3_links_f, false, controllerType);
 //        pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);

@@ -122,4 +122,14 @@ public class Location
         Location locTmp = this.spawnNewLocation(dist_from_point, bisect_angle);
         return locTmp;
     }
+
+    public double distance(Location rhs) {
+        double x1 = this.getX();
+        double x2 = rhs.getX();
+        double y1 = this.getY();
+        double y2 = rhs.getY();
+        double distance = Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+        return distance;
+    }
+
 }

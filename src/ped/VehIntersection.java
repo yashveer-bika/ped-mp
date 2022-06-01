@@ -14,6 +14,9 @@ public class VehIntersection extends VehNode {
     // private Set<VehLink> incomingVehLinks;
     // private Set<VehLink> outgoingVehLinks;
     private Set<TurningMovement> vehicleTurns;
+    private Set<TurningMovement> entryTurns;
+    private Set<TurningMovement> exitTurns;
+
 
     // private HashSet<PedNode> pedIntersections;
     // private HashSet<Pedestrian> pedestrians;
@@ -26,6 +29,8 @@ public class VehIntersection extends VehNode {
     public VehIntersection(int id, double x, double y, Network engine) {
         super(id, x, y);
         vehicleTurns = new HashSet<>();
+        entryTurns = new HashSet<>();
+        exitTurns = new HashSet<>();
         this.engine = engine;
 //        incomingVehLinks = new HashSet<>();
 //        outgoingVehLinks = new HashSet<>();
@@ -87,6 +92,48 @@ public class VehIntersection extends VehNode {
         }
     }
 
+    public Set<TurningMovement> getEntryTurns() {
+        return entryTurns;
+    }
+
+    public void generateEntryTurns() {
+//        System.out.println("Intersection " + getId());
+        Link in = getEntryLink();
+//        System.out.println("in: " + in);
+        // for (Link in : this.getIncomingLinks()) {
+            for (Link out : this.getOutgoingLinks()) {
+                // prevent u-turns
+                // NOTE: adding u-turn logic will require a change of feasible states
+                if (in.getSource() == out.getDest()) {
+                    continue;
+                }
+//                if (in instanceof EntryLink || out instanceof ExitLink) {
+//                    continue;
+//                }
+//                System.out.println("in: " + in);
+//                System.out.println("out: " + out);
+                entryTurns.add(new TurningMovement(in, out, engine));
+            }
+ //       }
+    }
+
+    public void generateExitTurns() {
+//        System.out.println("Intersection " + getId());
+//        System.out.println("in: " + in);
+        // for (Link in : this.getIncomingLinks()) {
+        Link out = getExitLink();
+        for (Link in : getIncomingLinks()) {
+//                if (in instanceof EntryLink || out instanceof ExitLink) {
+//                    continue;
+//                }
+//                System.out.println("in: " + in);
+//                System.out.println("out: " + out);
+            exitTurns.add(new TurningMovement(in, out, engine));
+        }
+        //       }
+    }
+
+
     public void generateVehicleTurns() {
         // Get the product between vehInt.getIncomingVehLinks() and vehInt.getOutgoingVehLinks()
         for (Link in : this.getIncomingLinks()) {
@@ -96,9 +143,18 @@ public class VehIntersection extends VehNode {
                 if (in.getSource() == out.getDest()) {
                     continue;
                 }
+//                if (in instanceof EntryLink || out instanceof ExitLink) {
+//                    continue;
+//                }
+//                System.out.println("in: " + in);
+//                System.out.println("out: " + out);
                 vehicleTurns.add(new TurningMovement(in, out, engine));
             }
         }
+    }
+
+    public Set<TurningMovement> getExitTurns() {
+        return exitTurns;
     }
 
     /*

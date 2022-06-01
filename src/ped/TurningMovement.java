@@ -13,6 +13,7 @@ public class TurningMovement {
     private int capacity; // Q_{ij}
     private double turning_proportion;
     private Set<ConflictRegion> conflictRegions;
+    private double queueLength;
 
     // [
     //  [number of vehicles that entered at time t, entrance time t]
@@ -31,26 +32,21 @@ public class TurningMovement {
 
     public TurningMovement(Link i, Link j)  {
         // need connectivity
+//        System.out.println("link i: " + i);
+//        System.out.println("link j: " + j);
         assert i.getDest() == j.getSource();
         this.i = i;
         this.j = j;
         // setCapacity();
         conflictRegions = new HashSet<>();
+        queueLength = 0;
         // queue = new LinkedList<>();
         // vehicleQueue = new ArrayList<>();
         // turning_proportion = 0;
     }
 
     public TurningMovement(Link i, Link j, Network engine)  {
-        // need connectivity
-        assert i.getDest() == j.getSource();
-        this.i = i;
-        this.j = j;
-        // setCapacity();
-        conflictRegions = new HashSet<>();
-        // queue = new LinkedList<>();
-        // vehicleQueue = new ArrayList<>();
-        // turning_proportion = 0;
+        this(i,j);
         this.engine = engine;
     }
 
@@ -58,19 +54,19 @@ public class TurningMovement {
         return conflictRegions;
     }
 
-    public List<Vehicle> getVehicles() {
-        List<Vehicle> vehs = new ArrayList<>();
-        for (Vehicle v : i.getVehs()) {
-            Node d3_ = j.getDest();
-            Node d2_ = j.getSource();
-            Node d2 = v.getNextNode(1);
-            Node d3 = v.getNextNode(2);
-            if (d2_.equals(d2) && d3_.equals(d3)) {
-                vehs.add(v);
-            }
-        }
-        return vehs;
-    }
+//    public List<Vehicle> getVehicles() {
+//        List<Vehicle> vehs = new ArrayList<>();
+//        for (Vehicle v : i.getVehs()) {
+//            Node d3_ = j.getDest();
+//            Node d2_ = j.getSource();
+//            Node d2 = v.getNextNode(1);
+//            Node d3 = v.getNextNode(2);
+//            if (d2_.equals(d2) && d3_.equals(d3)) {
+//                vehs.add(v);
+//            }
+//        }
+//        return vehs;
+//    }
 
     public Link getIncomingLink(){
         return i;
@@ -82,15 +78,23 @@ public class TurningMovement {
 
     // NOTE: THIS ONLY (supposedly) WORKS FOR VEHICLES RN
     public double getWeight() {
+//        System.out.println("\t Getting weight");
         double weight = getQueueLength();
+//        System.out.println("dest: " + getOutgoingLink().getDest());
+        if (!(getOutgoingLink().getDest() instanceof VehIntersection)) {
+            return weight;
+        }
         VehIntersection neigh = (VehIntersection) getOutgoingLink().getDest();
-        Set<TurningMovement> downstream_turns = neigh.getVehicleTurns();
-        for (TurningMovement downstream_turn : downstream_turns) {
+        Set<TurningMovement> nextTurns = neigh.getVehicleTurns();
+//        System.out.println("\t\t downstream turns: " + nextTurns);
+        for (TurningMovement nextTurn : nextTurns) {
+            if (nextTurn.getIncomingLink().equals(j)) {
+                TurningMovement downstream_turn = nextTurn;
+                weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
+            }
 //            System.out.println("\tweight: " + weight);
 //            System.out.println("\tdownstream_turn.getTurningProportion(): " + downstream_turn.getTurningProportion());
 //            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
-
-            weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
         }
 //        System.out.println("\tweight: " + weight);
         return weight;
@@ -197,6 +201,25 @@ public class TurningMovement {
 
 //    // YASH's IDEAS
     public boolean intersects(TurningMovement rhs) {
+        if (
+                this.getIncomingLink() instanceof EntryLink ||
+                this.getOutgoingLink() instanceof ExitLink ||
+                rhs.getIncomingLink() instanceof EntryLink ||
+                rhs.getOutgoingLink() instanceof ExitLink
+        ) {
+            return false;
+        }
+
+//        // if the links have physical intersect
+//        if (
+//                this.getIncomingLink().intersects(rhs.getIncomingLink()) ||
+//                this.getIncomingLink().intersects(rhs.getOutgoingLink()) ||
+//                this.getOutgoingLink().intersects(rhs.getIncomingLink()) ||
+//                this.getOutgoingLink().intersects(rhs.getOutgoingLink())
+//        ) {
+//            return true;
+//        }
+
         // TODO: this is a simplified model
         // if i = rhs.i , there is no conflict
         // if j = rhs.j , there is conflict
@@ -348,7 +371,13 @@ public class TurningMovement {
 //        return q_length;
 //    }
 
-    public int getQueueLength() {
+
+    public void setQueueLength(double queueLength) {
+        this.queueLength = queueLength;
+    }
+
+    public double getQueueLength() {
+        // TODO: implement
 //        // let a turning movement be seen as three nodes (n1,n2,n3)
 //        // number of vehicles on link i who want will go to link j
 //        int ql = 0;
@@ -362,7 +391,11 @@ public class TurningMovement {
 //        }
 //
 //        return ql;
-        return getVehicles().size();
+//        return getVehicles().size();
+
+//        return queueLength;
+        return i.getOccupancy() * getTurningProportion();
+//        return i.getOccupancy();
     }
 
 //    public void addToQueue(Vehicle v) {

@@ -6,6 +6,12 @@
 package ped;
 
 
+import Geometry.Geometry;
+import Geometry.LineSegment;
+import Geometry.Point;
+
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +24,7 @@ import java.util.List;
  */
 public abstract class Link implements Comparable<Link>
 {
-    private List<Vehicle> vehs; // TODO: see if we need this
+//    private List<Vehicle> vehs; // TODO: see if we need this
 
     // id used to reference the Link
     private int id;
@@ -51,7 +57,8 @@ public abstract class Link implements Comparable<Link>
     // YASHVEER's ADDITIONS
     // suppose we plotted the source and dest. angle is the angle from source to dest
     private double angle;
-    private boolean sidewalk;
+    private boolean sidewalk = false;
+    private boolean crosswalk = false;
 
 
 
@@ -80,7 +87,7 @@ public abstract class Link implements Comparable<Link>
         this.length = length;
         this.numLanes = numLanes;
         this.free_flow_time = ffspd / length;
-        this.vehs = new ArrayList<>();
+//        this.vehs = new ArrayList<>();
 
         // update incoming/outgoing sets of Links in the Node class
         if(source != null)
@@ -342,7 +349,7 @@ public abstract class Link implements Comparable<Link>
 
     /** YASHVEER's ADDITIONS ***/
     // TODO: javadoc
-    public abstract boolean isEntry();
+//    public abstract boolean isEntry();
 
     // TODO: make my new methods follow good design practice
     public double getAngle() {
@@ -367,17 +374,86 @@ public abstract class Link implements Comparable<Link>
 //        return t_ij;
 //    }
 
-    public List<Vehicle> getVehs() {
-        return vehs;
-    }
+//    public List<Vehicle> getVehs() {
+//        return vehs;
+//    }
 
-    public void addVehicle(Vehicle v) {}
-
-    public void removeVehicle(Vehicle v) {}
+//    public void addVehicle(Vehicle v) {}
+//
+//    public void removeVehicle(Vehicle v) {}
 
     public double getPositionalLength() {
         double x_diff = source.getX() - dest.getX();
         double y_diff = source.getY() - dest.getY();
         return Math.sqrt(x_diff * x_diff + y_diff * y_diff);
+    }
+
+    public boolean intersects(Link rhs) {
+//        LineSegment l1 = new LineSegment(
+//                new Point(getSource().getX(), getSource().getY()),
+//                new Point(getDest().getX(), getDest().getY())
+//        );
+//
+//        LineSegment l2 = new LineSegment(
+//                new Point(rhs.getSource().getX(), rhs.getSource().getY()),
+//                new Point(rhs.getDest().getX(), rhs.getDest().getY())
+//        );
+
+        Point2D.Double p1 = new Point2D.Double(getSource().getX(), getSource().getY());
+        Point2D.Double p2 = new Point2D.Double(getDest().getX(), getDest().getY());
+        Point2D.Double p3 = new Point2D.Double(rhs.getSource().getX(), rhs.getSource().getY());
+        Point2D.Double p4 = new Point2D.Double(rhs.getDest().getX(), rhs.getDest().getY());
+
+        // this intersect includes tips
+        double x1 = this.getSource().getX();
+        double y1 = this.getSource().getY();
+
+        double x2 = this.getDest().getX();
+        double y2 = this.getDest().getY();
+
+        double x3 = rhs.getSource().getX();
+        double y3 = rhs.getSource().getY();
+
+        double x4 = rhs.getDest().getX();
+        double y4 = rhs.getDest().getY();
+
+        return Line2D.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) && !shareAnyPoint(p1, p2, p3, p4);
+//        return Geometry.doLinesIntersect()
+    }
+
+    // https://stackoverflow.com/questions/23192573/java-proper-line-intersection-check
+    // shareAnyPoint(StartPointA, EndPointA, StartPointB, EndPointB) function that checks if start/end points from either lines lies on the other line.
+    public static boolean shareAnyPoint(Point2D.Double A, Point2D.Double B, Point2D.Double C, Point2D.Double D) {
+        if (isPointOnTheLine(A, B, C)) return true;
+        else if (isPointOnTheLine(A, B, D)) return true;
+        else if (isPointOnTheLine(C, D, A)) return true;
+        else if (isPointOnTheLine(C, D, B)) return true;
+        else return false;
+    }
+
+    public static boolean isPointOnTheLine(Point2D.Double A, Point2D.Double B, Point2D.Double P) {
+        double m = (B.y - A.y) / (B.x - A.x);
+
+        //handle special case where the line is vertical
+        if (Double.isInfinite(m)) {
+            if(A.x == P.x) return true;
+            else return false;
+        }
+
+        if ((P.y - A.y) == m * (P.x - A.x)) return true;
+        else return false;
+    }
+
+
+    public void setSidewalk(boolean sidewalk) {
+        this.sidewalk = sidewalk;
+    }
+
+    public void setCrosswalk(boolean crosswalk) {
+        this.crosswalk = crosswalk;
+    }
+
+    public boolean isCrosswalk() {
+        return crosswalk;
     }
 }

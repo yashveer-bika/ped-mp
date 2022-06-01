@@ -34,7 +34,7 @@ public class Node extends Location
     private Link entryLink;
 
     private double curDemand = 0;
-    private List<Vehicle> vehicles;
+//    private List<Vehicle> vehicles;
     // public HashMap<String, Integer> signals; // Integer 1 = green, Integer 0 = red
 
     // private boolean thruNode;
@@ -50,9 +50,9 @@ public class Node extends Location
     public Node(double x, double y) {
         super(x,y);
         this.allLinks = new HashSet<>();
-        this.vehicles = new ArrayList<>();
+//        this.vehicles = new ArrayList<>();
         entryLink = new EntryLink();
-        exitLink = new ExitLink();
+        exitLink = null;
 
 //        signals = new HashMap<>();
     }
@@ -91,17 +91,17 @@ public class Node extends Location
         return null;
     }
 
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
+//    public List<Vehicle> getVehicles() {
+//        return vehicles;
+//    }
 
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
-    }
+//    public void setVehicles(List<Vehicle> vehicles) {
+//        this.vehicles = vehicles;
+//    }
 
-    public void addVehicle(Vehicle v) {
-        vehicles.add(v);
-    }
+//    public void addVehicle(Vehicle v) {
+//        vehicles.add(v);
+//    }
 
 
 
@@ -132,7 +132,7 @@ public class Node extends Location
     {
         Set<Link> outgoingLinks = new HashSet<>();
         for (Link l : allLinks) {
-            if (this.equals(l.getSource()) && l.getDest() != null) {
+            if (this.equals(l.getSource()) && l.getDest() != null && !(l instanceof EntryLink) && !(l instanceof ExitLink)) {
                 outgoingLinks.add(l);
             }
         }
@@ -143,7 +143,7 @@ public class Node extends Location
     {
         Set<Link> incomingLinks = new HashSet<>();
         for (Link l : allLinks) {
-            if (this.equals(l.getDest()) && l.getSource() != null) {
+            if (this.equals(l.getDest()) && l.getSource() != null && !(l instanceof EntryLink) && !(l instanceof ExitLink)) {
                 incomingLinks.add(l);
             }
         }
@@ -154,12 +154,28 @@ public class Node extends Location
         return this.allLinks;
     }
 
-    public void addEntryLink(Link l) {
-        addLink(l);
+    public void removeLink(Link l) {
+        allLinks.remove(l);
     }
 
-    public void addExitLink(Link l) {
+    public void setEntryLink(Link l) {
+        removeLink(getEntryLink());
         addLink(l);
+        entryLink = l;
+    }
+
+    public void setExitLink(Link l) {
+        removeLink(getExitLink());
+        addLink(l);
+        exitLink = l;
+    }
+
+    public Link getEntryLink() {
+        return entryLink;
+    }
+
+    public Link getExitLink() {
+        return exitLink;
     }
 
     public int getRowPosition() {
@@ -223,9 +239,9 @@ public class Node extends Location
         this.explored = explored;
     }
 
-    public void clearVehicles() {
-        vehicles = new ArrayList<>();
-    }
+//    public void clearVehicles() {
+//        vehicles = new ArrayList<>();
+//    }
 
     /*
     public void setIncomingLinks(Set<Link> incoming) {
@@ -286,7 +302,8 @@ public class Node extends Location
         if (rhs == null || this == null) {
             return false;
         }
-        return (rhs.getId() == this.getId()) || (super.equals(o));
+//        return (rhs.getId() == this.getId()) || (super.equals(o));
+        return (rhs.getId() == this.getId());
     }
 
      public String toString()

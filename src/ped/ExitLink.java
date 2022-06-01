@@ -15,35 +15,47 @@ import java.util.LinkedList;
 public class ExitLink extends Link
 {
 
-    private LinkedList<Vehicle> queue;
+//    private LinkedList<Vehicle> queue;
 
-    public ExitLink()
+    private double occupancy;
+
+    public ExitLink(int id, Node src, Node dummyDest)
     {
-        super(0, null, null, 0, 0, 0, 1);
-
-        queue = new LinkedList<Vehicle>();
+        super(id, src, dummyDest, 0, 0, Integer.MAX_VALUE, 1);
+        src.setExitLink(this);
+//        queue = new LinkedList<Vehicle>();
 
     }
 
-    public ExitLink(int id, Node n)
-    {
-        super(id, n, null, 0, 0, 0, 1);
+//    public ExitLink()
+//    {
+//        super(0, null, null, 0, 0, 0, 1);
+//
+////        queue = new LinkedList<Vehicle>();
+//
+//    }
 
-        queue = new LinkedList<Vehicle>();
-
-    }
+//    public ExitLink(int id, Node n)
+//    {
+//        super(id, n, null, 0, 0, 0, 1);
+//
+////        queue = new LinkedList<Vehicle>();
+//
+//    }
 
 
     public void reset()
     {
         // fill this in
-        queue.clear();
+//        queue.clear();
     }
 
     public double getOccupancy()
     {
         // fill this in
-        return queue.size();
+        // TODO:
+//        return queue.size();
+        return occupancy;
     }
 
 
@@ -60,7 +72,9 @@ public class ExitLink extends Link
     public double getSendingFlow()
     {
         // fill this in
-        return queue.size();
+        // TODO:
+//        return queue.size();
+        return -1.0;
     }
 
     public double getReceivingFlow()
@@ -71,15 +85,15 @@ public class ExitLink extends Link
 
     public void addFlow(double y)
     {
-        // fill this in
+        occupancy += y;
     }
 
     public void removeFlow(double y)
     {
-        // fill this in
+        occupancy -= y;
     }
 
-    public boolean isEntry() {
-        return true;
-    }
+//    public boolean isEntry() {
+//        return true;
+//    }
 }

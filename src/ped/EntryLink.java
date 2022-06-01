@@ -15,31 +15,42 @@ import java.util.LinkedList;
 public class EntryLink extends Link
 {
 
-    private LinkedList<Vehicle> queue;
+    private double occupancy;
 
     public EntryLink() {
-        super(0, null, null, 0, 0, 0, 1);
+        super(0, null, null, 0, 0, Integer.MAX_VALUE, 1);
     }
 
-    public EntryLink(int id, Node n)
+    public EntryLink(int id, Node dummySrc, Node dest)
     {
-        super(id, null, n, 0, 0, 0, 1);
-
-        queue = new LinkedList<Vehicle>();
+        super(id, dummySrc, dest, 0, 0, Integer.MAX_VALUE, 1);
+        dest.setEntryLink(this);
+//        queue = new LinkedList<Vehicle>();
 
     }
+
+//    public EntryLink(int id, Node n)
+//    {
+//        super(id, null, n, 0, 0, 0, 1);
+//
+////        queue = new LinkedList<Vehicle>();
+//
+//    }
 
 
     public void reset()
     {
+        // TODO:
         // fill this in
-        queue.clear();
+//        queue.clear();
     }
 
     public double getOccupancy()
     {
         // fill this in
-        return queue.size();
+        // TODO:
+//        return queue.size();
+        return occupancy;
     }
 
 
@@ -56,23 +67,25 @@ public class EntryLink extends Link
     public double getSendingFlow()
     {
         // fill this in
-        return queue.size();
+        // TODO:
+//        return queue.size();
+        return occupancy;
     }
 
     public double getReceivingFlow()
     {
         // fill this in
-        return Integer.MAX_VALUE;
+        return Double.MAX_VALUE;
     }
 
     public void addFlow(double y)
     {
-        // fill this in
+        occupancy += y;
     }
 
     public void removeFlow(double y)
     {
-        // fill this in
+        occupancy -= y;
     }
 
     public boolean isEntry() {

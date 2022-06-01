@@ -43,22 +43,23 @@ public class TestPointQueue {
         }
     };
 
-    Vehicle v1 = new Vehicle(path1);
-    Vehicle v2 = new Vehicle(path2);
+//    Vehicle v1 = new Vehicle(path1);
+//    Vehicle v2 = new Vehicle(path2);
 //    Vehicle v3 = new Vehicle(path3);
 
     public TestPointQueue() {
-        l1.addVehicle(v1);
-        l1.addVehicle(v2);
+        // TODO: make relevant tests
+//        l1.addVehicle(v1);
+//        l1.addVehicle(v2);
     }
 
-    void testGetVehicles() {
-        System.out.println("Testing PointQueue.getVehs()");
-        List<Vehicle> vehs = new ArrayList<>();
-        vehs.add(v1);
-        vehs.add(v2);
-
-        assert vehs.containsAll(l1.getVehs());
-        assert l1.getVehs().containsAll(vehs);
-    }
+//    void testGetVehicles() {
+//        System.out.println("Testing PointQueue.getVehs()");
+//        List<Vehicle> vehs = new ArrayList<>();
+////        vehs.add(v1);
+////        vehs.add(v2);
+//
+//        assert vehs.containsAll(l1.getVehs());
+//        assert l1.getVehs().containsAll(vehs);
+//    }
 }

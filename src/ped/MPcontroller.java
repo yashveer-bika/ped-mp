@@ -19,7 +19,7 @@ public class MPcontroller implements Controller {
         network_time = newTime;
     }
 
-    public Tuple<Phase, Map<TurningMovement, Integer>> run() {
+    public Tuple<Phase, Map<TurningMovement, Double>> run() {
         // iterate over every phase
         Phase bestPhase = new Phase();
         Map<TurningMovement, Integer> flowVals = new HashMap<>();
@@ -59,7 +59,7 @@ public class MPcontroller implements Controller {
                 // but we forced the signal on and only look at non-conflicting turns
 
 
-                vehMoveNums.put(turn, Math.min(turn.getCapacity(), turn.getQueueLength()) );
+//                vehMoveNums.put(turn, Math.min(turn.getCapacity(), turn.getQueueLength()) );
                 if (intersection.getId() == 5) {
                     System.out.println("tm: " + turn);
                     System.out.println("Q_ij: " + turn.getCapacity());

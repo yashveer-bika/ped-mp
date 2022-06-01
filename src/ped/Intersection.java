@@ -18,6 +18,9 @@ public class Intersection {
 
 
     //    private final HashSet<Link> allLinks;
+    private Set<TurningMovement> entryTurns;
+    private Set<TurningMovement> exitTurns;
+    private Set<TurningMovement> internalVehicleTurns;
     private Set<TurningMovement> vehicleTurns;
     private final Set<TurningMovement> pedestrianTurningMovements;
     private final Set<TurningMovement> allTurningMovements;
@@ -30,7 +33,7 @@ public class Intersection {
 
     private final Controller controller;
     private Phase currentPhase;
-    private Map<TurningMovement, Integer> newFlowVals;
+    private Map<TurningMovement, Double> newFlowVals;
 
     // vehicle tm, pedestrian tm, 0/1 (0 if conflict, 1 if allowed)
     private final Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
@@ -46,6 +49,7 @@ public class Intersection {
 
 
     public Intersection(VehIntersection vehInt, String controllerType) {
+        internalVehicleTurns = new HashSet<>();
         this.conflictRegions = new ArrayList<>();
         this.possiblePhases = new HashSet<>();
         this.currentPhase = new Phase();
@@ -55,9 +59,20 @@ public class Intersection {
         this.node_to_tms = new HashMap<>();
         this.feasiblePhases = new HashSet<>();
         this.vehInt = vehInt;
-        this.vehicleTurns = new HashSet<>();
         vehInt.generateVehicleTurns();
-        this.vehicleTurns = vehInt.getVehicleTurns();
+        vehInt.generateEntryTurns();
+        vehInt.generateExitTurns();
+
+        vehicleTurns = new HashSet<>();
+        entryTurns = vehInt.getEntryTurns();
+        exitTurns = vehInt.getExitTurns();
+
+        internalVehicleTurns.addAll(vehInt.getVehicleTurns());
+        internalVehicleTurns.addAll(exitTurns);
+
+        vehicleTurns.addAll(entryTurns);
+        vehicleTurns.addAll(internalVehicleTurns);
+
         this.pedestrianTurningMovements = new HashSet<>();
         this.allTurningMovements = new HashSet<>();
         this.vehPedConflicts = new HashMap<>();
@@ -98,9 +113,16 @@ public class Intersection {
         generateV2Vconflicts();
     }
 
+    public Set<TurningMovement> getEntryTurns() {
+        return entryTurns;
+    }
 
-    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts,
-                        Set<Crosswalk> crosswalks, Set<PedNode> pedNodes, String controllerType) {
+    public ArrayList<PedIntersection> getPedInts() {
+        return pedInts;
+    }
+
+    public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts, Set<PedNode> pedNodes,
+                        Set<Crosswalk> crosswalks, String controllerType) {
         this.ped = true;
         this.conflictRegions = new ArrayList<>();
         this.possiblePhases = new HashSet<>();
@@ -108,12 +130,26 @@ public class Intersection {
         this.node_to_tms = new HashMap<>();
         this.feasiblePhases = new HashSet<>();
         this.pedNodes = pedNodes;
+        pedNodes.addAll(pedInts);
         this.vehInt = vehInt;
         // assert pedInts.size() == 4;
         this.pedInts = pedInts;
-        this.vehicleTurns = new HashSet<>();
         vehInt.generateVehicleTurns();
-        this.vehicleTurns = vehInt.getVehicleTurns();
+        vehInt.generateEntryTurns();
+        vehInt.generateExitTurns();
+
+        vehicleTurns = new HashSet<>();
+        internalVehicleTurns = new HashSet<>();
+
+        entryTurns = vehInt.getEntryTurns();
+        exitTurns = vehInt.getExitTurns();
+
+        internalVehicleTurns.addAll(vehInt.getVehicleTurns());
+        internalVehicleTurns.addAll(exitTurns);
+
+        vehicleTurns.addAll(entryTurns);
+        vehicleTurns.addAll(internalVehicleTurns);
+
         this.pedestrianTurningMovements = new HashSet<>();
         this.allTurningMovements = new HashSet<>();
         this.vehPedConflicts = new HashMap<>();
@@ -149,7 +185,22 @@ public class Intersection {
         return this.allNodes;
     }
 
-    public void setNumForks() {
+    // TODO: once testing works, move make to set and get paradigm
+//    public void setNumForks() {
+//        Set<Node> neighs = new HashSet<>();
+//        for (Link l : vehInt.getIncomingLinks()) {
+//            neighs.add( l.getSource() );
+//        }
+//        for (Link l : vehInt.getOutgoingLinks()) {
+//            neighs.add( l.getDest() );
+//        }
+////        if (getId() == 2) {
+////            System.out.println("neighbors: " + neighs);
+////        }
+//        num_forks = neighs.size();
+//    }
+
+    public int getNum_forks() {
         Set<Node> neighs = new HashSet<>();
         for (Link l : vehInt.getIncomingLinks()) {
             neighs.add( l.getSource() );
@@ -157,14 +208,9 @@ public class Intersection {
         for (Link l : vehInt.getOutgoingLinks()) {
             neighs.add( l.getDest() );
         }
-        if (getId() == 2) {
-            System.out.println("neighbors: " + neighs);
-        }
-        num_forks = neighs.size();
-    }
-
-    public int getNum_forks() {
-        return num_forks;
+//        System.out.println("Intersection: " + getId());
+//        System.out.println("neighs: " + neighs);
+        return neighs.size();
     }
 
     public void initializeNodeTMs() {
@@ -257,6 +303,7 @@ public class Intersection {
             temp = Angle.bound(temp);
             bisectAngles.add(temp);
         }
+//        System.out.println("Intersection " + getId());
         temp = linkAngles.get(0) + Math.PI*2 + linkAngles.get(l-1);
         temp /= 2;
         temp = Angle.bound(temp);
@@ -279,6 +326,9 @@ public class Intersection {
         // stored in vehicleTurns
         List<Double> boundaryAngles = getBoundaryAngles();
 
+//        System.out.println("boundaryAngles.size(): " + boundaryAngles.size());
+//        System.out.println("getNum_forks(): " + getNum_forks());
+
         assert boundaryAngles.size() == getNum_forks();
 //        System.out.println("\tboundaryAngles " + boundaryAngles);
 
@@ -286,7 +336,7 @@ public class Intersection {
             conflictRegions.add(new ConflictRegion());
         }
         // assume boundaryAngles is already populated and sorted from smallest to largest
-        for (TurningMovement tm : vehicleTurns) {
+        for (TurningMovement tm : internalVehicleTurns) {
 //            System.out.println("\ttm " + tm);
 //            System.out.println("\tboundaryAngles " + boundaryAngles);
             double inAng = Angle.bound(tm.getIncomingLink().getAngle() + Math.PI);
@@ -334,7 +384,7 @@ public class Intersection {
     // makes sure that the phases are generated and code won't be redundantly called
     public void finishLoading() {
 //        this.loadingComplete = true;
-        setNumForks();
+        // setNumForks();
 
         if (ped) {
             setPedestrianTurningMovements();
@@ -346,7 +396,7 @@ public class Intersection {
         }
 //        System.out.println("pedestrianTurningMovements: " + pedestrianTurningMovements);
         allTurningMovements.addAll(vehicleTurns);
-        allTurningMovements.addAll(pedestrianTurningMovements);
+//        allTurningMovements.addAll(pedestrianTurningMovements);
         initializeNodeTMs();
         initializeConflictRegions();
 
@@ -354,7 +404,10 @@ public class Intersection {
 
 //        System.out.println(this.getId());
 //        System.out.println("\tallTurningMovements: " + allTurningMovements);
-         generatePhases();
+        // TODO: activate generate phases if I am using for testing
+//        if (!ped) {
+//            generatePhases();
+//        }
 //        Map<Link, Map<Link, TurningMovement>> conflicts = ConflictFactory.generate(this);
 
 //        for (Link link_in : conflicts.keySet()) {
@@ -557,9 +610,12 @@ public class Intersection {
                     tmp.put(veh_tm2, 1); // no-conflict (allowed)
                 }
             }
+
+//            for (TurningMovement veh_tm2 : entryTurns) {
+//                tmp.put(veh_tm2, 1); // no-conflict (allowed)
+//            }
             v2vConflicts.put(veh_tm, tmp);
         }
-
         // print out vehicle turns
 //        for (TurningMovement veh_tm : vehicleTurns) {
 //            for (TurningMovement veh_tm2 : vehicleTurns) {
@@ -649,10 +705,9 @@ public class Intersection {
         List<Set<TurningMovement>> tms = new ArrayList<>();
 //        for (Set<TurningMovement> posPhase : PowerSet.powerSet(this.allTurningMovements)) {
         for (Set<TurningMovement> posPhase : powerSetWFilter(this.allTurningMovements)) {
-
-        if (!containsConflicts(posPhase)) {
-                tms.add(posPhase);
-            }
+            if (!containsConflicts(posPhase)) {
+                    tms.add(posPhase);
+                }
         }
 
         class sortSetTM implements Comparator<Set<TurningMovement>>
@@ -717,23 +772,33 @@ public class Intersection {
         return false;
     }
 
-
+    public Set<TurningMovement> getInternalVehicleTurns() {
+        return internalVehicleTurns;
+    }
 
     public void setPedestrianTurningMovements() {
         assert this.pedestrianTurningMovements.size() == 0;
+        System.out.println("Intersection " + getId());
+        System.out.println("\tNum pedInts " + pedInts.size());
+
         for (PedIntersection pedInt : this.pedInts) {
             this.pedestrianTurningMovements.addAll(pedInt.getPedestrianTurns());
         }
     }
 
+    // TODO: make this work, test it, etc.
     // NOTE: not efficient since this searchs over the sidewalks and may search over the
     // same vehLinks multiple times
     public void setVehPedConflicts() {
         for (TurningMovement veh_tm : vehicleTurns) {
             // Map<TurningMovement, Map<TurningMovement, Integer>> vehPedConflicts;
             Map<TurningMovement, Integer> tmp = new HashMap<>();
+            Link l1 = veh_tm.getIncomingLink();
+            Link l2 = veh_tm.getOutgoingLink();
             for (TurningMovement ped_tm : pedestrianTurningMovements) {
-                if (veh_tm.intersects(ped_tm)) {
+                Link crosswalk = ped_tm.getOutgoingLink();
+
+                if ( l1.intersects(crosswalk) || l2.intersects(crosswalk)  ) {
                     tmp.put(ped_tm, 0);
                 } else {
                     tmp.put(ped_tm, 1);
@@ -754,7 +819,7 @@ public class Intersection {
     // veh_tm, ped_tm, 0/1
     public Map<TurningMovement, Map<TurningMovement, Integer>> getVehPedConflicts() {
         setVehPedConflicts();
-        return this.vehPedConflicts;
+        return vehPedConflicts;
     }
 
     public HashMap<TurningMovement, Double> getVehQueueLengths() {
@@ -766,7 +831,7 @@ public class Intersection {
     }
 
     public Set<PedNode> getPedNodes() {
-        return this.pedNodes;
+        return pedNodes;
     }
 
     public Set<TurningMovement> getPedestrianTurningMovements() {
@@ -812,7 +877,7 @@ public class Intersection {
     }
 
     public void runController() {
-        Tuple<Phase, Map<TurningMovement, Integer>> out = controller.run();
+        Tuple<Phase, Map<TurningMovement, Double>> out = controller.run();
         currentPhase = out.getX();
         newFlowVals = out.getY();
     }
@@ -829,7 +894,7 @@ public class Intersection {
         this.currentPhase = currentPhase;
     }
 
-    public void setNewFlowVals(Map<TurningMovement, Integer> newFlowVals) {
+    public void setNewFlowVals(Map<TurningMovement, Double> newFlowVals) {
         this.newFlowVals = newFlowVals;
     }
 
@@ -837,11 +902,14 @@ public class Intersection {
         return currentPhase;
     }
 
-    public Map<TurningMovement, Integer> getNewFlowVals() {
+    public Map<TurningMovement, Double> getNewFlowVals() {
         return newFlowVals;
     }
 
-    public void moveVehicles() {
+    public void moveFlow() {
+
+        System.out.println("VEHICLE TURNS: " + vehicleTurns);
+
 //        System.out.println("\tMOVING VEHICLES");
         System.out.println("\tID: " + getId());
 //        System.out.println("\tphase: " + getCurrentPhase());
@@ -851,8 +919,8 @@ public class Intersection {
         for (TurningMovement tm : getNewFlowVals().keySet()) {
 //            System.out.println("tm: " + tm);
 //            System.out.println("vehs: " + tm.getVehicles().size());
-            int x_ij = tm.getVehicles().size();
-            int y_ij = getNewFlowVals().get(tm);
+            double x_ij = tm.getQueueLength();
+            double y_ij = getNewFlowVals().get(tm);
             double turn_prop = tm.getTurningProportion();
 //            System.out.println("x_ij: " + x_ij);
 //            System.out.println("y_ij: " + y_ij);
@@ -861,31 +929,95 @@ public class Intersection {
 //                assert false;
 //            }
             assert y_ij <= x_ij;
-
-
+            // TODO: write moving code
             Link i = tm.getIncomingLink();
             Link j = tm.getOutgoingLink();
-            int idx = 0;
-            for (Vehicle v : tm.getVehicles()) {
-//                System.out.println(v);
-//                System.out.println(v.getCurrentNode().getId());
-                if (idx >= y_ij * turn_prop) {
-                    break;
-                }
-//                System.out.println(v);
-//                System.out.println(v.getCurrentNode().getId());
-                Node n = v.moveVehicle();
-                if (n != null) {
-                    j.addVehicle(v);
-                }
-                i.removeVehicle(v);
+            i.removeFlow(y_ij);
+            j.addFlow(y_ij);
+            // move flow from i to j
 
-//                System.out.println(v.getCurrentNode().getId());
-                idx += 1;
-            }
+            double r_ij = tm.getTurningProportion();
 
+
+//            // move from all h into i
+//            double inflow = 0;
+//            for (TurningMovement tm2 : getNewFlowVals().keySet()) {
+//                if (!i.equals(tm2.getOutgoingLink())) {
+//                    continue;
+//                } else {
+//                    Link h = tm2.getIncomingLink();
+//                    double y_hi = getNewFlowVals().get(tm2);
+//                    inflow += y_hi * r_ij;
+//                    h.removeFlow(y_hi * r_ij);
+//                }
+//            }
+//
+//            i.addFlow(inflow);
+        }
+
+        // TODO: move flow from entryTurns to demand
+        for (TurningMovement tm : entryTurns) {
+            // entry link
+            // real-link
+            Link entryLink = tm.getIncomingLink();
+            Link l = tm.getOutgoingLink();
+            // move turn_prop * occupancy to next link
+            double out_flow = tm.getTurningProportion() * entryLink.getOccupancy();
+            System.out.println("Entry turn: " + tm);
+            System.out.println("\tturn_prop: " + tm.getTurningProportion() );
+            System.out.println("\td_i: " + entryLink.getOccupancy() );
+            System.out.println("\tout_flow: " + out_flow);
+            l.addFlow(out_flow);
+            entryLink.removeFlow(out_flow);
         }
     }
+
+
+//    public void moveVehicles() {
+////        System.out.println("\tMOVING VEHICLES");
+//        System.out.println("\tID: " + getId());
+////        System.out.println("\tphase: " + getCurrentPhase());
+//        System.out.println("\tflow vals: " + getNewFlowVals());
+//
+////        System.out.println("tms: " + getNewFlowVals().keySet().size());
+//        for (TurningMovement tm : getNewFlowVals().keySet()) {
+////            System.out.println("tm: " + tm);
+////            System.out.println("vehs: " + tm.getVehicles().size());
+//            int x_ij = tm.getVehicles().size();
+//            int y_ij = getNewFlowVals().get(tm);
+//            double turn_prop = tm.getTurningProportion();
+////            System.out.println("x_ij: " + x_ij);
+////            System.out.println("y_ij: " + y_ij);
+//            // ensure that y_ij <= x_ij
+////            if (y_ij.compareTo(x_ij) > 0) {
+////                assert false;
+////            }
+//            assert y_ij <= x_ij;
+//
+//
+//            Link i = tm.getIncomingLink();
+//            Link j = tm.getOutgoingLink();
+//            int idx = 0;
+//            for (Vehicle v : tm.getVehicles()) {
+////                System.out.println(v);
+////                System.out.println(v.getCurrentNode().getId());
+//                if (idx >= y_ij * turn_prop) {
+//                    break;
+//                }
+////                System.out.println(v);
+////                System.out.println(v.getCurrentNode().getId());
+//                Node n = v.moveVehicle();
+//                if (n != null) {
+//                    j.addVehicle(v);
+//                }
+//                i.removeVehicle(v);
+//
+////                System.out.println(v.getCurrentNode().getId());
+//                idx += 1;
+//            }
+//
+//        }
+//    }
 
     @Override
     public String toString() {
