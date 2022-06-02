@@ -25,9 +25,19 @@ public class PointQueue extends Link
     private double entering; // number of vehicles entering this time step
 //    private List<Vehicle> entering_vehs;
 
+    public PointQueue(int id, String type, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
+    {
+        super(id, type, source, dest, length, ffspd, capacityPerLane, numLanes);
+//        vehs = new ArrayList<>();
+//        exiting_vehs = new ArrayList<>();
+//        entering_vehs = new ArrayList<>();
+
+        // reset();
+    }
+
     public PointQueue(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
     {
-        super(id, source, dest, length, ffspd, capacityPerLane, numLanes);
+        super(id, "point-queue", source, dest, length, ffspd, capacityPerLane, numLanes);
 //        vehs = new ArrayList<>();
 //        exiting_vehs = new ArrayList<>();
 //        entering_vehs = new ArrayList<>();

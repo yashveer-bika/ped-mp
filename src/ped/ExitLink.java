@@ -21,7 +21,7 @@ public class ExitLink extends Link
 
     public ExitLink(int id, Node src, Node dummyDest)
     {
-        super(id, src, dummyDest, 0, 0, Integer.MAX_VALUE, 1);
+        super(id, "exit", src, dummyDest, 0, 0, Integer.MAX_VALUE, 1);
         src.setExitLink(this);
 //        queue = new LinkedList<Vehicle>();
 

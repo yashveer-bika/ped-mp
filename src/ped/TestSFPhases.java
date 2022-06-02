@@ -24,7 +24,7 @@ public class TestSFPhases {
     }
 
     public void testVehFeasiblePhases() {
-        // TODO: read for conflictGroundTruth file and make sure we are consistent
+        // TODO: read from conflictGroundTruth file and make sure we are consistent
         System.out.println("\nTESTING : SiouxFalls FEASIBLE VEHICLE PHASES\n");
         for (Intersection i : sf_net_vehs.getIntersectionSet()) {
             int id = i.getId();

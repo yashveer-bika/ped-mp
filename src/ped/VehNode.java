@@ -10,6 +10,12 @@ public class VehNode extends Node {
 //    protected HashSet<Vehicle> outgoingVehicles;
 //    public OldNetwork engine;
 
+
+    public VehNode(int id, String type, double x, double y) {
+        super(id, type, x, y);
+//        vehOutgoing = new HashSet<>();
+//        vehIncoming = new HashSet<>();
+    }
     public VehNode(int id, double x, double y) {
         super(id, x, y);
 //        vehOutgoing = new HashSet<>();

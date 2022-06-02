@@ -18,12 +18,12 @@ public class EntryLink extends Link
     private double occupancy;
 
     public EntryLink() {
-        super(0, null, null, 0, 0, Integer.MAX_VALUE, 1);
+        super(0, "entry", null, null, 0, 0, Integer.MAX_VALUE, 1);
     }
 
     public EntryLink(int id, Node dummySrc, Node dest)
     {
-        super(id, dummySrc, dest, 0, 0, Integer.MAX_VALUE, 1);
+        super(id, "entry", dummySrc, dest, 0, 0, Integer.MAX_VALUE, 1);
         dest.setEntryLink(this);
 //        queue = new LinkedList<Vehicle>();
 

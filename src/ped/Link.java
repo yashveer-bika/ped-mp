@@ -32,6 +32,9 @@ public abstract class Link implements Comparable<Link>
     // stores the upstream and downstream nodes
     private Node source, dest;
 
+    //
+    private String type;
+
     // capacity per lane in veh/hr
     private int capacityPerLane;
 
@@ -76,10 +79,11 @@ public abstract class Link implements Comparable<Link>
      * @param capacityPerLane capacity (per lane) in veh/hr
      * @param numLanes number of lanes
      */
-    public Link(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
+    public Link(int id, String type, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
     {
         // store Link parameters
         this.id = id;
+        this.type = type;
         this.source = source;
         this.dest = dest;
         this.capacityPerLane = capacityPerLane;
@@ -455,5 +459,9 @@ public abstract class Link implements Comparable<Link>
 
     public boolean isCrosswalk() {
         return crosswalk;
+    }
+
+    public String getType() {
+        return type;
     }
 }

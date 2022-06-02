@@ -1,6 +1,8 @@
 package ped;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Map;
 
 public class TestPQ3Conflicts {
@@ -39,6 +41,161 @@ public class TestPQ3Conflicts {
             Node n = pq3_net_peds.getNodes().get(id);
             System.out.format("%-20s %-20s %-20s %n", id, n.getX(), n.getY());
         }
+    }
+
+    public void writeOutPedNetworkData() {
+        System.out.println("\nwriting out fake pedestrian data\n");
+
+        // write out pedNodes
+        try {
+            FileWriter myWriter = new FileWriter(pq3_net_peds.getDataPath() + "nodesWPeds.txt");
+//            myWriter.write("Files in Java might be tricky, but it is fun enough!");
+//            myWriter.close();
+
+            String format = "%s\t%s\t%s\t%s\t%s\t%n";
+            String s = String.format(format, "id",  "type", "longitude", "latitude", "elevation");
+            myWriter.write(s);
+            for (Node n : pq3_net_peds.getNodes().values()) {
+                // assume elevation=0
+                s = String.format(format, n.getId(),  n.getType(), n.getX(), n.getY(), 0);
+                myWriter.write(s);
+//            System.out.println("node: " + n.getId() + n.getType() + n.getX() + n.getY() + "0");
+            }
+
+            myWriter.close();
+
+            System.out.println("Successfully wrote to the pedNodes file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+//        System.out.format("%-20s %-20s %-20s %-20s %-20s %n", "id",  "type", "longitude", "latitude", "elevation");
+//        for (Node n : pq3_net_peds.getPedNodes()) {
+//            // assume elevation=0
+//            System.out.format("%-20s %-20s %-20s %-20s %-20s %n", n.getId(),  n.getType(), n.getX(), n.getY(), 0);
+//
+////            System.out.println("node: " + n.getId() + n.getType() + n.getX() + n.getY() + "0");
+//        }
+
+//        System.out.println("LINKS");
+////        String format = "%-20s %-20s %-20s %-20s %-20s %-20s %-20s %-20s %n";
+//        System.out.format(format, "id",  "type", "source", "dest", "length (mi)", "ffspd (mph)", "capacity(veh/hr)", "num_lanes");
+//        for (Link l : pq3_net_peds.getLinkSet()) {
+//            System.out.format(format, l.getId(),  l.getType(), l.getSource().getId(), l.getDest().getId(), l.getLength(), l.getFFSpeed(), l.getCapacity(), l.getNumLanes());
+//
+////            System.out.println("node: " + n.getId() + n.getType() + n.getX() + n.getY() + "0");
+//        }
+
+        // write out allLinks
+        try {
+            FileWriter myWriter = new FileWriter(pq3_net_peds.getDataPath() + "linksWPeds.txt");
+//            myWriter.write("Files in Java might be tricky, but it is fun enough!");
+//            myWriter.close();
+
+            String format = "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s%n";
+            String s = String.format(format, "id",  "type", "source", "dest", "length (mi)", "ffspd (mph)", "capacity(veh/hr)", "num_lanes");
+            myWriter.write(s);
+            for (Link l : pq3_net_peds.getLinkSet()) {
+                s = String.format(format, l.getId(),  l.getType(), l.getSource().getId(), l.getDest().getId(), l.getLength(), l.getFFSpeed(), l.getCapacity(), l.getNumLanes());
+                myWriter.write(s);
+//            System.out.println("node: " + n.getId() + n.getType() + n.getX() + n.getY() + "0");
+            }
+
+            myWriter.close();
+
+            System.out.println("Successfully wrote to the linksWPeds file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void writeOutPedTurningProportions() {
+        // TODO
+        // assume that the link and node files already exist, with names linksWPeds.txt, nodesWPeds.txt??
+        System.out.println("\nWRITING OUT PED PQ3 TURNING PROPORTIONS\n");
+
+
+        System.out.println("LINKS");
+        for (Link l : pq3_net_peds.getLinkSet()) {
+            System.out.println("\t" + l.getId());
+        }
+
+        try {
+            FileWriter myWriter = new FileWriter(pq3_net_peds.getDataPath() + "pedTurningProportions.txt");
+
+            String format = "%s\t%s\t%s%n";
+            String s = String.format(format, "src",  "dest", "turning proportions");
+            myWriter.write(s);
+
+            double turningProportion;
+            int srcId;
+            int destId;
+            for (Link l1 : pq3_net_peds.getLinkSet()) {
+                Node start = l1.getSource();
+                if ( (l1.getSource() instanceof PedNode || l1.getDest() instanceof PedNode) && !(l1 instanceof ExitLink) ) {
+                    boolean isEntry = (l1 instanceof EntryLink);
+                    Node mid = l1.getDest();
+                    srcId = l1.getId();
+                    double count = 1; // each none- dummy node has an exit link
+
+                    if (isEntry) {
+                        count -= 1;
+                    }
+                    for (Link j : mid.getOutgoingLinks()) {
+                        if (!j.getDest().equals(start)) {
+                            count += 1;
+                        }
+                    }
+
+                    for (Link l2 : pq3_net_peds.getLinkSet()) {
+                        if (l2.getSource() instanceof PedNode || l2.getDest() instanceof PedNode && !(l2 instanceof EntryLink)) {
+                            destId = l2.getId();
+                            // skip u-turns
+                            if (start.equals(l2.getDest())) {
+                                turningProportion = 0;
+                            }
+                            // if the two links connect, set equally spread turning proportions
+                            else if (mid.equals(l2.getSource())) {
+                                turningProportion = 1 / count;
+//                                System.out.println("adding turn prop");
+                            } else {
+                                turningProportion = 0;
+                            }
+
+                            if (srcId == 904666902) {
+                                System.out.println("904666902 outgoing links");
+                                System.out.println("\t" + mid.getOutgoingLinks());
+                            }
+
+                            s = String.format(format, srcId,  destId, turningProportion);
+                            myWriter.write(s);
+                        }
+                    }
+//                    // write out to exit link
+//                    System.out.println("mid ID: " + mid.getId());
+//                    System.out.println("\tcount: " + count);
+//                    destId = mid.getExitLink().getId();
+//                    turningProportion = 1 / count;
+//                    s = String.format(format, srcId,  destId, turningProportion);
+//                    myWriter.write(s);
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        System.out.println("\nFINISHED WRITING OUT PED PQ3 TURNING PROPORTIONS\n");
+    }
+
+    public void writeOutPedDemand() {
+        // TODO
+
     }
 
     public void testV2VConflicts() {

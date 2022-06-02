@@ -28,6 +28,7 @@ public class Node extends Location
     protected int colPosition;
     // protected Location location;
     protected int id;
+    protected String type;
 
     private Set<Link> allLinks;
     private Link exitLink;
@@ -57,6 +58,13 @@ public class Node extends Location
 //        signals = new HashMap<>();
     }
 
+    public Node(int id, String type, double x, double y) {
+        this(id,x,y);
+        this.type = type;
+
+//        signals = new HashMap<>();
+    }
+
     public Node(int id, double x, double y)
     {
         this(x,y);
@@ -71,6 +79,10 @@ public class Node extends Location
         this.rowPosition = row;
         this.colPosition = col;
 
+    }
+
+    public String getType() {
+        return type;
     }
 
     public Link getOutgoingLink(Node rhs) {

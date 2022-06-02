@@ -26,8 +26,19 @@ public class VehIntersection extends VehNode {
     // public Map<ConflictPoint, IloNumVar[]> deltas; // NOTE: some Cplex thing
     // public OldNetwork engine;
 
-    public VehIntersection(int id, double x, double y, Network engine) {
-        super(id, x, y);
+//    public VehIntersection(int id, double x, double y, Network engine) {
+//        super(id, x, y, nodeType);
+//        vehicleTurns = new HashSet<>();
+//        entryTurns = new HashSet<>();
+//        exitTurns = new HashSet<>();
+//        this.engine = engine;
+////        incomingVehLinks = new HashSet<>();
+////        outgoingVehLinks = new HashSet<>();
+////        this.vehLinks = new HashSet<>();
+//    }
+
+    public VehIntersection(int id, String nodeType, double x, double y, Network engine) {
+        super(id, nodeType, x, y);
         vehicleTurns = new HashSet<>();
         entryTurns = new HashSet<>();
         exitTurns = new HashSet<>();

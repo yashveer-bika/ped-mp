@@ -9,6 +9,7 @@ public class Simulator extends Network {
     private double timeStepSize;
     private double toleranceTime; // pedestrian tolerance time
     private boolean ped;
+    private String dataPath;
 //    entrance node, destination node, time, demand_quantity
 //    private Map<Node, Map<Node, Map<Double, Double>>> demand;
 //    entrance node, start time, end time, demand_quantity
@@ -22,6 +23,7 @@ public class Simulator extends Network {
                 ped,
                 controllerType
         );
+        dataPath = path;
 
 
         File nodesFile = new File(path + "nodes.txt");
@@ -41,6 +43,10 @@ public class Simulator extends Network {
         toleranceTime = 0;
         this.ped = ped;
         this.static_demand = new HashMap<>();
+    }
+
+    public String getDataPath() {
+        return dataPath;
     }
 
     public void loadStaticDemand(File demandFile) {

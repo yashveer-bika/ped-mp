@@ -235,13 +235,13 @@ public class Network {
                 double elevation = Double.parseDouble(node_data[4]);
 
                 if (nodeType.equals("dummy") || nodeType.equals("1000")) {
-                    node = new Node(nodeId, longitude, latitude);
+                    node = new Node(nodeId, "dummy", longitude, latitude);
                     nodes.put(nodeId, node);
 
                 } else {
                     // make node
 
-                    node = new VehIntersection(nodeId, longitude, latitude, this);
+                    node = new VehIntersection(nodeId, nodeType, longitude, latitude, this);
 
                     // set up entry link for the new node
                     // EntryLink(int id, Node source, Node dest)
@@ -502,12 +502,12 @@ public class Network {
 //                    }
                 }
                 Location loc1 = vehIntLoc.spawnNewLocation(distanceFromVehLink,  angle + Math.PI / 2);
-                PedNode pednode1 = new PedNode(loc1);
+                PedNode pednode1 = new PedNode("mid-sidewalk", loc1);
                 this.pedNodeRoads.put(pednode1, new HashSet<>(Arrays.asList(singleLink)));
                 this.pedNodesRoadAngles.put(pednode1, new HashSet<>(Arrays.asList(angle)));
 
                 Location loc2 = vehIntLoc.spawnNewLocation(distanceFromVehLink,  angle - Math.PI / 2);
-                PedNode pednode2 = new PedNode(loc2);
+                PedNode pednode2 = new PedNode("mid-sidewalk", loc2);
                 this.pedNodeRoads.put(pednode2, new HashSet<>(Arrays.asList(singleLink)));
                 this.pedNodesRoadAngles.put(pednode2, new HashSet<>(Arrays.asList(angle)));
 
@@ -548,9 +548,9 @@ public class Network {
                 double angle1 = (two_angles_l.get(1) + two_angles_l.get(0))/2;
                 double angle2 = angle1 + Math.PI;
                 Location loc1 = vehIntLoc.spawnNewLocation(distanceFromVehLink, angle1);
-                PedNode ped1 = new PedNode(loc1);
+                PedNode ped1 = new PedNode("mid-sidewalk", loc1);
                 Location loc2 = vehIntLoc.spawnNewLocation(distanceFromVehLink, angle2);
-                PedNode ped2 = new PedNode(loc2);
+                PedNode ped2 = new PedNode("mid-sidewalk", loc2);
 
                 this.pedNodeRoads.put(ped1, new HashSet<Link>(two_links));
                 this.pedNodeRoads.put(ped2, new HashSet<Link>(two_links));
@@ -657,29 +657,38 @@ public class Network {
                     int numLanes = 0;
                     // TODO: make sure the id gen for sidewalks is easy to deal with
                     int id = Integer.parseInt(ped1.getId() + "666" + ped2.getId());
-                    Link sidewalk = new PointQueue(id, ped1, ped2, length, ffspd, capacityPerLane, numLanes);
+                    Link sidewalk = new PointQueue(id, "sidewalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
                     id = Integer.parseInt(ped2.getId() + "666" + ped1.getId());
-                    Link sidewalk_ = new PointQueue(id, ped2, ped1, length, ffspd, capacityPerLane, numLanes);
+                    Link sidewalk_ = new PointQueue(id, "sidewalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                     sidewalk.setSidewalk(true);
                     sidewalk_.setSidewalk(true);
                     // TODO: tell the code this is a sidewalk
 
                     this.linkSet.add(sidewalk);
                     this.linkSet.add(sidewalk_);
-                    // System.out.println("\tPed Int list: " + pedIntList);
+                    System.out.println("\tCurrent node: " + vehInt.getId());
+                    System.out.println("\tPed Int list: " + pedIntList);
 
                     // make crosswalks
                     for (int j = 0; j < pedIntList.size() - 2 ; j++) {
                         // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
                         // TODO: update the parameters id, length, ffspd, ..., correctly
-                        id = 0;
-                        length = 0;
+                        ped1 = pedIntList.get(j);
+                        ped2 = pedIntList.get(j+1);
                         ffspd = 0;
                         capacityPerLane = 0;
-                        numLanes = 0;
-
-                        Link cross1 = new PointQueue(id, pedIntList.get(j), pedIntList.get(j+1), length, ffspd, capacityPerLane, numLanes);
-                        Link cross2 = new PointQueue(id, pedIntList.get(j+1), pedIntList.get(j), length, ffspd, capacityPerLane, numLanes);
+                        numLanes = 1;
+                        length = ped1.euclideanDist(ped2);
+                        
+                        if (ped1.getId() == 902) {
+                            System.out.println("oonga : " + 902);
+                            System.out.println("\t" + ped2.getId());
+                        }
+                        
+                        id = Integer.parseInt(ped1.getId() + "777" + ped2.getId());
+                        Link cross1 = new PointQueue(id, "crosswalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
+                        id = Integer.parseInt(ped2.getId() + "777" + ped1.getId());
+                        Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                         cross1.setCrosswalk(true);
                         cross2.setCrosswalk(true);
                         crosswalks.add(new Crosswalk(cross1, cross2));
@@ -687,8 +696,22 @@ public class Network {
                         this.linkSet.add(cross1);
                         this.linkSet.add(cross2);
                     }
-                    Link cross1 = new PointQueue(id, pedIntList.get(0), pedIntList.get(pedIntList.size() - 1), length, ffspd, capacityPerLane, numLanes);
-                    Link cross2 = new PointQueue(id, pedIntList.get(pedIntList.size() - 1), pedIntList.get(0), length, ffspd, capacityPerLane, numLanes);
+                    ped1 = pedIntList.get(0);
+                    ped2 = pedIntList.get(pedIntList.size() - 1);
+                    ffspd = 0;
+                    capacityPerLane = 0;
+                    numLanes = 1;
+                    length = ped1.euclideanDist(ped2);
+
+                    if (ped1.getId() == 902) {
+                        System.out.println("oonga : " + 902);
+                        System.out.println("\t" + ped2.getId());
+                    }
+
+                    id = Integer.parseInt(ped1.getId() + "777" + ped2.getId());
+                    Link cross1 = new PointQueue(id, "crosswalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
+                    id = Integer.parseInt(ped2.getId() + "777" + ped1.getId());
+                    Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                     cross1.setCrosswalk(true);
                     cross2.setCrosswalk(true);
                     crosswalks.add(new Crosswalk(cross1, cross2));
@@ -725,38 +748,71 @@ public class Network {
                     pedIntList.add(pedIntTmp);
                     pedNodes.add(pedIntTmp);
 
+                    System.out.println("\tCurrent node: " + vehInt.getId());
+                    System.out.println("\tPed Int list: " + pedIntList);
+
+                    PedNode ped1;
+                    PedNode ped2;
+                    double ffspd;
+                    int capacityPerLane;
+                    int numLanes;
+                    double length;
+                    int id;
                     // make crosswalks
-                    for (int j = 0; j < pedIntList.size() - 1 ; j++) {
-                        // TODO: change parameters
-                        int id = 0;
-                        int length = 0;
-                        int ffspd = 0;
-                        int capacityPerLane = 0;
-                        int numLanes = 0;
-                        Link cross1 = new PointQueue(id, pedIntList.get(j), pedIntList.get(j+1), length, ffspd, capacityPerLane, numLanes);
-                        Link cross2 = new PointQueue(id, pedIntList.get(j+1), pedIntList.get(j), length, ffspd, capacityPerLane, numLanes);
+                    for (int j = 0; j < pedIntList.size() - 2 ; j++) {
+                        // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
+                        // TODO: update the parameters id, length, ffspd, ..., correctly
+                        ped1 = pedIntList.get(j);
+                        ped2 = pedIntList.get(j+1);
+                        ffspd = 0;
+                        capacityPerLane = 0;
+                        numLanes = 1;
+                        length = ped1.euclideanDist(ped2);
+
+                        if (vehInt.getId() == 2) {
+                            System.out.println("Intersection 2 crosswalk");
+                            System.out.println("\tneighboring ped ints: " + pedIntList);
+                            System.out.println("\t" + ped1);
+                            System.out.println("\t" + ped2);
+                        }
+
+                        id = Integer.parseInt(ped1.getId() + "777" + ped2.getId());
+                        Link cross1 = new PointQueue(id, "crosswalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
+                        id = Integer.parseInt(ped2.getId() + "777" + ped1.getId());
+                        Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                         cross1.setCrosswalk(true);
                         cross2.setCrosswalk(true);
-
                         crosswalks.add(new Crosswalk(cross1, cross2));
                         crosswalk_count += 1;
                         this.linkSet.add(cross1);
                         this.linkSet.add(cross2);
                     }
-                    // TODO: change parameters
-                    int id = 0;
-                    int length = 0;
-                    int ffspd = 0;
-                    int capacityPerLane = 0;
-                    int numLanes = 0;
-                    Link cross1 = new PointQueue(id, pedIntList.get(0), pedIntList.get(pedIntList.size() - 1), length, ffspd, capacityPerLane, numLanes);
-                    Link cross2 = new PointQueue(id, pedIntList.get(pedIntList.size() - 1), pedIntList.get(0), length, ffspd, capacityPerLane, numLanes);
+                    ped1 = pedIntList.get(0);
+                    ped2 = pedIntList.get(pedIntList.size() - 1);
+                    ffspd = 0;
+                    capacityPerLane = 0;
+                    numLanes = 1;
+                    length = ped1.euclideanDist(ped2);
+
+                    if (vehInt.getId() == 2) {
+                        System.out.println("Intersection 2 crosswalk");
+                        System.out.println("\tneighboring ped ints: " + pedIntList);
+                        System.out.println("\t" + ped1);
+                        System.out.println("\t" + ped2);
+                    }
+
+                    id = Integer.parseInt(ped1.getId() + "777" + ped2.getId());
+                    Link cross1 = new PointQueue(id, "crosswalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
+                    id = Integer.parseInt(ped2.getId() + "777" + ped1.getId());
+                    Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                     cross1.setCrosswalk(true);
                     cross2.setCrosswalk(true);
                     crosswalks.add(new Crosswalk(cross1, cross2));
                     crosswalk_count += 1;
                     this.linkSet.add(cross1);
                     this.linkSet.add(cross2);
+
+
                 }
 
 
@@ -780,18 +836,29 @@ public class Network {
 
         }
 
+        Set<PedNode> dummyPeds = new HashSet<>();
         // TODO: make test pedestrian node, link, and demand data
-//        // add entry links for every pedNode
-//        for (Node ped_i : this.pedNodes) {
-//            // TODO: set entry link id
-//            // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes
-//            int id = 0;
-//            new EntryLink(id, ped_i);
-//        }
+        // add entry links for every pedNode
+        int id;
+        for (Node dest : this.pedNodes) {
+            // TODO: set entry link id
+            // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes
+            // create dummy source
+            int dummyId = 9000 + dest.getId();
+            PedNode dummySrc = new PedNode(dummyId, "dummy", dest);
+            dummyPeds.add(dummySrc);
+            // TODO: do I need to add dummySrc to pedNodes??
+            id = Integer.parseInt(dummySrc.getId() + "" + dest.getId());
+            linkSet.add(new EntryLink(id, dummySrc, dest));
+            id = Integer.parseInt( dest.getId() + "" + dummySrc.getId());
+            linkSet.add(new ExitLink(id, dest, dummySrc));
+        }
+
+
+        this.pedNodes.addAll(dummyPeds);
 
         for (Node n : pedNodes) {
             nodes.put(n.getId(), n);
-
         }
 //        System.out.println("# of crosswalks: " + crosswalk_count);
     }
@@ -1100,12 +1167,12 @@ public class Network {
                     }
                     //  Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
                     // TODO: make correct parameters
-                    int id = 0;
-                    double length = 0;
+                    int id = Integer.parseInt(srcPed.getId() + "666" + nearestDest.getId());
+                    double length = srcPed.euclideanDist(nearestDest);
                     double ffspd = 0;
                     int capacityPerLane = Integer.MAX_VALUE;
                     int numLanes = 0;
-                    Link side_walk = new PointQueue(id, srcPed, nearestDest, length, ffspd, capacityPerLane, numLanes);
+                    Link side_walk = new PointQueue(id, "sidewalk", srcPed, nearestDest, length, ffspd, capacityPerLane, numLanes);
                     side_walk.setSidewalk(true);
                     System.out.println("\t\tNEW SIDEWALK MADE: " + side_walk);
                     this.linkSet.add(side_walk);

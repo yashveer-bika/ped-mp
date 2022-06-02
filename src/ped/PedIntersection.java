@@ -14,7 +14,7 @@ public class PedIntersection extends PedNode {
 //    private Map<Link, List<Pedestrian>> pedestrians;
 
     public PedIntersection(double x, double y) {
-        super(x, y);
+        super("pedInt", x, y);
         this.id = curr_id++;
         pedestrianTurns = new HashSet<>();
     }
