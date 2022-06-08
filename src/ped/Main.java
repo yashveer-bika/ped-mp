@@ -88,8 +88,12 @@ public class Main
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
 
-        String path = "data/SiouxFalls/";
-        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
-        siouxFallsVehOnly.runSim();
+//        String path = "data/SiouxFalls/";
+//        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
+//        siouxFallsVehOnly.runSim();
+
+//        String path = "data/SiouxFalls/";
+//        Simulator siouxFallsPeds = new Simulator(path, true, "vehMP", Params.demandScaleFactor);
+//        siouxFallsPeds.runSim();
     }
 }

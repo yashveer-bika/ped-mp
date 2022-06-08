@@ -546,6 +546,7 @@ public class Network {
 
 //                    }
                 }
+                System.out.println("");
                 assert two_angles.size() == 2;
                 List<Double> two_angles_l = new ArrayList<>(two_angles);
                 Collections.sort(two_angles_l);
@@ -847,7 +848,6 @@ public class Network {
         // add entry links for every pedNode
         int id;
         for (Node dest : this.pedNodes) {
-            // TODO: set entry link id
             // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes
             // create dummy source
             int dummyId = 9000 + dest.getId();
@@ -859,7 +859,6 @@ public class Network {
             id = Integer.parseInt( dest.getId() + "" + dummySrc.getId());
             linkSet.add(new ExitLink(id, dest, dummySrc));
         }
-
 
         this.pedNodes.addAll(dummyPeds);
 
