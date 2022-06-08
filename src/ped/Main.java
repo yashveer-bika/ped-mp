@@ -92,8 +92,8 @@ public class Main
 //        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
 //        siouxFallsVehOnly.runSim();
 
-//        String path = "data/SiouxFalls/";
-//        Simulator siouxFallsPeds = new Simulator(path, true, "vehMP", Params.demandScaleFactor);
-//        siouxFallsPeds.runSim();
+        String path = "data/SiouxFalls/";
+        Simulator siouxFallsPeds = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
+        siouxFallsPeds.runSim();
     }
 }

@@ -1,11 +1,10 @@
 package ped;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 public class Simulator extends Network {
-    private double simTime; // total network time (time in simulation)
+//    private double simTime; // total network time (time in simulation)
     private double timeStepSize;
     private double toleranceTime; // pedestrian tolerance time
     private boolean ped;
@@ -59,7 +58,6 @@ public class Simulator extends Network {
 
     public Simulator(File nodesFile, File linksFile, File turnPropsFile, boolean ped, String controllerType) {
         super(nodesFile, linksFile, turnPropsFile, ped, controllerType);
-        simTime = 0;
         timeStepSize = 0;
         toleranceTime = 0;
         this.ped = ped;
@@ -230,12 +228,33 @@ public class Simulator extends Network {
 
     public void runSim() {
         //
+        PrintStream ps_console = System.out;
+
+        try {
+            System.setOut(new PrintStream(new File(Params.sim_output_filepath)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("STARTING NEW SIM");
+
+
         long startTime = System.nanoTime();
 
-        while (simTime <= Params.DURATION) {
+        while (Params.time <= Params.DURATION) {
+            calculateTT();
 
-            System.out.println("Sim Time: " + simTime);
-            System.out.println("\t avg occupancy : " + getAvgOccupancy());
+//                myWriter.write("Sim Time: " + Params.time);
+//                myWriter.write("\t network-level occupancy : " + getOccupancy());
+//                myWriter.write("\t avg link tt : " + getAvgLinkTravelTime());
+//                myWriter.write("\t avg delay : " + getAvgDelay());
+
+
+            System.out.println("Sim Time: " + Params.time);
+            System.out.println("\t network-level occupancy: " + getOccupancy());
+            System.out.println("\t avg link tt: " + getAvgLinkTravelTime());
+            System.out.println("\t avg delay: " + getAvgDelay());
+
             addVehicleDemand(static_demand, Params.dt);
 
 //            // print links
@@ -250,35 +269,88 @@ public class Simulator extends Network {
 
         System.out.println("\truntime: " + elapsedTime);
         System.out.println("\truntime / iteration: " + (elapsedTime / Params.n_steps * Math.pow(10, -9)));
+
+
+        System.setOut(ps_console);
+        System.out.println("Console again !!");
     }
 
+
+    public double getAvgDelay() {
+
+        double sumOfAvgDelay = 0.0;
+        int count = 0;
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            else {
+                count++;
+                sumOfAvgDelay += l.getAvgDelay();
+            }
+        }
+        return sumOfAvgDelay / count;
+    }
+
+    public void calculateTT() {
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            } else {
+                l.logOccupancyTime();
+            }
+        }
+
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            } else {
+                l.calculateTravelTime();
+            }
+        }
+    }
+
+    public double getAvgLinkTravelTime() {
+
+        double sumOfAvgLinkTTs = 0.0;
+        int count = 0;
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            else {
+                count++;
+                sumOfAvgLinkTTs += l.getAvgTT();
+            }
+        }
+        return sumOfAvgLinkTTs / count;
+    }
 
     public void updateTime() {
         // send the time update to the Network components
         // turningMovement
         // controller
 
-        simTime += Params.dt;
+//        simTime += Params.dt;
+        Params.time += Params.dt;
 
         for (Intersection intersection : this.getIntersectionSet()) {
-            intersection.updateTime(simTime);
+            intersection.updateTime(Params.time);
         }
 
     }
 
 
-    public double getAvgOccupancy() {
+    public double getOccupancy() {
         double totalOccupancy = 0;
-        int count = 0;
         for (Link l : getLinkSet()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;
             }
-            count += 1;
             totalOccupancy += l.getOccupancy();
 
         }
-        return totalOccupancy / count;
+        return totalOccupancy;
     }
 }
 

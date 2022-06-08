@@ -78,26 +78,7 @@ public class TurningMovement {
 
     // NOTE: THIS ONLY (supposedly) WORKS FOR VEHICLES RN
     public double getWeight() {
-//        System.out.println("\t Getting weight");
-        double weight = getQueueLength();
-//        System.out.println("dest: " + getOutgoingLink().getDest());
-        if (!(getOutgoingLink().getDest() instanceof VehIntersection)) {
-            return weight;
-        }
-        VehIntersection neigh = (VehIntersection) getOutgoingLink().getDest();
-        Set<TurningMovement> nextTurns = neigh.getVehicleTurns();
-//        System.out.println("\t\t downstream turns: " + nextTurns);
-        for (TurningMovement nextTurn : nextTurns) {
-            if (nextTurn.getIncomingLink().equals(j)) {
-                TurningMovement downstream_turn = nextTurn;
-                weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
-            }
-//            System.out.println("\tweight: " + weight);
-//            System.out.println("\tdownstream_turn.getTurningProportion(): " + downstream_turn.getTurningProportion());
-//            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
-        }
-//        System.out.println("\tweight: " + weight);
-        return weight;
+        return i.getPressure(j, getTurningProportion());
     }
 
 
@@ -377,25 +358,7 @@ public class TurningMovement {
     }
 
     public double getQueueLength() {
-        // TODO: implement
-//        // let a turning movement be seen as three nodes (n1,n2,n3)
-//        // number of vehicles on link i who want will go to link j
-//        int ql = 0;
-////        System.out.println(getIncomingLink().getVehs());
-//        for (Vehicle v : getIncomingLink().getVehs()) {
-//            Node n2 = v.getNextNode(1);
-//            Node n3 = v.getNextNode(2);
-//            if (n2 != null && n3 != null) {
-//                ql++;
-//            }
-//        }
-//
-//        return ql;
-//        return getVehicles().size();
-
-//        return queueLength;
         return i.getSendingFlow() * getTurningProportion();
-//        return i.getOccupancy();
     }
 
 //    public void addToQueue(Vehicle v) {

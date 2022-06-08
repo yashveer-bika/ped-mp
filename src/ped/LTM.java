@@ -16,8 +16,8 @@ import java.util.List;
 
 /**
  * This class propagates flow according to the link transmission model.
- *
- * @author
+ * TODO: update this correctly
+ * @author Te Xu
  */
 public class LTM extends Link
 {
@@ -173,6 +173,12 @@ public class LTM extends Link
         // fill this in
         yin += y;
         logEnteringFlow(y);
+    }
+
+    // TODO: update this
+    @Override
+    public double getPressure(Link downstreamLink, double turningProportion) {
+        return 0;
     }
 
     public void removeFlow(double y) // flow from all outgoing links

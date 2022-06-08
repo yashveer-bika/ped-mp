@@ -23,12 +23,13 @@ public class Params
     /**
      * This is the time step, in seconds
      */
-    public final static double dt = 15;
+    public final static int dt = 15;
 
     /**
      * This is the current time in the network. It is updated when {@link Network#nextTimestep()} is called.
      */
     public static int time = 0;
+    // TODO: update time each timestep in the simulation
 
     /**
      * This is the pedestrian tolerance time in the simulation, in seconds
@@ -36,17 +37,24 @@ public class Params
     public final static int tolerance_time = 60;
 
 
-    public final static int n_steps = 25;
-
 
     /**
      * this is the end time of the simulation, in s. The maximum number of time steps is {@link #DURATION}/{@link #dt}.
      */
-    public final static double DURATION = dt * n_steps;
+    public final static int DURATION = 60*60*3;
+
+
+
+    public final static int n_steps = DURATION / dt;
+
+
+
+    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s.txt", demandScaleFactor, DURATION, dt);
+
 
     public final static String cplex_out_filepath = "cplex_out.txt";
 
-    public final static String avg_occupancy_out_filepath = String.format("avg_occupancy_ts=%s.txt");
+    // public final static String avg_occupancy_out_filepath = String.format("avg_occupancy_ts=%s.txt");
 
     /**
      * The exogenous jam density.

@@ -63,6 +63,7 @@ public abstract class Link implements Comparable<Link>
     private boolean sidewalk = false;
     private boolean crosswalk = false;
 
+    // TODO: make simTime reachable here
 
 
     /**
@@ -245,6 +246,8 @@ public abstract class Link implements Comparable<Link>
     public abstract void addFlow(double y);
 
 
+    public abstract double getPressure(Link downstreamLink, double turningProportion);
+
     /**
      * This is used to track the total number of vehicles entering this Link.
      * The number of vehicles is used to calculate the average travel time.
@@ -257,15 +260,19 @@ public abstract class Link implements Comparable<Link>
     }
 
 
-//    // TODO: update once I understand the purpose
-//    /**
-//     * This method is used to calculate the average travel time.
-//     * It should be called once per time step by the {@Link dnl.Network} class.
-//     */
-//    public void logOccupancyTime()
-//    {
-//        total_time_occ += Params.dt * getOccupancy();
-//    }
+    // TODO: update once I understand the purpose
+    /**
+     * This method is used to calculate the average travel time.
+     * It should be called once per time step by the {@Link dnl.Network} class.
+     */
+    public void logOccupancyTime()
+    {
+        total_time_occ += Params.dt * getOccupancy();
+    }
+
+    public double getAvgDelay() {
+        return getAvgTT() - getFFTime();
+    }
 
     /**
      * This method is used to calculate the total travel time at the end of the dynamic network loading.
@@ -368,16 +375,6 @@ public abstract class Link implements Comparable<Link>
     public boolean isSidewalk() {
         return sidewalk;
     }
-
-//    public double getTravelTime()
-//    {
-//        // fill this in
-//        double t_ij = 0;
-//
-//        t_ij = ffspd * (1 + alpha * Math.pow(xf/capacityPerLane, beta));
-//
-//        return t_ij;
-//    }
 
 //    public List<Vehicle> getVehs() {
 //        return vehs;

@@ -88,6 +88,11 @@ public class ExitLink extends Link
         occupancy += y;
     }
 
+    @Override
+    public double getPressure(Link downstreamLink, double turningProportion) {
+        return 0;
+    }
+
     public void removeFlow(double y)
     {
         occupancy -= y;

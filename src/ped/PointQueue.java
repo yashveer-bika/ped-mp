@@ -8,6 +8,7 @@ package ped;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class propagates flow according to the point queue model (no spatial constraints).
@@ -125,7 +126,7 @@ public class PointQueue extends Link
     {
         entering += y;
 //        n += y;
-        // logEnteringFlow(y);
+         logEnteringFlow(y);
     }
 
     public void removeFlow(double y)
@@ -158,4 +159,31 @@ public class PointQueue extends Link
 //    }
 
 
+    public double getQueueLength(double turningProportion) {
+        return getSendingFlow() * turningProportion;
+    }
+
+    @Override
+    public double getPressure(Link downstreamLink, double turningProportion) {
+        //        System.out.println("\t Getting weight");
+        double weight = getQueueLength(turningProportion);
+//        System.out.println("dest: " + getOutgoingLink().getDest());
+        if (!(downstreamLink.getDest() instanceof VehIntersection)) {
+            return weight;
+        }
+        VehIntersection neigh = (VehIntersection) downstreamLink.getDest();
+        Set<TurningMovement> nextTurns = neigh.getVehicleTurns();
+//        System.out.println("\t\t downstream turns: " + nextTurns);
+        for (TurningMovement nextTurn : nextTurns) {
+            if (nextTurn.getIncomingLink().equals(downstreamLink)) {
+                TurningMovement downstream_turn = nextTurn;
+                weight -= downstream_turn.getTurningProportion() * downstream_turn.getQueueLength() ;
+            }
+//            System.out.println("\tweight: " + weight);
+//            System.out.println("\tdownstream_turn.getTurningProportion(): " + downstream_turn.getTurningProportion());
+//            System.out.println("\tdownstream_turn.getQueueLength(): " + downstream_turn.getQueueLength());
+        }
+//        System.out.println("\tweight: " + weight);
+        return weight;
+    }
 }

@@ -367,12 +367,10 @@ public class Network {
 //                    startNode.setExitLink(link);
                 }
                 else if (type.equals("point-queue") || type.equals("201")) {
-                    // TODO: make code consistently use Params.dt everyhwere instead of my simulator timestep
                     link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
                 }
 
                 else if (type.equals("LTM")) {
-                    // TODO: make code consistently use Params.dt everyhwere instead of my simulator timestep
                     link = new LTM(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
                 }
 
@@ -478,13 +476,8 @@ public class Network {
             vehLinks.addAll(vehLinkAngles.keySet());
 
             // get the neighbors
-            Set<Node> neighs = new HashSet<>();
-            for (Link l : vehInt.getIncomingLinks()) {
-                neighs.add( l.getSource() );
-            }
-            for (Link l : vehInt.getOutgoingLinks()) {
-                neighs.add( l.getDest() );
-            }
+            Set<Node> neighs = vehInt.getNeighbors();
+
             int num_forks = neighs.size();
 
             // based on the num_forks (forks),
@@ -533,20 +526,21 @@ public class Network {
                 double tempAngle; //
                 for (Link l : vehInt.getIncomingLinks()) {
 //                    if (!l.isEntry()) {
-                        tempAngle = (l.getAngle() + Math.PI);
+                        tempAngle = Angle.bound(l.getAngle() + Math.PI);
                         two_angles.add(tempAngle);
                         two_links.add(l);
 //                    }
                 }
                 for (Link l : vehInt.getOutgoingLinks()) {
 //                    if (!l.isEntry()) {
-                        tempAngle = l.getAngle();
+                        tempAngle = Angle.bound( l.getAngle() );
                         two_angles.add(tempAngle);
                         two_links.add(l);
 
 //                    }
                 }
-                System.out.println("");
+                System.out.println("veh int id: " + key);
+                System.out.println("two_angles: " + two_angles);
                 assert two_angles.size() == 2;
                 List<Double> two_angles_l = new ArrayList<>(two_angles);
                 Collections.sort(two_angles_l);
