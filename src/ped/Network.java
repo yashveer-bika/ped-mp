@@ -344,7 +344,7 @@ public class Network {
                 double length = Double.parseDouble(link_data[4]);
                 double ffspd = Double.parseDouble(link_data[5]);
 
-                int capacityPerLane = Integer.parseInt(link_data[6]);
+                double capacityPerLane = Integer.parseInt(link_data[6]);
 
                 int numLanes = Integer.parseInt(link_data[7]);
 
@@ -360,14 +360,20 @@ public class Network {
                     link = new EntryLink(id, startNode, endNode);
 //                    endNode.setEntryLink(link);
                 }
-                if (type.equals("2000")) {
+                else if (type.equals("2000")) {
                     capacityPerLane = Integer.MAX_VALUE;
                     numLanes = 1;
                     link = new ExitLink(id, startNode, endNode);
 //                    startNode.setExitLink(link);
                 }
-                if (type.equals("point-queue") || type.equals("201")) {
-                    link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane, numLanes);
+                else if (type.equals("point-queue") || type.equals("201")) {
+                    // TODO: make code consistently use Params.dt everyhwere instead of my simulator timestep
+                    link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
+                }
+
+                else if (type.equals("LTM")) {
+                    // TODO: make code consistently use Params.dt everyhwere instead of my simulator timestep
+                    link = new LTM(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
                 }
 
 

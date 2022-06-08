@@ -906,14 +906,17 @@ public class Intersection {
         return newFlowVals;
     }
 
+
+    // TODO: MAYBE CHANGE SO IT WORKS WITH LTM
+    // TODO: TE MAY NEED TO CHANGE THIS FOR LTM, OR WE FIND A LINK AGNOSTIC APPROACH??
     public void moveFlow() {
 
-        System.out.println("VEHICLE TURNS: " + vehicleTurns);
+//        System.out.println("VEHICLE TURNS: " + vehicleTurns);
 
 //        System.out.println("\tMOVING VEHICLES");
-        System.out.println("\tID: " + getId());
+//        System.out.println("\tID: " + getId());
 //        System.out.println("\tphase: " + getCurrentPhase());
-        System.out.println("\tflow vals: " + getNewFlowVals());
+//        System.out.println("\tflow vals: " + getNewFlowVals());
 
 //        System.out.println("tms: " + getNewFlowVals().keySet().size());
         for (TurningMovement tm : getNewFlowVals().keySet()) {
@@ -962,11 +965,11 @@ public class Intersection {
             Link entryLink = tm.getIncomingLink();
             Link l = tm.getOutgoingLink();
             // move turn_prop * occupancy to next link
-            double out_flow = tm.getTurningProportion() * entryLink.getOccupancy();
-            System.out.println("Entry turn: " + tm);
-            System.out.println("\tturn_prop: " + tm.getTurningProportion() );
-            System.out.println("\td_i: " + entryLink.getOccupancy() );
-            System.out.println("\tout_flow: " + out_flow);
+            double out_flow = tm.getTurningProportion() * entryLink.getSendingFlow();
+//            System.out.println("Entry turn: " + tm);
+//            System.out.println("\tturn_prop: " + tm.getTurningProportion() );
+//            System.out.println("\td_i: " + entryLink.getOccupancy() );
+//            System.out.println("\tout_flow: " + out_flow);
             l.addFlow(out_flow);
             entryLink.removeFlow(out_flow);
         }

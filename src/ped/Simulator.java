@@ -15,6 +15,27 @@ public class Simulator extends Network {
 //    entrance node, start time, end time, demand_quantity
     private Map<Node, Map<Node, Double>> static_demand;
 
+    public Simulator(String path, boolean ped, String controllerType, double demandScaleFactor) {
+        this(
+                new File(path + "nodes.txt"),
+                new File(path + "links.txt"),
+                new File(path + "turning_proportions.txt"),
+                ped,
+                controllerType
+        );
+        dataPath = path;
+
+
+        File nodesFile = new File(path + "nodes.txt");
+        File linksFile = new File(path + "links.txt");
+        File demand_file = new File(path + "trips_static_od_demand.txt");
+        File turn_props_file = new File(path + "turning_proportions.txt");
+
+        loadStaticDemand(demand_file, demandScaleFactor);
+
+
+    }
+
     public Simulator(String path, boolean ped, String controllerType) {
         this(
                 new File(path + "nodes.txt"),
@@ -49,7 +70,8 @@ public class Simulator extends Network {
         return dataPath;
     }
 
-    public void loadStaticDemand(File demandFile) {
+
+    public void loadStaticDemand(File demandFile, double demandScaleFactor) {
         try {
             String[] header = {};
             Scanner myReader = new Scanner(demandFile);
@@ -102,7 +124,8 @@ public class Simulator extends Network {
 //                System.out.println(demand_data[0]);
                 int origin_id = Integer.parseInt(demand_data[0]);
                 int dest_id = Integer.parseInt(demand_data[1]);
-                double demand = Double.parseDouble(demand_data[2]); // assume vehicles / hour
+                double demand = Double.parseDouble(demand_data[2]) * demandScaleFactor; // assume vehicles / hour
+                demand = demand * Params.dt / 3600; // converts from vehs / hr to vehs / timestep
 
                 Node src = getNode(origin_id);
                 Node dest = getNode(dest_id);
@@ -117,6 +140,11 @@ public class Simulator extends Network {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
+
+
+    public void loadStaticDemand(File demandFile) {
+        loadStaticDemand(demandFile, 1.0);
     }
 
 
@@ -139,12 +167,12 @@ public class Simulator extends Network {
             for (Node src : static_demand.keySet()) {
                 for (Node dest : static_demand.get(src).keySet()) {
                     // TODO: verify the units of num_vehs
-                    Double num_vehs = static_demand.get(src).get(dest); // in vehs / hr
-                    num_vehs = num_vehs * timeStepSize / 60 / 60;
+                    Double num_vehs = static_demand.get(src).get(dest);
 //                    for (int i = 0; i < num_vehs; i++) {
 //                        createVehicle(src, dest);
 //                    }
                     // TODO: test the line below
+                    // THIS SEEMS CONSISTENT WITH MICHA
                     src.getEntryLink().addFlow(num_vehs);
                 }
             }
@@ -183,13 +211,13 @@ public class Simulator extends Network {
     // run controller on each intersection in this network
     // this means we calculate the best phase [set of (s_ij)'s] and flow values [(y_ij)'s]
     public void runController() {
-        System.out.println("Running controller on simulator level");
+//        System.out.println("Running controller on simulator level");
         for (Intersection i : getIntersectionSet()) {
-            System.out.println("Running controller on intersection " + i.getId());
+//            System.out.println("Running controller on intersection " + i.getId());
             i.runController();
         }
         for (Intersection i : getIntersectionSet()) {
-            System.out.println("Moving vehicles on intersection " + i.getId());
+//            System.out.println("Moving vehicles on intersection " + i.getId());
             // TODO: move vehicles based on flow calculation
              i.moveFlow();
         }
@@ -197,24 +225,31 @@ public class Simulator extends Network {
             // in point queue, we move the entering flow into n, and the exiting flow out of n at each link
             l.update();
         }
+        // goal, l.step(), then l.update()
     }
 
-    public void runSim(double timeStepSize, double totalRunTime, double toleranceTime) {
-        this.toleranceTime = toleranceTime;
-        this.timeStepSize = timeStepSize;
+    public void runSim() {
+        //
+        long startTime = System.nanoTime();
 
-        while (simTime <= totalRunTime) {
+        while (simTime <= Params.DURATION) {
+
             System.out.println("Sim Time: " + simTime);
-            addVehicleDemand(static_demand, timeStepSize);
-            // print links
-            for (Link l : getLinkSet()) {
-                System.out.println("Link ID: " + l.getId() + ", vehsOnLink: " + l.getOccupancy());
-            }
-            // load demand onto links
+            System.out.println("\t avg occupancy : " + getAvgOccupancy());
+            addVehicleDemand(static_demand, Params.dt);
+
+//            // print links
+//            for (Link l : getLinkSet()) {
+//                System.out.println("Link ID: " + l.getId() + ", vehsOnLink: " + l.getOccupancy());
+//            }
             runController();
             updateTime();
-            System.out.println();
         }
+        long endTime = System.nanoTime();
+        long elapsedTime = (endTime-startTime);
+
+        System.out.println("\truntime: " + elapsedTime);
+        System.out.println("\truntime / iteration: " + (elapsedTime / Params.n_steps * Math.pow(10, -9)));
     }
 
 
@@ -223,12 +258,27 @@ public class Simulator extends Network {
         // turningMovement
         // controller
 
-        simTime += timeStepSize;
+        simTime += Params.dt;
 
         for (Intersection intersection : this.getIntersectionSet()) {
             intersection.updateTime(simTime);
         }
 
+    }
+
+
+    public double getAvgOccupancy() {
+        double totalOccupancy = 0;
+        int count = 0;
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            count += 1;
+            totalOccupancy += l.getOccupancy();
+
+        }
+        return totalOccupancy / count;
     }
 }
 

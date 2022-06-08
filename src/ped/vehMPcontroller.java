@@ -33,12 +33,13 @@ public class vehMPcontroller implements Controller {
         Map<TurningMovement, Double> flowVals = new HashMap<>();
         double max_value = Double.NEGATIVE_INFINITY;
 
-        System.out.println("INTERSECTION " + intersection.getId());
-        System.out.println("\t\t" + intersection.getInternalVehicleTurns());
+//        System.out.println("INTERSECTION " + intersection.getId());
+//        System.out.println("\t\t" + intersection.getInternalVehicleTurns());
 
         // TODO: write the CPLEX
         try {
             IloCplex cplex = new IloCplex();
+            cplex.setOut(null);
 
             // CREATE VEHICLE SIGNALS (s_ij)
             Map<TurningMovement, IloIntVar> v_signals = new HashMap<>();
@@ -63,7 +64,7 @@ public class vehMPcontroller implements Controller {
             for (TurningMovement turn : intersection.getInternalVehicleTurns()) {
                 double v_turn_mov_cap = turn.getCapacity();
                 double v_weight_ij = turn.getWeight();
-                System.out.println("weight of " + turn + " --> " + v_weight_ij);
+//                System.out.println("weight of " + turn + " --> " + v_weight_ij);
                 // if weight == 0 and the turn doesn't add additional conflict, then add into turns???
                 objExpr.addTerm(v_turn_mov_cap * v_weight_ij, v_signals.get(turn));
             }
@@ -81,8 +82,8 @@ public class vehMPcontroller implements Controller {
                 for (TurningMovement tm2 : conflictMap.keySet()) {
                     // if tm1 and tm2 conflict
                     if (conflictMap.get(tm2) == 0 && !tm1.equals(tm2)) {
-                        System.out.println("tm1: " + tm1);
-                        System.out.println("tm2: " + tm2);
+//                        System.out.println("tm1: " + tm1);
+//                        System.out.println("tm2: " + tm2);
                         // don't allow tm2 to be activated if tm1 is activated
 //                        IloConstraint r1 = cplex.eq(1, v_signals.get(tm1));
 //                        IloConstraint r2 = cplex.eq(0, v_signals.get(tm2));
@@ -116,20 +117,20 @@ public class vehMPcontroller implements Controller {
 //                 flow with the capacity of the turn. mov., otherwise letting
 //                 the flow by the queue length for the turning movement
 //                 for vehicles
-            System.out.println("Intersection " + intersection.getId());
-            System.out.println("flow value queue length/capacity constraint");
+//            System.out.println("Intersection " + intersection.getId());
+//            System.out.println("flow value queue length/capacity constraint");
             for (TurningMovement turn : intersection.getInternalVehicleTurns()) {
                 IloLinearNumExpr expr68e = cplex.linearNumExpr();
                 // y^{v}_{ij} = min ( Q^{v}_{ij} * s^{v}_{ij}, x^{v}_{ij} )
                 expr68e.addTerm(turn.getCapacity(), v_signals.get(turn));
-                System.out.println("\t" + turn + " --> " + turn.getQueueLength());
-                System.out.println("\t" + "capacity" + " --> " + turn.getCapacity());
+//                System.out.println("\t" + turn + " --> " + turn.getQueueLength());
+//                System.out.println("\t" + "capacity" + " --> " + turn.getCapacity());
                 cplex.addEq(flow_vals.get(turn), cplex.min(expr68e, turn.getQueueLength() ));
             }
 
 
             if (cplex.solve()) {
-                System.out.println("Optimal value = " + cplex.getObjValue());
+//                System.out.println("Optimal value = " + cplex.getObjValue());
 //                for (TurningMovement turn : v_signals.keySet()) {
 //                    IloIntVar v_sig = v_signals.get(turn);
 //                    System.out.println("vehicle signal @ " + turn + " = " + cplex.getValue(v_sig));
@@ -138,21 +139,21 @@ public class vehMPcontroller implements Controller {
                 for (TurningMovement tm : v_signals.keySet()) {
                     IloIntVar v_sig = v_signals.get(tm);
                     double on_off = cplex.getValue(v_sig);
-                    System.out.println("\t" + tm + " --> " + on_off);
+//                    System.out.println("\t" + tm + " --> " + on_off);
                     if (((Double) on_off).equals(1.0)) {
                         bestTurningMovements.add(tm);
                     }
                 }
                 bestPhase = new Phase(bestTurningMovements);
-                System.out.println("Intersection " + intersection.getId());
-                System.out.println("Best phase: " + bestPhase);
-                System.out.println("Conflicts: " + intersection.getV2vConflicts());
+//                System.out.println("Intersection " + intersection.getId());
+//                System.out.println("Best phase: " + bestPhase);
+//                System.out.println("Conflicts: " + intersection.getV2vConflicts());
 
                 for (TurningMovement turn : intersection.getInternalVehicleTurns()) {
                     double y_ij = cplex.getValue(flow_vals.get(turn));
                     flowVals.put(turn, y_ij);
 //                    flowVals.put(turn, 5);
-                    System.out.println("\t" + turn + " --> " + y_ij);
+//                    System.out.println("\t" + turn + " --> " + y_ij);
                 }
 
 //                if (intersection.getId() == 2) {
@@ -160,8 +161,8 @@ public class vehMPcontroller implements Controller {
 //                }
 
 
-                System.out.println();
-                System.out.println();
+//                System.out.println();
+//                System.out.println();
             }
 
 

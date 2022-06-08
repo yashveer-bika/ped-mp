@@ -25,7 +25,7 @@ public class PointQueue extends Link
     private double entering; // number of vehicles entering this time step
 //    private List<Vehicle> entering_vehs;
 
-    public PointQueue(int id, String type, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
+    public PointQueue(int id, String type, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
     {
         super(id, type, source, dest, length, ffspd, capacityPerLane, numLanes);
 //        vehs = new ArrayList<>();
@@ -33,9 +33,15 @@ public class PointQueue extends Link
 //        entering_vehs = new ArrayList<>();
 
         // reset();
+
+        demand = new LinkedList<Double>();
+        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-1; i++)
+        {
+            demand.add(0.0);
+        }
     }
 
-    public PointQueue(int id, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
+    public PointQueue(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
     {
         super(id, "point-queue", source, dest, length, ffspd, capacityPerLane, numLanes);
 //        vehs = new ArrayList<>();
@@ -43,6 +49,18 @@ public class PointQueue extends Link
 //        entering_vehs = new ArrayList<>();
 
         // reset();
+//
+//        System.out.println("link: " + this);
+//        System.out.println("\tlink free flow time: " + getFFTime());
+//        System.out.println("\ttime step (dt): " + Params.dt);
+
+        demand = new LinkedList<>();
+        demand.add(0.0);
+        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-2; i++)
+        {
+            demand.add(0.0);
+        }
+
     }
 
 //    public List<Vehicle> getVehs() {
@@ -84,9 +102,11 @@ public class PointQueue extends Link
 
     public void update()
     {
-//        n = n - exiting + demand.removeFirst();
-//        demand.add(entering);
-        n = n - exiting + entering;
+//        System.out.println("link: " + this);
+//        System.out.println("demand: " + demand);
+        n = n - exiting + demand.removeFirst();
+        demand.add(entering);
+//        n = n - exiting + entering;
         entering = 0;
         exiting = 0;
     }

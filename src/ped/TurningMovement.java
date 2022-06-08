@@ -394,7 +394,7 @@ public class TurningMovement {
 //        return getVehicles().size();
 
 //        return queueLength;
-        return i.getOccupancy() * getTurningProportion();
+        return i.getSendingFlow() * getTurningProportion();
 //        return i.getOccupancy();
     }
 
@@ -405,7 +405,7 @@ public class TurningMovement {
 
     /** Capacity as defined in ped-AIM by Rongsheng and Jeffery :
      * Section 3 : Network model **/
-    public int getCapacity() {
+    public double getCapacity() {
         return Math.min(i.getCapacity(), j.getCapacity());
     }
 

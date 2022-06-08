@@ -22,7 +22,7 @@ public class TestPQ3Conflicts {
 //        pq3_nodes_f = new File("data/PQ3/nodes.txt");
 //        pq3_links_f = new File("data/PQ3/links.txt");
 //        controllerType = "vehMP";
-        pq3_net_vehs = new Simulator("data/PQ3/", false, "vehMP");
+        pq3_net_vehs = new Simulator("data/PQ3/", false, "vehMP", 0.02);
 
 //        pq3_way2_nodes_f = new File("data/PQ3way2/nodes.txt");
 //        pq3_way2_links_f = new File("data/PQ3way2/links.txt");
@@ -30,18 +30,18 @@ public class TestPQ3Conflicts {
         pq3_net_way2_vehs = new Simulator("data/PQ3way2/", false, "vehMP");
 
 
-        pq3_net_peds = new Simulator("data/PQ3/", true, "vehMP");
+//        pq3_net_peds = new Simulator("data/PQ3/", true, "vehMP");
         // pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
         // pq3_net.runSim(60*60, 60*60*10, Params.tolerance_time);
     }
 
-    public void printAllLocations() {
-        System.out.format("%-20s %-20s %-20s %n", "id", "x", "y");
-        for (int id : pq3_net_peds.getNodes().keySet()) {
-            Node n = pq3_net_peds.getNodes().get(id);
-            System.out.format("%-20s %-20s %-20s %n", id, n.getX(), n.getY());
-        }
-    }
+//    public void printAllLocations() {
+//        System.out.format("%-20s %-20s %-20s %n", "id", "x", "y");
+//        for (int id : pq3_net_peds.getNodes().keySet()) {
+//            Node n = pq3_net_peds.getNodes().get(id);
+//            System.out.format("%-20s %-20s %-20s %n", id, n.getX(), n.getY());
+//        }
+//    }
 
     public void writeOutPedNetworkData() {
         System.out.println("\nwriting out fake pedestrian data\n");
@@ -330,10 +330,7 @@ public class TestPQ3Conflicts {
 
     public void testController() {
         System.out.println("\nTESTING CONTROLLER\n");
-        double timeStepSize = 60*60;
-        double totalRunTime = 60*60*10;
-        double toleranceTime = 0;
-        pq3_net_vehs.runSim( timeStepSize,  totalRunTime, toleranceTime);
+        pq3_net_vehs.runSim();
 
         System.out.println("\nFINISHED TESTING CONTROLLER\n");
 
@@ -341,10 +338,7 @@ public class TestPQ3Conflicts {
 
     public void testVehMPControllerWPeds() {
         System.out.println("\nTESTING CONTROLLER\n");
-        double timeStepSize = 60*60;
-        double totalRunTime = 60*60*10;
-        double toleranceTime = 0;
-        pq3_net_peds.runSim( timeStepSize,  totalRunTime, toleranceTime);
+        pq3_net_peds.runSim();
 
         System.out.println("\nFINISHED TESTING CONTROLLER\n");
 

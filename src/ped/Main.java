@@ -21,8 +21,6 @@ import util.*;
 public class Main 
 {
     public static void main(String[] args) throws IloException {
-        String path = "data/PQ3/";
-
 //        System.out.println(path);
 //        File nodesFile = new File(path + "nodes.txt");
 //        File linksFile = new File(path + "links.txt");
@@ -50,22 +48,13 @@ public class Main
 
 //        TestCPLEX testCPLEX = new TestCPLEX();
 
-        TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
-//        tpq3.testControllerWPeds();
-        // TODO: later, make my phase generation logic less expensive so I can test on larger networks or ped networks
-        tpq3.testVehFeasiblePhases();
-         tpq3.testV2VConflicts();
-        // TODO: move writeOutPedNetworkData to it's own class outside of testing
-        // TODO: write ped network loading
-        // TODO: verify network loading on generated ped data is the same as the interal generated ped network
-//        tpq3.writeOutPedNetworkData();
-//        tpq3.testV2PConflicts();
-//        tpq3.printAllLocations();
-//        tpq3.testVehMPControllerWPeds();
-        tpq3.writeOutPedTurningProportions();
+//        TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
+////        tpq3.testControllerWPeds();
+//        // TODO: later, make my phase generation logic less expensive so I can test on larger networks or ped networks
+//        tpq3.testVehFeasiblePhases();
+//        tpq3.testV2VConflicts();
 
-        tpq3.testConflictRegions();
-        tpq3.testTurningProportions();
+
 //        tpq3.testController();
 
 //        TestINT4 testINT4 = new TestINT4();
@@ -98,5 +87,9 @@ public class Main
 //        pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
+
+        String path = "data/SiouxFalls/";
+        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
+        siouxFallsVehOnly.runSim();
     }
 }

@@ -9,10 +9,7 @@ public class TestINT4 {
 
     public void testController() {
         System.out.println("\nTESTING CONTROLLER ON INT4\n");
-        double timeStepSize = 60*60;
-        double totalRunTime = 60*60*10;
-        double toleranceTime = 0;
-        int4_net.runSim( timeStepSize,  totalRunTime, toleranceTime);
+        int4_net.runSim();
 
         System.out.println("\nFINISHED TESTING CONTROLLER ON INT4\n");
 

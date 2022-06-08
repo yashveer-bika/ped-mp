@@ -1,0 +1,15 @@
+id	type	longitude	latitude	elevation
+1	source	0	0	0
+2	diverge	1	0	0
+3	diverge	2	-1	0
+4	merge	2	1	0
+5	merge	3	0	0
+6	sink	4	0	0
+7	sink	5	0	0
+9001	dummy	0	0	0
+9002	dummy	1	0	0
+9003	dummy	2	-1	0
+9004	dummy	2	1	0
+9005	dummy	3	0	0
+9006	dummy	4	0	0
+9007	dummy	5	0	0

@@ -36,7 +36,7 @@ public abstract class Link implements Comparable<Link>
     private String type;
 
     // capacity per lane in veh/hr
-    private int capacityPerLane;
+    private double capacityPerLane;
 
     // number of lanes
     private int numLanes;
@@ -79,7 +79,7 @@ public abstract class Link implements Comparable<Link>
      * @param capacityPerLane capacity (per lane) in veh/hr
      * @param numLanes number of lanes
      */
-    public Link(int id, String type, Node source, Node dest, double length, double ffspd, int capacityPerLane, int numLanes)
+    public Link(int id, String type, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
     {
         // store Link parameters
         this.id = id;
@@ -127,7 +127,7 @@ public abstract class Link implements Comparable<Link>
      */
     public double getFFTime()
     {
-        return getLength() / getFFSpeed() * 3600.0;
+        return getLength() / 5280.0 / getFFSpeed() * 3600.0;
     }
 
     /**
@@ -156,10 +156,11 @@ public abstract class Link implements Comparable<Link>
 //    }
 
     /**
-     * @return the length in mi
+     * @return the length in ft
      */
     public double getLength()
     {
+//        System.out.println("Link: " + this.id + " ---> " + length);
         return length;
     }
 
@@ -174,7 +175,7 @@ public abstract class Link implements Comparable<Link>
     /**
      * @return the total capacity in veh/hr
      */
-    public int getCapacity()
+    public double getCapacity()
     {
         return capacityPerLane * numLanes;
     }
