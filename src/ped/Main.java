@@ -54,7 +54,6 @@ public class Main
 //        tpq3.testVehFeasiblePhases();
 //        tpq3.testV2VConflicts();
 
-
 //        tpq3.testController();
 
 //        TestINT4 testINT4 = new TestINT4();
@@ -71,8 +70,6 @@ public class Main
 //        TestSFPhases test_sf = new TestSFPhases();
 //        test_sf.testVehFeasiblePhases();
 
-
-
 //        File sf_nodes_f = new File("data/SiouxFalls/network/nodes.txt");
 //        File sf_links_f = new File("data/SiouxFalls/network/links.txt");
 //        String controllerType = "vehMP";
@@ -87,13 +84,15 @@ public class Main
 //        pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
-
 //        String path = "data/SiouxFalls/";
-//        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
+//        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP");
 //        siouxFallsVehOnly.runSim();
 
         String path = "data/SiouxFalls/";
-        Simulator siouxFallsPeds = new Simulator(path, false, "vehMP", Params.demandScaleFactor);
-        siouxFallsPeds.runSim();
+        Simulator siouxFallsPeds = new Simulator(path, false, "vehMP");
+//        siouxFallsPeds.runSim();
+
+        // TODO: write some 
+
     }
 }

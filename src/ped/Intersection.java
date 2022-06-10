@@ -922,16 +922,16 @@ public class Intersection {
         for (TurningMovement tm : getNewFlowVals().keySet()) {
 //            System.out.println("tm: " + tm);
 //            System.out.println("vehs: " + tm.getVehicles().size());
-            double x_ij = tm.getQueueLength();
+//            double x_ij = tm.getQueueLength();
             double y_ij = getNewFlowVals().get(tm);
-            double turn_prop = tm.getTurningProportion();
+//            double turn_prop = tm.getTurningProportion();
 //            System.out.println("x_ij: " + x_ij);
 //            System.out.println("y_ij: " + y_ij);
             // ensure that y_ij <= x_ij
 //            if (y_ij.compareTo(x_ij) > 0) {
 //                assert false;
 //            }
-            assert y_ij <= x_ij;
+//            assert y_ij <= x_ij;
             // TODO: write moving code
             Link i = tm.getIncomingLink();
             Link j = tm.getOutgoingLink();
@@ -939,7 +939,7 @@ public class Intersection {
             j.addFlow(y_ij);
             // move flow from i to j
 
-            double r_ij = tm.getTurningProportion();
+//            double r_ij = tm.getTurningProportion();
 
 
 //            // move from all h into i
@@ -965,7 +965,7 @@ public class Intersection {
             Link entryLink = tm.getIncomingLink();
             Link l = tm.getOutgoingLink();
             // move turn_prop * occupancy to next link
-            double out_flow = tm.getTurningProportion() * entryLink.getSendingFlow();
+            double out_flow = tm.getRandomTurningProportion() * entryLink.getSendingFlow();
 //            System.out.println("Entry turn: " + tm);
 //            System.out.println("\tturn_prop: " + tm.getTurningProportion() );
 //            System.out.println("\td_i: " + entryLink.getOccupancy() );

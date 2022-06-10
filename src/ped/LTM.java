@@ -6,6 +6,7 @@
 package ped;
 
 
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.List;
 
 /**
  * This class propagates flow according to the link transmission model.
- * TODO: update this correctly
- * @author Te Xu
+ *
+ * @author Te Xu changed MWL's LTM code for APWBP paper
  */
+
+// TODO: 根据Michael & Yash 的代码 调整目前代码的结构
 public class LTM extends Link
 {
 
@@ -42,6 +45,13 @@ public class LTM extends Link
 
     }
 
+    public LinkedList<Double> getN_up() {
+        return N_up;
+    }
+
+    public LinkedList<Double> getN_down() {
+        return N_down;
+    }
 
     public void reset()
     {
@@ -150,6 +160,7 @@ public class LTM extends Link
     {
         // fill this in
 
+
         return  Math.min(N_up.getFirst()- N_down.getLast(), getCapacity() * Params.dt/3600.0);
 
     }
@@ -175,10 +186,22 @@ public class LTM extends Link
         logEnteringFlow(y);
     }
 
-    // TODO: update this
     @Override
     public double getPressure(Link downstreamLink, double turningProportion) {
-        return 0;
+        // TODO: add case when this link is EntryLink and downstreamLink is LTM
+        if (downstreamLink instanceof LTM dl) {
+            // TODO: Set params C_ab, C_bc, Pi_bc
+            double C_ab = 0;
+            double C_bc = 0;
+            double Pi_bc = 0;
+
+            return LTM.getPressure_normal(this, dl, C_ab, C_bc, Pi_bc, Params.time, Params.time,
+                    this.getN_up(), dl.getN_up(), this.getN_down(), dl.getN_down());
+
+        }
+
+        // TODO: what is the other case??
+        return 0.0;
     }
 
     public void removeFlow(double y) // flow from all outgoing links
@@ -211,91 +234,93 @@ public class LTM extends Link
 
 
     // 这个代码结构测不出 Multiple ShockWave
+    /*
     public LinkedList<Double> ShockWaveDetection(int cur_time)
     {
-        // x_s is the solution, we do not know x_s
-        // N_up(t - x_s/uf) = N_down(t - (L-x_s)/wb) + Kj * (L - x_s)
+    	 // x_s is the solution, we do not know x_s
+    	 // N_up(t - x_s/uf) = N_down(t - (L-x_s)/wb) + Kj * (L - x_s)
 
 
-        LinkedList<Double> correct_xs = new LinkedList<Double>();
+    	LinkedList<Double> correct_xs = new LinkedList<Double>();
 
 
-        // 改正：不能是 N_up.size() - 1 & N_down.size() - 1; ---> Size 大小影响到你能否trace back to correct answers
-        // if L/uf = 4, L/wb = 8, N_up.size() = 5 index =[0, 1, 2, 3, 4]; N_down.size() = 9, index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    	// 改正：不能是 N_up.size() - 1 & N_down.size() - 1; ---> Size 大小影响到你能否trace back to correct answers
+    	// if L/uf = 4, L/wb = 8, N_up.size() = 5 index =[0, 1, 2, 3, 4]; N_down.size() = 9, index = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-        // 这意味着 N_up & N_down 的 initialization 需要改
-        // 先假设已经改好了 Hard Code 完以后再测试
-        for (int i = 0; i < N_up.size() - 1; i++) {
-            for (int j = 0; j < N_down.size() - 1; j++) {
+    	// 这意味着 N_up & N_down 的 initialization 需要改
+    	// 先假设已经改好了 Hard Code 完以后再测试
+    	for (int i = 0; i < N_up.size() - 1; i++) {
+    		for (int j = 0; j < N_down.size() - 1; j++) {
 
-                // w wb uf unit 需要注意 脑子清醒的时候算算对不对；现在先不管这个
-                // 注意 代码单位是 per dt 而输入 是 mile per hour
-                double w =  getCapacityPerLane()/ Params.JAM_DENSITY; // 单位 per dt
-                double wb = (w / 3600) /Params.dt; // 单位 per dt
-                double uf = (getFFSpeed()/3600)/Params.dt; // 单位 per dt
+    			// w wb uf unit 需要注意 脑子清醒的时候算算对不对；现在先不管这个
+    			// 注意 代码单位是 per dt 而输入 是 mile per hour
+    			double w =  getCapacityPerLane()/ Params.JAM_DENSITY; // 单位 per dt
+    			double wb = (w / 3600) /Params.dt; // 单位 per dt
+    			double uf = (getFFSpeed()/3600)/Params.dt; // 单位 per dt
 
-                // 写成两个b 方便debug
-                double b1 = (wb*uf)* N_up.get(i) + ((wb*uf)*(cur_time) - (wb*uf)*(Params.time - (N_up.size() - (i+1))))*(N_up.get(i+1) - N_up.get(i));
-                double b2 = (wb*uf)* N_down.get(j) + ((wb*uf)*(cur_time) - uf*getLength() - (wb*uf)*(Params.time - (N_down.size() - (j+1))))*(N_down.get(j+1) - N_down.get(j)) + wb*uf*Params.JAM_DENSITY*getLength();
-                double b = b1 - b2;
-
-
-                double a  = (uf*(N_down.get(j+1) - N_down.get(j)) - wb*uf*Params.JAM_DENSITY + wb*(N_up.get(i+1) - N_up.get(i)));
+    			// 写成两个b 方便debug
+    			double b1 = (wb*uf)* N_up.get(i) + ((wb*uf)*(cur_time) - (wb*uf)*(Params.time - (N_up.size() - (i+1))))*(N_up.get(i+1) - N_up.get(i));
+    			double b2 = (wb*uf)* N_down.get(j) + ((wb*uf)*(cur_time) - uf*getLength() - (wb*uf)*(Params.time - (N_down.size() - (j+1))))*(N_down.get(j+1) - N_down.get(j)) + wb*uf*Params.JAM_DENSITY*getLength();
+    			double b = b1 - b2;
 
 
-                double temp_xs;
-                temp_xs = SolveLinearEquation(a, b);  // ---> 搞清楚：多个 temp_xs 的值来自于 loop；而 LinearEquation() 一次只能求出一个 temp_xs 的解
+    			double a  = (uf*(N_down.get(j+1) - N_down.get(j)) - wb*uf*Params.JAM_DENSITY + wb*(N_up.get(i+1) - N_up.get(i)));
 
 
-                // using if to check temp_xs 是否有效 ---> 看手算笔记
-                double up_stream_time_check;
-                double down_stream_time_check;
-
-                up_stream_time_check = cur_time - (temp_xs/uf); // ---> (t - xs / uf)
-                down_stream_time_check = cur_time - (getLength() - temp_xs) / wb; // ---> (t - (L-x_s)/wb)
-
-                int up_stream_time_lowerbound;
-                int up_stream_time_upperbound;
-
-                // check i， 是否 index 到了正确的值 ---> 看手算笔记
-                up_stream_time_lowerbound = Params.time - (N_up.size() - (i+1));
-                up_stream_time_upperbound = Params.time - (N_up.size() - (i+2));
-
-                int down_stream_time_lowerbound;
-                int down_stream_time_upperbound;
+    		    double temp_xs;
+    		    temp_xs = SolveLinearEquation(a, b);  // ---> 搞清楚：多个 temp_xs 的值来自于 loop；而 LinearEquation() 一次只能求出一个 temp_xs 的解
 
 
-                // check j， 是否 index 到了正确的值
-                down_stream_time_lowerbound = Params.time - (N_down.size() - (j+1)); // j
-                down_stream_time_upperbound = Params.time - (N_down.size() - (j+2)); // j
+    		    // using if to check temp_xs 是否有效 ---> 看手算笔记
+    		    double up_stream_time_check;
+    		    double down_stream_time_check;
 
-                if (up_stream_time_check >= up_stream_time_lowerbound && up_stream_time_check <= up_stream_time_upperbound && down_stream_time_check >=  down_stream_time_lowerbound && down_stream_time_check <= down_stream_time_upperbound) {
+    		    up_stream_time_check = cur_time - (temp_xs/uf); // ---> (t - xs / uf)
+    		    down_stream_time_check = cur_time - (getLength() - temp_xs) / wb; // ---> (t - (L-x_s)/wb)
 
-                    // 是否需要加一个 if 判断 temp_xs \in [0, Link.length]
+    		    int up_stream_time_lowerbound;
+    		    int up_stream_time_upperbound;
 
-                    correct_xs.add(temp_xs);
+    		    // check i， 是否 index 到了正确的值 ---> 看手算笔记
+    		    up_stream_time_lowerbound = Params.time - (N_up.size() - (i+1));
+    		    up_stream_time_upperbound = Params.time - (N_up.size() - (i+2));
 
-
-                }
-
-
-            }
-
-        }
+    		    int down_stream_time_lowerbound;
+    		    int down_stream_time_upperbound;
 
 
-        LinkedList<Double> x_s = correct_xs;
+    		    // check j， 是否 index 到了正确的值
+    		    down_stream_time_lowerbound = Params.time - (N_down.size() - (j+1)); // j
+    		    down_stream_time_upperbound = Params.time - (N_down.size() - (j+2)); // j
+
+    		    if (up_stream_time_check >= up_stream_time_lowerbound && up_stream_time_check <= up_stream_time_upperbound && down_stream_time_check >=  down_stream_time_lowerbound && down_stream_time_check <= down_stream_time_upperbound) {
+
+    		    // 是否需要加一个 if 判断 temp_xs \in [0, Link.length]
+
+    		    correct_xs.add(temp_xs);
+
+
+    		    }
+
+
+    		}
+
+    	}
+
+
+    	LinkedList<Double> x_s = correct_xs;
         return x_s; // 返回的 LinkedList 按照升序排列
 
 
     }
-
+    */
 
 
     // 全部加一个脚标2 用于function的测试
     // Hard coding test ---> Example with --- " N_up2 = {0: 12, 1: 14, 2: 16, 3: 18, 4: 20} " --- " N_down2 = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 4, 8: 8}"
     //                          Corresponding time_up = {6      7      8      9      10   }       time_down = {2     3     4     5     6     7     8     9     10  }
     // TODO: 这个shockwaveDetection() 代码还有精度的问题需要改进 需要邮件/开会的时候 问一下MWL 或者 Yashveer
+
     public static LinkedList<Double> ShockWaveDetection2(int cur_time2, int params_time, LinkedList<Double> N_up2, LinkedList<Double> N_down2)
     {
 
@@ -392,8 +417,6 @@ public class LTM extends Link
                 // double L = 0.20; // 0.2 mile
                 //int params_time = 10;
 
-                // bug 问题出现在计算 a & b 上
-                // bug 问题可能出现在丢失精度上面 ！！！！！
 
                 double b12 = (wb2*uf2)* N_up2.get(i) + ((wb2*uf2)*(cur_time2) - (wb2*uf2)*(params_time - (N_up2.size() - (i+1))))*(N_up2.get(i+1) - N_up2.get(i));  //  ---> refer 推算 04-10-2022 Page-11
                 //System.out.println("b12 is:" + b12); // 手算应该是 34/800 = 0.0425 还是丢失了精度
@@ -450,14 +473,13 @@ public class LTM extends Link
         }
 
 
-        // 这个判断是把 backward speed 的无效解 删除
-        // TODO: 需要一个正确的逻辑 存下 合适的 x_shock & x_backward 目前if 的 逻辑 会把无效解（x_shock 和 x_backwardd 两种无效解）存下来
 
         LinkedList<Double> x_s2 = correct_xs2;
         return x_s2; // 返回的 LinkedList 按照升序排列
 
 
     }
+
 
 
 
@@ -558,9 +580,9 @@ public class LTM extends Link
         }
 
         // x_s2 就是 x_shock
-        for (double item: correct_x_shock2) {
-            System.out.println("print out each item in correct_x_shock2: " + item);
-        }
+        //for (double item: correct_x_shock2) {
+        //System.out.println("print out each item in correct_x_shock2: " + item);
+        //}
         HashSet<Double> h = new HashSet<Double>(correct_x_shock2);
         LinkedList<Double> remove_duplicated_correct_x_shock2 = new LinkedList<Double>(h);
         System.out.println("After removing duplicated value in correct_x_shock2, we get single & valid x_shock value, which is: " + remove_duplicated_correct_x_shock2);
@@ -610,8 +632,9 @@ public class LTM extends Link
 
         } else {
 
+            int max_index = N_up2.size() - 1;
             // if trackback_time 就是一个整数 对应一个
-            temp_x_shock_N = N_up2.get((int)trackback_time);
+            temp_x_shock_N = N_up2.get(max_index -(cur_time2 - (int)trackback_time)); //return index not the time  (4 - (10 - 6))
             x_shock_N.add(temp_x_shock_N);
         }
 
@@ -673,10 +696,12 @@ public class LTM extends Link
         int max_N_down_index = (N_down2.size() - 1);
         // x_break_downstream 如果存在 则 只存在一个值 所以取第一个index = 0
         int backwardBreakN_index = (int) (Math.round ((x_break_downstream.get(0)  + wb2 * max_N_down_index - L)/wb2) );  // 正确使用: Math.round（包含所有计算）
-        System.out.println("value in the bracket is: " + ((x_break_downstream.get(0)  + wb2 * max_N_down_index - L)/wb2));
-        System.out.println("backwardBreakN_index is :" + backwardBreakN_index);
+        //System.out.println("value in the bracket is: " + ((x_break_downstream.get(0)  + wb2 * max_N_down_index - L)/wb2));
+        //System.out.println("backwardBreakN_index is :" + backwardBreakN_index);
 
-        double  temp_x_break_downstream_N = N_down2.get(backwardBreakN_index);
+        double  temp_x_break_downstream_N = N_down2.get(backwardBreakN_index) + K_jam*((L - x_break_downstream.get(0)));
+
+
         x_break_downstream_N.add(temp_x_break_downstream_N);
 
         return x_break_downstream_N;
@@ -742,14 +767,14 @@ public class LTM extends Link
         //TODO: 0.15000000000000002 输入 return 值有问题 解决精度问题 先用多余的弄了
         // 精度问题
         dx = single_x_break_upstream - x_start;
-        System.out.println("dx ----> " + dx);
+        //System.out.println("dx ----> " + dx);
         dt = dx / uf2;
-        System.out.println("dt ----> " + dt);
+        //System.out.println("dt ----> " + dt);
 
         // track back to index
         int temp_index = (int)(Math.round(max_N_up_index - dt)); // Math.round (5.9999999999999964) = 5.0 Math.round (6.0000000000001) = 6.0
-        System.out.println("(max_N_up_index - dt) is:" + (max_N_up_index - dt));
-        System.out.println("temp_index is:" + temp_index);
+        //System.out.println("(max_N_up_index - dt) is:" + (max_N_up_index - dt));
+        //System.out.println("temp_index is:" + temp_index);
         double temp_x_break_upstream_corresponding_N = N_up2.get(temp_index);
 
         x_break_upstream_N = temp_x_break_upstream_corresponding_N;
@@ -912,85 +937,97 @@ public class LTM extends Link
     public static ArrayList<Double> getDensity(HashMap <Double, Double> sorted_X_N_pairs, int cur_time2, int params_time, LinkedList<Double> N_up2, LinkedList<Double> N_down2){
         // 若存在 他们的 size() = 1; 有且只有一个;
         double K_jam = 240.00;
-        LinkedList<Double> temp_x_shock_forchecking = ShockWaveDetection3(cur_time2, params_time, N_up2, N_down2);
-        LinkedList<Double> temp_x_break_downstream_forchecking = downstreamBreakpointDetection(cur_time2, params_time, N_up2, N_down2);
+        //LinkedList<Double> temp_x_shock_forchecking = ShockWaveDetection3(cur_time2, params_time, N_up2, N_down2);
+        //LinkedList<Double> temp_x_break_downstream_forchecking = downstreamBreakpointDetection(cur_time2, params_time, N_up2, N_down2);
 
-        int linkDensitysize = sorted_X_N_pairs.size() - 1; // density size 是 X_N_pairs size() - 1
+        int linkDensitysize = sorted_X_N_pairs.size() - 1; // 以 link b & time = 17 为例 density size 是 X_N_pairs size() - 1 = 5 - 1 = 4
         ArrayList<Double> linkDensity = new ArrayList<>(linkDensitysize);
 
-        int jam_density_lowindex = 0;
-        int jam_density_upindex = 0;
+        //int jam_density_lowindex = 0;
+        //int jam_density_upindex = 0;
 
         ArrayList<Double> sortedKeys = new ArrayList<Double>(sorted_X_N_pairs.keySet());
         Collections.sort(sortedKeys);
         //Collections.sort(sortedKeys, Collections.reverseOrder());
         List<Double> indexes = new ArrayList<Double>(sortedKeys); // --> Notice: List of sorted_X_N_pairs indexes is: [0.0, 0.15, 0.1, 0.2] if we use Collections.sort(sortedKeys);
+        System.out.println("sorted X_N_pairs indexes List is:" + indexes);
 
         double temp_Density;
         double dN;
         double dX;
 
+        for (int i = 0; i < sorted_X_N_pairs.size() - 1; i++) {
+            dN = sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1)); // i < 4 ; i = 3 i+1 = 4 这个是index 是对的
+            dX = indexes.get(i+1) - indexes.get(i);
+            temp_Density = dN/dX;
+            linkDensity.add(temp_Density);
+        }
 
 
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- //
         // if x_b x_s 存在 我们希望return 一个 index for sorted_X_N_pairs
-
+    	/*
         if(temp_x_shock_forchecking.size() > 0 && temp_x_break_downstream_forchecking.size() > 0 && temp_x_break_downstream_forchecking.get(0) > temp_x_shock_forchecking.get(0)) {
-            System.out.println("We have valid x_shock solution and x_break_downstream solution, so we have jam_density !!!");
-            System.out.println("We start to calculate cases with K_jam");
-            // return the jam density corresponding index
-            if (sorted_X_N_pairs.containsKey(temp_x_shock_forchecking.get(0)) == true && sorted_X_N_pairs.containsKey(temp_x_break_downstream_forchecking.get(0)) == true){
-                jam_density_lowindex = indexes.indexOf(temp_x_shock_forchecking.get(0));
-                jam_density_upindex = indexes.indexOf(temp_x_break_downstream_forchecking.get(0));
-            }
-            // case 1 calculate density
-            for (int i = 0; i <= jam_density_lowindex - 1; i++ ) {
-                dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1)); // i+1 =  0+1 = 1
-                dX =  indexes.get(i+1) - indexes.get(i);
-                temp_Density = dN / dX;
-                linkDensity.add(temp_Density);
+    	   System.out.println("We have valid x_shock solution and x_break_downstream solution, so we have jam_density !!!");
+    	   System.out.println("We start to calculate cases with K_jam");
+    	   // return the jam density corresponding index
+    	   if (sorted_X_N_pairs.containsKey(temp_x_shock_forchecking.get(0)) == true && sorted_X_N_pairs.containsKey(temp_x_break_downstream_forchecking.get(0)) == true){
+    		   jam_density_lowindex = indexes.indexOf(temp_x_shock_forchecking.get(0));
+    		   jam_density_upindex = indexes.indexOf(temp_x_break_downstream_forchecking.get(0));
+    		   }
+    	   // case 1 calculate density
+    	   for (int i = 0; i <= jam_density_lowindex - 1; i++ ) {
+    		   dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1)); // i+1 =  0+1 = 1
+    		   dX =  indexes.get(i+1) - indexes.get(i);
+    		   temp_Density = dN / dX;
+    		   linkDensity.add(temp_Density);
 
-            }
+    	   }
 
-            for (int i = jam_density_lowindex; i < jam_density_upindex; i++) {
-                // add jam density
-                // TODO: 这个肯定有其他的方法 再仔细想想 我觉得最好问 MWL
-                linkDensity.add(K_jam);
-            }
-            // sorted_X_N_pairs.size() - 1 = 4-1 = 3
-            // jam_density_upindex = 2; i < 3; i = 2
-            for( int i = jam_density_upindex; i < sorted_X_N_pairs.size() - 1; i++) {
-                // 这里应该是 n_down(当前time index) - n_up(break point index);
-                // TODO: 这个绝对不是最正确的解 要仔细想想 再问 MWL！！！
-                dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1));
-                dX =  indexes.get(i+1) - indexes.get(i);
-                temp_Density = dN / dX;
-                linkDensity.add(temp_Density);
-            }
-
-
-        }
-        else {
-            System.out.println("We do not have valid x_shock solution and x_break_downstream solution, so we do not have jam_density !!!");
-            System.out.println("We start to calculate cases without K_jam");
-            // case 2  calculate density
-            // assume linkDensitysize = 3, then sorted_X_N_pairs.size() = 4
-            // i = 0, 1, 2; i+1 = 1, 2, 3
-            // get_X_N_pairs 已经确定了 对应 N_up N_down 的值 如果要check 从这里开始
-            for (int i = 0; i <= linkDensitysize; i++) {
-                dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1));
-                dX =  indexes.get(i+1) - indexes.get(i);
-                temp_Density = dN / dX; // 	确保density_value的正负号逻辑
-                linkDensity.add(temp_Density);
-
-            }
+    	   for (int i = jam_density_lowindex; i < jam_density_upindex; i++) {
+    		   // add jam density
+    		   // TODO: 这个肯定有其他的方法 再仔细想想 我觉得最好问 MWL
+    		   linkDensity.add(K_jam);
+    	   }
+    	   // sorted_X_N_pairs.size() - 1 = 4-1 = 3
+    	   // jam_density_upindex = 2; i < 3; i = 2
+    	   for( int i = jam_density_upindex; i < sorted_X_N_pairs.size() - 1; i++) {
+    		   // 这里应该是 n_down(当前time index) - n_up(break point index);
+    		   // TODO: 这个绝对不是最正确的解 要仔细想想 再问 MWL！！！
+    		   dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1));
+    		   dX =  indexes.get(i+1) - indexes.get(i);
+    		   temp_Density = dN / dX;
+    		   linkDensity.add(temp_Density);
+    	   }
 
 
+    	   }
+    		else {
+    			System.out.println("We do not have valid x_shock solution and x_break_downstream solution, so we do not have jam_density !!!");
+    			System.out.println("We start to calculate cases without K_jam");
+    			// case 2  calculate density
+    			// assume linkDensitysize = 3, then sorted_X_N_pairs.size() = 4
+    			// i = 0, 1, 2; i+1 = 1, 2, 3
+    			// get_X_N_pairs 已经确定了 对应 N_up N_down 的值 如果要check 从这里开始
+    			for (int i = 0; i <= linkDensitysize; i++) {
+    				dN =  sorted_X_N_pairs.get(indexes.get(i)) -  sorted_X_N_pairs.get(indexes.get(i+1));
+    				dX =  indexes.get(i+1) - indexes.get(i);
+    				temp_Density = dN / dX; // 	确保density_value的正负号逻辑
+    				linkDensity.add(temp_Density);
 
-        }
+    			}
 
+
+
+    		}
+        */
+        // ---------------------------------------------------------------------------------------------------------------------------------------------------------------- //
         return linkDensity;
 
     }
+
+
+
 
 
     // pressure 是一个double 还是一个 int
@@ -998,12 +1035,12 @@ public class LTM extends Link
     // how to update time in code
     // 先写一个demo 然后问Yashveer 去优化 pressure 是基于movement的  因此基于PQ3 network 看需要怎么用 ---> 问他写完了 mp pq3 吗？？？
     // upstream link is a soucre link or we call
-    public static double calculatePressure_upSource(EntryLink upLink, LTM downLink, double TurningPorp, int cur_time, LinkedList<Double> try_N_up, LinkedList<Double> try_N_down) {
+    public static double getPressure_upSource(EntryLink upLink, LTM downLink, double TurningPorp, int cur_time2, LinkedList<Double> N_up2, LinkedList<Double> N_down2) {
 
         double downLength = downLink.getLength();
-        LinkedList<Double> current_xs = downLink.ShockWaveDetection2(cur_time, cur_time, try_N_up, try_N_down);
+        //LinkedList<Double> current_xs = downLink.ShockWaveDetection2(cur_time2, cur_time, try_N_up, try_N_down);
         // sort the value in current_xs linkedlist from small to large
-        Collections.sort(current_xs);
+        // Collections.sort(current_xs);
         // loop and print out these value
         // if there is 2 xs solution, which means we have 3 density, but how I know these denstiy ??? Also, when we find a method to solve these density, we should store them
         // unit is veh/mile
@@ -1022,26 +1059,96 @@ public class LTM extends Link
 
 
     // upstream link a is not source link or we call entry link
-    public static double calculatePressure_normal(LTM upLink, LTM downLink, double TurningPorp, int cur_time, LinkedList<Double> try_N_up, LinkedList<Double> try_N_down) {
+    // Notice 是取绝对值！！！
+    // TODO: c_ab c_bc constant setting ???
+    public static double getPressure_normal(LTM upLink, LTM downLink, double C_ab, double C_bc, double Pi_bc, int cur_time2, int params_time, LinkedList<Double> N_up2_upLink, LinkedList<Double> N_up2_downLink, LinkedList<Double> N_down2_upLink, LinkedList<Double> N_down2_downLink) {
 
-        double downLength = downLink.getLength();
-        LinkedList<Double> current_xs = downLink.ShockWaveDetection2(cur_time, cur_time, try_N_up, try_N_down);
-        // sort the value in current_xs linkedlist from small to large
-        Collections.sort(current_xs);
-        // loop and print out these value
-        // if there is 2 xs solution, which means we have 3 density, but how I know these denstiy ??? Also, when we find a method to solve these density, we should store them
-        // unit is veh/mile
-        // 就是问他 怎么keep fill in and read out these value
+        double upLink_length = 0.2; // change this to upLink.getLength() when simulation start
+        double downLink_length = 0.2; // change this to downLink.getLength() when simulation start
 
-        double density_srcLink = 40;
-        double density_1 = 40;
-        double density_2 = 240;
-        double denstiy_3 = 80;
+        //int linkDensitysize = sorted_X_N_pairs.size() - 1;
+        //ArrayList<Double> linkDensity = new ArrayList<>(linkDensitysize);
 
-        // 根据density 计算积分
+        HashMap<Double, Double> sorted_X_N_pairs_upLink = LTM.get_X_N_pairs(cur_time2, params_time, N_up2_upLink, N_down2_upLink);
+        HashMap<Double, Double> sorted_X_N_pairs_downLink = LTM.get_X_N_pairs(cur_time2, params_time, N_up2_downLink, N_down2_downLink);
+
+        // for upLink
+
+        ArrayList<Double> sortedKeys_upLink = new ArrayList<Double>(sorted_X_N_pairs_upLink.keySet());
+        Collections.sort(sortedKeys_upLink);
+        //Collections.sort(sortedKeys, Collections.reverseOrder());
+        List<Double> indexes_upLink = new ArrayList<Double>(sortedKeys_upLink); // --> Notice: List of sorted_X_N_pairs indexes is: [0.0, 0.15, 0.1, 0.2] if we use Collections.sort(sortedKeys);
+        System.out.println("sorted X_N_pairs indexes for upstream Link (link_a in jabari's paper) List is >>>>>> " + indexes_upLink);
+
+        double temp_Density_upLink;
+        double dN_upLink;
+        double dX_upLink;
+        double temp_Intergration_upLink;
+        double upLink_part_value = 0;
+        // Math.pow(a,b) -> a的b次方 不是 Math.sqrt() !!!!!
+        for (int i = 0; i < sorted_X_N_pairs_upLink.size() - 1; i++) {
+            dN_upLink = sorted_X_N_pairs_upLink.get(indexes_upLink.get(i)) -  sorted_X_N_pairs_upLink.get(indexes_upLink.get(i+1)); // i < 4 ; i = 3 i+1 = 4 这个是index 是对的
+            dX_upLink = indexes_upLink.get(i+1) - indexes_upLink.get(i);
+            temp_Density_upLink = dN_upLink/dX_upLink;
+            System.out.println("temp_Density_upLink ======> " + temp_Density_upLink );
+            System.out.println(" x ======> " + indexes_upLink.get(i+1));
+            System.out.println(" x ======> " + indexes_upLink.get(i));
+            System.out.println(" x^2 ======> " + Math.pow(indexes_upLink.get(i+1), 2) );
+            System.out.println(" x^2 ======> " + Math.pow(indexes_upLink.get(i), 2) );
+
+            temp_Intergration_upLink = (0.5)* Math.pow(indexes_upLink.get(i+1), 2) - (0.5)* Math.pow(indexes_upLink.get(i), 2);
+            System.out.println("temp_Intergration_upLink ======> " + temp_Intergration_upLink);
+            //linkDensity.add(temp_Density_upLink);
+            System.out.println("temp_Density_upLink * temp_Intergration_upLink ======> " + (temp_Density_upLink * temp_Intergration_upLink));
+            System.out.println("C_ab * (1/la) ======> " + (C_ab)*(1/upLink_length));
+            upLink_part_value += (C_ab)*(1/upLink_length)*(temp_Density_upLink * temp_Intergration_upLink);
+
+            System.out.println("upLink_part_value ======> " + upLink_part_value );
+        }
 
 
-        return 0;
+        // for downLink
+
+        ArrayList<Double> sortedKeys_downLink = new ArrayList<Double>(sorted_X_N_pairs_downLink.keySet());
+        Collections.sort(sortedKeys_downLink);
+        //Collections.sort(sortedKeys, Collections.reverseOrder());
+        List<Double> indexes_downLink = new ArrayList<Double>(sortedKeys_downLink); // --> Notice: List of sorted_X_N_pairs indexes is: [0.0, 0.15, 0.1, 0.2] if we use Collections.sort(sortedKeys);
+        System.out.println("sorted X_N_pairs indexes for downstream Link (link_b in jabari's paper) List is >>>>>> " + indexes_downLink);
+
+
+        double temp_Density_downLink;
+        double dN_downLink;
+        double dX_downLink;
+        double temp_Intergration_downLink1;
+        double temp_Intergration_downLink2;
+        double downLink_part_value = 0;
+
+
+        for (int i = 0; i < sorted_X_N_pairs_downLink.size() - 1; i++) {
+            dN_downLink = sorted_X_N_pairs_downLink.get(indexes_downLink.get(i)) -  sorted_X_N_pairs_downLink.get(indexes_downLink.get(i+1)); ;
+            dX_downLink = indexes_downLink.get(i+1) - indexes_downLink.get(i);
+            temp_Density_downLink = dN_downLink/dX_downLink;
+            System.out.println("temp_Density_downLink ======> " + temp_Density_downLink );
+            temp_Intergration_downLink1 = temp_Density_downLink * (indexes_downLink.get(i+1) - indexes_downLink.get(i));
+            System.out.println("temp_Intergration_downLink1 ======> " + temp_Intergration_downLink1 );
+            //System.out.println("temp_Density_downLink * (1 / downLink_length)======> " +temp_Density_downLink * (1 / downLink_length) );
+            //System.out.println("((0.5)* Math.pow(indexes_downLink.get(i+1), 2) - (0.5)* Math.pow(indexes_downLink.get(i), 2)) ======> " + ((0.5)* Math.pow(indexes_downLink.get(i+1), 2) - (0.5)* Math.pow(indexes_downLink.get(i), 2)));
+            temp_Intergration_downLink2 =  temp_Density_downLink * (1 / downLink_length) * ((0.5)* Math.pow(indexes_downLink.get(i+1), 2) - (0.5)* Math.pow(indexes_downLink.get(i), 2));
+            System.out.println("temp_Intergration_downLink2 ======> " + temp_Intergration_downLink2);
+            downLink_part_value +=  C_bc * Pi_bc * (temp_Intergration_downLink1 - temp_Intergration_downLink2);
+
+
+        }
+
+        System.out.println("The pressure value for upLink a calculated from my paper APWBP is ------>" + upLink_part_value);
+        System.out.println("The pressure value for downLink a calculated from my paper APWBP is ------>" + downLink_part_value);
+
+        double pressure_Value = Math.abs(upLink_part_value - downLink_part_value);
+        System.out.println("The pressure value calculated from my paper APWBP is ------>" + pressure_Value);
+
+
+
+        return pressure_Value ;
     }
 
 
@@ -1094,6 +1201,16 @@ public class LTM extends Link
     	try_N_up.add((double) 4);
     	*/
 
+        // link a cur_time = 5 params_time = 5 normal condition
+    	/*
+    	try_N_up.add((double) 2);
+    	try_N_up.add((double) 4);
+    	try_N_up.add((double) 6);
+    	try_N_up.add((double) 8);
+    	try_N_up.add((double) 10);
+    	*/
+
+
         // link a cur_time = 5 params_time = 5 two break point condition checking page-57
     	/*
     	try_N_up.add((double) 2);
@@ -1124,6 +1241,7 @@ public class LTM extends Link
     	*/
 
 
+
         // link a cur_time = 10 params_time = 10
     	/*
     	try_N_up.add((double) 12); // 6
@@ -1143,6 +1261,14 @@ public class LTM extends Link
     	try_N_up.add((double) 22); // 11
     	*/
 
+        // link a cur_time = 12 params_time = 12
+    	/*
+    	try_N_up.add((double) 16); // 8
+    	try_N_up.add((double) 18); // 9
+    	try_N_up.add((double) 20); // 10
+    	try_N_up.add((double) 22); // 11
+    	try_N_up.add((double) 24); // 12
+    	*/
 
         // link a cur_time = 13 params_time = 13
     	/*
@@ -1164,13 +1290,63 @@ public class LTM extends Link
     	try_N_up.add((double) 16); // 13
     	*/
 
-        // link b cur_time = 15 params_time = 15
 
-        try_N_up.add((double) 12); // 11
-        try_N_up.add((double) 16); // 12
-        try_N_up.add((double) 16); // 13
-        try_N_up.add((double) 16); // 14
-        try_N_up.add((double) 16); // 15
+        // link b cur_time = 15 params_time = 15
+    	/*
+    	try_N_up.add((double) 12); // 11
+    	try_N_up.add((double) 16); // 12
+    	try_N_up.add((double) 16); // 13
+    	try_N_up.add((double) 16); // 14
+    	try_N_up.add((double) 16); // 15
+    	*/
+
+        // link b cur_time = 17 params_time = 17
+    	/*
+    	try_N_up.add((double) 16); // 13
+    	try_N_up.add((double) 16); // 14
+    	try_N_up.add((double) 16); // 15
+    	try_N_up.add((double) 16); // 16
+    	try_N_up.add((double) 20); // 17
+    	*/
+        // -------------------------------------- getPressure() testing N_up for link a & link b -------------------------------------- //
+        LinkedList<Double> try_N_up_linka = new LinkedList<Double>();
+        LinkedList<Double> try_N_up_linkb = new LinkedList<Double>();
+
+        // link a & link b cur_time = 11 params_time = 11 normal condition
+
+        try_N_up_linka.add((double) 14);
+        try_N_up_linka.add((double) 16);
+        try_N_up_linka.add((double) 18);
+        try_N_up_linka.add((double) 20);
+        try_N_up_linka.add((double) 22);
+
+        try_N_up_linkb.add((double) 0);
+        try_N_up_linkb.add((double) 0);
+        try_N_up_linkb.add((double) 4);
+        try_N_up_linkb.add((double) 8);
+        try_N_up_linkb.add((double) 12);
+
+
+
+
+        // link a & link b cur_time = 13 params_time = 13 normal condition
+    	/*
+		try_N_up_linka.add((double) 18);
+    	try_N_up_linka.add((double) 20);
+    	try_N_up_linka.add((double) 22);
+    	try_N_up_linka.add((double) 24);
+    	try_N_up_linka.add((double) 26);
+
+		try_N_up_linkb.add((double) 4);  //9
+    	try_N_up_linkb.add((double) 8);  //10
+    	try_N_up_linkb.add((double) 12); //11
+    	try_N_up_linkb.add((double) 16); //12
+    	try_N_up_linkb.add((double) 16); //13
+    	*/
+
+
+
+
 
 
 
@@ -1196,6 +1372,18 @@ public class LTM extends Link
     	try_N_down.add((double) 0);
     	*/
 
+        // link a cur_time = 5 params_time = 5 normal condition
+    	/*
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	try_N_down.add((double) 0);
+    	*/
 
         // link a cur_time = 5 params_time = 5 two break point condition checking page-57
     	/*
@@ -1267,6 +1455,19 @@ public class LTM extends Link
     	try_N_down.add((double) 12); // 11
     	*/
 
+        // link a cur_time = 12 params_time = 12
+    	/*
+    	try_N_down.add((double) 0); // 4
+    	try_N_down.add((double) 0); // 5
+    	try_N_down.add((double) 0); // 6
+    	try_N_down.add((double) 0); // 7
+    	try_N_down.add((double) 0); // 8
+    	try_N_down.add((double) 4); // 9
+    	try_N_down.add((double) 8); // 10
+    	try_N_down.add((double) 12); // 11
+    	try_N_down.add((double) 16); // 12
+    	*/
+
 
         // link a cur_time = 13 params_time = 13
     	/*
@@ -1296,17 +1497,130 @@ public class LTM extends Link
     	try_N_down.add((double) 0); // 13
     	*/
 
-        // link b cur_time = 15 params_time = 15
 
-        try_N_down.add((double) 0); // 7
-        try_N_down.add((double) 0); // 8
-        try_N_down.add((double) 0); // 9
-        try_N_down.add((double) 0); // 10
-        try_N_down.add((double) 0); // 11
-        try_N_down.add((double) 0); // 12
-        try_N_down.add((double) 0); // 13
-        try_N_down.add((double) 0); // 14
-        try_N_down.add((double) 0); // 15
+        // link b cur_time = 15 params_time = 15
+    	/*
+    	try_N_down.add((double) 0); // 7
+    	try_N_down.add((double) 0); // 8
+    	try_N_down.add((double) 0); // 9
+    	try_N_down.add((double) 0); // 10
+    	try_N_down.add((double) 0); // 11
+    	try_N_down.add((double) 0); // 12
+    	try_N_down.add((double) 0); // 13
+    	try_N_down.add((double) 0); // 14
+    	try_N_down.add((double) 0); // 15
+    	*/
+
+
+        // link b cur_time = 17 params_time = 17
+    	/*
+    	try_N_down.add((double) 0); // 9
+    	try_N_down.add((double) 0); // 10
+    	try_N_down.add((double) 0); // 11
+    	try_N_down.add((double) 0); // 12
+    	try_N_down.add((double) 0); // 13
+    	try_N_down.add((double) 0); // 14
+    	try_N_down.add((double) 0); // 15
+    	try_N_down.add((double) 0); // 16
+    	try_N_down.add((double) 4); // 17
+    	*/
+
+        // -------------------------------------- getPressure() testing N_down for link a & link b -------------------------------------- //
+        LinkedList<Double> try_N_down_linka = new LinkedList<Double>();
+        LinkedList<Double> try_N_down_linkb = new LinkedList<Double>();
+
+        // link a & link b cur_time = 5 params_time = 5 normal condition
+    	/*
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	*/
+
+        // link a & link b cur_time = 10 params_time = 10 normal condition
+    	/*
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 4);
+    	try_N_down_linka.add((double) 8);
+
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	*/
+
+
+        // link a & link b cur_time = 11 params_time = 11 normal condition
+
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 0);
+        try_N_down_linka.add((double) 4);
+        try_N_down_linka.add((double) 8);
+        try_N_down_linka.add((double) 12);
+
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+        try_N_down_linkb.add((double) 0);
+
+
+        // link a & link b cur_time = 13 params_time = 13 normal condition
+    	/*
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 0);
+    	try_N_down_linka.add((double) 4);
+    	try_N_down_linka.add((double) 8);
+    	try_N_down_linka.add((double) 12);
+    	try_N_down_linka.add((double) 16);
+    	try_N_down_linka.add((double) 16);
+
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	try_N_down_linkb.add((double) 0);
+    	*/
 
 
 
@@ -1396,17 +1710,30 @@ public class LTM extends Link
 
         // ------> Testing get_X_N_pairs() ------> Testing case: link a & t = 2 (上面是空的情况);  link a  & t  = 5 on page-57（多个upstream); link a & t = 10; link a & t = 11; link b & t = 13 (下面是空的);  link b & t = 15 (下面是空的);
         // for link a
-        // HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(2, 2, try_N_up, try_N_down);
-        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(11, 11, try_N_up, try_N_down);
-        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(10, 10, try_N_up, try_N_down);
-        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(13, 13, try_N_up, try_N_down);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(2, 2, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(5, 5, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(8, 8, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(9, 9, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(10, 10, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(11, 11, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(12, 12, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(13, 13, try_N_up_linka, try_N_down_linka);
+
         // for link b
+        // TODO:
+        //HashMap<Double, Double> try_X_N_pairs_link_b = get_X_N_pairs(13, 13, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_b = LTM.get_X_N_pairs(15, 15, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_b = LTM.get_X_N_pairs(17, 17, try_N_up_linka, try_N_down_linka); // works perfect
 
-        // TODO: 测一下 t = 15 时候的情况
-        //HashMap<Double, Double> try_X_N_pairs_link_b = LTM.get_X_N_pairs(13, 13, try_N_up, try_N_down);
-        HashMap<Double, Double> try_X_N_pairs_link_b = LTM.get_X_N_pairs(15, 15, try_N_up, try_N_down);
 
-        // ------> Testing get_density() ------> Testing case 1: link a & t = 10; link a  & t  = 5 on page
+        // ------> Testing get_density() ------> Testing case on google docs:
+        // for link a
+        //ArrayList<Double> try_get_density_link_a =  getDensity(try_X_N_pairs_link_a, 5, 5, try_N_up, try_N_down);
+        //System.out.println("Tesing get_density function, result is:" + try_get_density_link_a);
+
+        // for link b
+        //ArrayList<Double> try_get_density_link_b =  getDensity(try_X_N_pairs_link_b, 13, 13, try_N_up, try_N_down);
+        //System.out.println("Testing get_density function, result is:" + try_get_density_link_b);
 
 
         // ------> Testing Sorted HashMap function
@@ -1430,13 +1757,16 @@ public class LTM extends Link
     	System.out.println("Checking HashMap index order :" + test_sorted_X_N_pairs.get((double)0.1)); // check 一下 hashmap 存数据的顺利 对应的值
     	*/
 
-        // ------> Testing getDensity:
-    	/*
-    	double dN = test_sorted_X_N_pairs.get(0.0) - test_sorted_X_N_pairs.get(0.1); // [0.0, 0.1, 0.15, 0.2] test_sorted_X_N_pairs.get(index = 0) - test_sorted_X_N_pairs.get(index = 1);
-    	double dX = test_indexes.get(1) - test_indexes.get(0);
-    	double test_density_value = dN/dX;
-    	System.out.println("Testing density value is :" + test_density_value);
-    	*/
+
+        // ------> Testing getPressure_normal() function
+        LTM upLink = null;
+        LTM downLink = null;
+        //HashMap<Double, Double> try_X_N_pairs_link_a = LTM.get_X_N_pairs(10, 10, try_N_up_linka, try_N_down_linka);
+        //HashMap<Double, Double> try_X_N_pairs_link_b = LTM.get_X_N_pairs(10, 10, try_N_up_linkb, try_N_down_linkb);
+
+        double try_getPressure_value = LTM.getPressure_normal(upLink, downLink, 0.5, 0.5, 1.0, 11, 11, try_N_up_linka, try_N_up_linkb, try_N_down_linka, try_N_down_linkb);
+
+
 
         // ------> Testing for loop:
     	/*

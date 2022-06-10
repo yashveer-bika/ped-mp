@@ -49,7 +49,10 @@ public class Params
 
 
 
-    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s.txt", demandScaleFactor, DURATION, dt);
+//    public final static
+    public static long t = System.currentTimeMillis();
+
+    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, t);
 
 
     public final static String cplex_out_filepath = "cplex_out.txt";

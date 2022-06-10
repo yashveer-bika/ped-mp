@@ -60,11 +60,11 @@ public class MPcontroller implements Controller {
 
 
 //                vehMoveNums.put(turn, Math.min(turn.getCapacity(), turn.getQueueLength()) );
-                if (intersection.getId() == 5) {
-                    System.out.println("tm: " + turn);
-                    System.out.println("Q_ij: " + turn.getCapacity());
-                    System.out.println("x_ij: " + turn.getQueueLength());
-                }
+//                if (intersection.getId() == 5) {
+//                    System.out.println("tm: " + turn);
+//                    System.out.println("Q_ij: " + turn.getCapacity());
+//                    System.out.println("x_ij: " + turn.getQueueLength());
+//                }
             }
 
 

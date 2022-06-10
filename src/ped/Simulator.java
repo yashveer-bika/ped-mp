@@ -51,7 +51,7 @@ public class Simulator extends Network {
         File demand_file = new File(path + "trips_static_od_demand.txt");
         File turn_props_file = new File(path + "turning_proportions.txt");
 
-        loadStaticDemand(demand_file);
+        loadStaticDemand(demand_file, Params.demandScaleFactor);
 
 
     }
@@ -226,8 +226,11 @@ public class Simulator extends Network {
         // goal, l.step(), then l.update()
     }
 
-    public void runSim() {
-        //
+    // TODO: javadoc
+    // true if stable, false if non-stable
+    public boolean runSim() {
+        // TODO: define a k for slope
+
         PrintStream ps_console = System.out;
 
         try {
@@ -251,9 +254,9 @@ public class Simulator extends Network {
 
 
             System.out.println("Sim Time: " + Params.time);
-            System.out.println("\t network-level occupancy: " + getOccupancy());
-            System.out.println("\t avg link tt: " + getAvgLinkTravelTime());
-            System.out.println("\t avg delay: " + getAvgDelay());
+            System.out.println("\tnetwork-level occupancy: " + getOccupancy());
+            System.out.println("\tavg link tt: " + getAvgLinkTravelTime());
+            System.out.println("\tavg delay: " + getAvgDelay());
 
             addVehicleDemand(static_demand, Params.dt);
 
@@ -273,6 +276,8 @@ public class Simulator extends Network {
 
         System.setOut(ps_console);
         System.out.println("Console again !!");
+
+        return false;
     }
 
 
@@ -341,6 +346,7 @@ public class Simulator extends Network {
     }
 
 
+
     public double getOccupancy() {
         double totalOccupancy = 0;
         for (Link l : getLinkSet()) {
@@ -348,9 +354,29 @@ public class Simulator extends Network {
                 continue;
             }
             totalOccupancy += l.getOccupancy();
-
         }
         return totalOccupancy;
     }
+
+
+
+    public void reset() {
+        // TODO: reset all the links
+        for (Link l : getLinkSet()) {
+            l.reset();
+        }
+    }
+
+    public void findMaximalDemandScaleFactor() {
+        // TODO: set up binary search to find the MDSF
+        int maxIter = 10;
+        double min = 0.0;
+        double max = 1.0;
+
+        while (true) {
+
+        }
+    }
+
 }
 

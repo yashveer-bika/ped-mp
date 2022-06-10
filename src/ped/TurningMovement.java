@@ -358,7 +358,7 @@ public class TurningMovement {
     }
 
     public double getQueueLength() {
-        return i.getSendingFlow() * getTurningProportion();
+        return i.getSendingFlow() * getRandomTurningProportion();
     }
 
 //    public void addToQueue(Vehicle v) {
@@ -407,6 +407,12 @@ public class TurningMovement {
 //    public void addVehicles(List<Vehicle> vs) {
 //        vehicleQueue.addAll(vs);
 //    }
+
+    public double getRandomTurningProportion() {
+        // TODO: ask Michael if we add some sophistication here
+        double tp = readTurningProps(this.i.getId(), this.j.getId());
+        return tp;
+    }
 
     public double getTurningProportion() {
         // TODO: note the data setup of the file
