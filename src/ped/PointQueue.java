@@ -36,7 +36,8 @@ public class PointQueue extends Link
         // reset();
 
         demand = new LinkedList<Double>();
-        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-1; i++)
+        demand.add(0.0);
+        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-2; i++)
         {
             demand.add(0.0);
         }

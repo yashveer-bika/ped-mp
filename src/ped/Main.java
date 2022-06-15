@@ -84,15 +84,18 @@ public class Main
 //        pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
-//        String path = "data/SiouxFalls/";
-//        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP");
-//        siouxFallsVehOnly.runSim();
-
         String path = "data/SiouxFalls/";
-        Simulator siouxFallsPeds = new Simulator(path, false, "vehMP");
+        Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP");
+        double minDSF = 0.024;
+        double maxDSF = 0.0256875;
+        Params.demandScaleFactor = (maxDSF + minDSF) / 2;
+        siouxFallsVehOnly.runSim();
+
+//        String path = "data/SiouxFalls/";
+//        Simulator siouxFallsPeds = new Simulator(path, false, "vehMP");
 //        siouxFallsPeds.runSim();
 
-        // TODO: write some 
+        // TODO: write some
 
     }
 }

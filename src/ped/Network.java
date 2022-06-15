@@ -650,12 +650,14 @@ public class Network {
 
                     // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
 
-                    // TODO: make sure position from data is consistent with the lengths
-                    double length = ped1.distance(ped2);
-                    // TODO: define ffspd for
-                    double ffspd = 0;
+                    // TODO: define ffspd for pedestrians
+                    double ffspd = 3; // 3 mi/hr
                     int capacityPerLane = sidewalk_capacity;
-                    int numLanes = 0;
+                    int numLanes = 1;
+                    // corner sidewalk, assume it takes 2 timesteps to cross
+                    int ts_for_travel = 2;
+                    double length = (ts_for_travel+1) * Params.dt * 5280 / (3600 * ffspd);
+
                     // TODO: make sure the id gen for sidewalks is easy to deal with
                     int id = Integer.parseInt(ped1.getId() + "666" + ped2.getId());
                     Link sidewalk = new PointQueue(id, "sidewalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
@@ -676,10 +678,11 @@ public class Network {
                         // TODO: update the parameters id, length, ffspd, ..., correctly
                         ped1 = pedIntList.get(j);
                         ped2 = pedIntList.get(j+1);
-                        ffspd = 0;
-                        capacityPerLane = 0;
+                        ffspd = 3; // 3 mph ffspd
+                        capacityPerLane = 0; // TODO: what is the real capacity??
                         numLanes = 1;
-                        length = ped1.euclideanDist(ped2);
+                        // TODO: verify that length = 0 makes sense
+                        length = 0; // NOTE: WE SET LENGTH TO 0, SINCE THE CODE FORCES PointQueue to have
                         
                         if (ped1.getId() == 902) {
                             System.out.println("oonga : " + 902);
@@ -699,10 +702,11 @@ public class Network {
                     }
                     ped1 = pedIntList.get(0);
                     ped2 = pedIntList.get(pedIntList.size() - 1);
-                    ffspd = 0;
+                    ffspd = 3;
                     capacityPerLane = 0;
                     numLanes = 1;
-                    length = ped1.euclideanDist(ped2);
+                    length = 0; // TODO: verify that length = 0 makes sense
+
 
                     if (ped1.getId() == 902) {
                         System.out.println("oonga : " + 902);
@@ -765,10 +769,10 @@ public class Network {
                         // TODO: update the parameters id, length, ffspd, ..., correctly
                         ped1 = pedIntList.get(j);
                         ped2 = pedIntList.get(j+1);
-                        ffspd = 0;
+                        ffspd = 3;
                         capacityPerLane = 0;
                         numLanes = 1;
-                        length = ped1.euclideanDist(ped2);
+                        length = 0;
 
                         if (vehInt.getId() == 2) {
                             System.out.println("Intersection 2 crosswalk");
@@ -790,10 +794,10 @@ public class Network {
                     }
                     ped1 = pedIntList.get(0);
                     ped2 = pedIntList.get(pedIntList.size() - 1);
-                    ffspd = 0;
+                    ffspd = 3;
                     capacityPerLane = 0;
                     numLanes = 1;
-                    length = ped1.euclideanDist(ped2);
+                    length = 0;
 
                     if (vehInt.getId() == 2) {
                         System.out.println("Intersection 2 crosswalk");
@@ -1123,7 +1127,6 @@ public class Network {
         for (Intersection inter : this.intersectionSet) {
             Set<Intersection> neighs = intersectionGraph.get(inter);
             VehIntersection vehInt = inter.getVehInt();
-            Location curLoc = vehInt.getLocation();
 
             for (PedNode srcPed : inter.getPedNodes()) {
                 // Location srcPedLoc = srcPed.getLocation();
@@ -1164,13 +1167,25 @@ public class Network {
                             nearestDest = tmpDest;
                         }
                     }
-                    //  Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
+                    // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
                     // TODO: make correct parameters
                     int id = Integer.parseInt(srcPed.getId() + "666" + nearestDest.getId());
-                    double length = srcPed.euclideanDist(nearestDest);
-                    double ffspd = 0;
-                    int capacityPerLane = Integer.MAX_VALUE;
-                    int numLanes = 0;
+
+//                    double length = srcPed.euclideanDist(nearestDest);
+                    // NOTE: we want the length of the road from Intersection inter to Intersection nei
+                    double road_length = inter.getVehInt().getOutgoingLink(nei.getVehInt()).getLength();
+                    double road_ll_length = inter.getVehInt().distance(nei.getVehInt());
+                    double sidewalk_ll_length = srcPed.distance(nearestDest);
+//                    double length = sidewalk_ll_length / road_ll_length * road_length;
+                    double length = road_length;
+                    // NOTE: we approximate sidewalk length to be the same as road length
+
+
+
+                    double ffspd = 3;
+                    int capacityPerLane = Integer.MAX_VALUE; // NOTE: dummy value
+                    int numLanes = 1;
+
                     Link side_walk = new PointQueue(id, "sidewalk", srcPed, nearestDest, length, ffspd, capacityPerLane, numLanes);
                     side_walk.setSidewalk(true);
                     System.out.println("\t\tNEW SIDEWALK MADE: " + side_walk);

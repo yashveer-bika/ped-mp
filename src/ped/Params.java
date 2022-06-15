@@ -18,7 +18,7 @@ public class Params
     /**
      * uniform demand scale
      */
-    public final static double demandScaleFactor = 0.1;
+    public static double demandScaleFactor = 0.1;
 
     /**
      * This is the time step, in seconds
@@ -50,10 +50,13 @@ public class Params
 
 
 //    public final static
-    public static long t = System.currentTimeMillis();
+    private static long t = System.currentTimeMillis();
 
-    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, t);
+//    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, t);
 
+    public static String getSim_output_filepath() {
+        return String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, System.currentTimeMillis());
+    }
 
     public final static String cplex_out_filepath = "cplex_out.txt";
 

@@ -153,7 +153,7 @@ public abstract class Link implements Comparable<Link>
 //     */
 //    public double getAvgGrade()
 //    {
-//        return (dest.getElevation() - source.getElevation()) / (getLength() * 5280);
+//        return (dest.getElevation() - source.getElevation()) / (getLength());
 //    }
 
     /**

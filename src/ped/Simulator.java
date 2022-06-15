@@ -1,5 +1,7 @@
 package ped;
 
+import ilog.cplex.IloCplex;
+
 import java.io.*;
 import java.util.*;
 
@@ -123,7 +125,7 @@ public class Simulator extends Network {
                 int origin_id = Integer.parseInt(demand_data[0]);
                 int dest_id = Integer.parseInt(demand_data[1]);
                 double demand = Double.parseDouble(demand_data[2]) * demandScaleFactor; // assume vehicles / hour
-                demand = demand * Params.dt / 3600; // converts from vehs / hr to vehs / timestep
+                demand = demand * Params.dt / 24 / 60 / 60; // converts from vehs / day to vehs / timestep
 
                 Node src = getNode(origin_id);
                 Node dest = getNode(dest_id);
@@ -216,7 +218,6 @@ public class Simulator extends Network {
         }
         for (Intersection i : getIntersectionSet()) {
 //            System.out.println("Moving vehicles on intersection " + i.getId());
-            // TODO: move vehicles based on flow calculation
              i.moveFlow();
         }
         for (Link l : getLinkSet()) {
@@ -234,7 +235,7 @@ public class Simulator extends Network {
         PrintStream ps_console = System.out;
 
         try {
-            System.setOut(new PrintStream(new File(Params.sim_output_filepath)));
+            System.setOut(new PrintStream(new File(Params.getSim_output_filepath())));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -365,16 +366,20 @@ public class Simulator extends Network {
         for (Link l : getLinkSet()) {
             l.reset();
         }
+        Params.time = 0;
     }
 
-    public void findMaximalDemandScaleFactor() {
+    public void findMaximalDemandScaleFactor(double min_scale, double max_scale) {
         // TODO: set up binary search to find the MDSF
         int maxIter = 10;
-        double min = 0.0;
-        double max = 1.0;
+        double min = min_scale;
+        double max = max_scale;
+        min = 0.024 ;
+        max = 0.24 ;
 
         while (true) {
 
+            reset();
         }
     }
 
