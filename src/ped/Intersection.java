@@ -44,7 +44,6 @@ public class Intersection {
 //    private boolean loadingComplete = false;
     private boolean ped; // says whether or not we allow pedestrians in this intersection
     // this is the Q_c defined in the paper
-    private double capacityConflictRegion_Qc;
     private int num_forks;
 
 
@@ -97,19 +96,6 @@ public class Intersection {
 //        allLinks.addAll(vehInt.getIncomingLinks());
 //        allLinks.addAll(vehInt.getOutgoingLinks());
 
-        // TODO: verify the purpose of the code below
-        // TODO: move this into the conflict region class
-        // find the capacity of the conflict region
-        // capacityConflictRegion_Qc
-        // max Q_{ij} where ij is a turning movement
-        double maxTurn = Double.MIN_VALUE;
-        for (TurningMovement t : this.vehicleTurns) {
-            double temp = t.getCapacity();
-            if (temp > maxTurn) {
-                maxTurn = temp;
-            }
-        }
-        capacityConflictRegion_Qc = maxTurn;
         generateV2Vconflicts();
     }
 
@@ -119,6 +105,10 @@ public class Intersection {
 
     public ArrayList<PedIntersection> getPedInts() {
         return pedInts;
+    }
+
+    public Set<TurningMovement> getExitTurns() {
+        return exitTurns;
     }
 
     public Intersection(VehIntersection vehInt, ArrayList<PedIntersection> pedInts, Set<PedNode> pedNodes,
@@ -184,21 +174,6 @@ public class Intersection {
     public Set<Node> getAllNodes() {
         return this.allNodes;
     }
-
-    // TODO: once testing works, move make to set and get paradigm
-//    public void setNumForks() {
-//        Set<Node> neighs = new HashSet<>();
-//        for (Link l : vehInt.getIncomingLinks()) {
-//            neighs.add( l.getSource() );
-//        }
-//        for (Link l : vehInt.getOutgoingLinks()) {
-//            neighs.add( l.getDest() );
-//        }
-////        if (getId() == 2) {
-////            System.out.println("neighbors: " + neighs);
-////        }
-//        num_forks = neighs.size();
-//    }
 
     public int getNum_forks() {
         Set<Node> neighs = new HashSet<>();
@@ -273,9 +248,9 @@ public class Intersection {
 
     // precondition: boundaryAngles is sorted from smallest to largest, boundaryAngles isn't empty (size >= 1)
     // boundaryAngles' values and angle are bound by [0, 2*PI)
+    // returns the integer associated with this angle given the boundary angles
     private int getConflictRegion(double angle, List<Double> boundaryAngles) {
         assert boundaryAngles != null;
-        // TODO: return the integer associated with this angle given the boundary angles
         int len = boundaryAngles.size();
         assert len >= 1;
 
@@ -532,7 +507,7 @@ public class Intersection {
 //            return false;
 //        }
 //
-//        // TODO: what does this case mean?
+//        // merge links don't conflict
 ////        if(t1.getOutgoingLink() == t2.getOutgoingLink() && getVehInt().getOutgoingLinks().size() == 2)
 ////        {
 ////            return false;

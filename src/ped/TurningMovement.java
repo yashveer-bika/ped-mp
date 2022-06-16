@@ -459,6 +459,7 @@ public class TurningMovement {
                     int downstreamId_ = Integer.parseInt(turn_prop_data[1]);
                     if (upstreamId == upstreamId_ && downstreamId == downstreamId_) {
                         double proportion = Double.parseDouble(turn_prop_data[2]);
+                        myReader.close();
                         return proportion;
                     }
                 }

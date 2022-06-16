@@ -143,40 +143,15 @@ public class Simulator extends Network {
     }
 
 
-    public void loadStaticDemand(File demandFile) {
-        loadStaticDemand(demandFile, 1.0);
-    }
-
-
-    public void addVehicleDemand(Map<Node, Map<Node, Double>> static_demand, double timeStepSize) {
-
-//        // if (simTime == 0) {
-//            for (Node src : static_demand.keySet()) {
-//                for (Node dest : static_demand.get(src).keySet()) {
-//                    // TODO: verify the units of num_vehs
-//                    Double num_vehs = static_demand.get(src).get(dest); // in vehs / hr
-//                    num_vehs = num_vehs * timeStepSize / 60 / 60;
-////                    for (int i = 0; i < num_vehs; i++) {
-////                        createVehicle(src, dest);
-////                    }
-//                }
-//            }
-//        // }
-
-        // if (simTime == 0) {
-            for (Node src : static_demand.keySet()) {
-                for (Node dest : static_demand.get(src).keySet()) {
-                    // TODO: verify the units of num_vehs
-                    Double num_vehs = static_demand.get(src).get(dest);
-//                    for (int i = 0; i < num_vehs; i++) {
-//                        createVehicle(src, dest);
-//                    }
-                    // TODO: test the line below
-                    // THIS SEEMS CONSISTENT WITH MICHA
-                    src.getEntryLink().addFlow(num_vehs);
-                }
+    public void addVehicleDemand(Map<Node, Map<Node, Double>> static_demand) {
+        for (Node src : static_demand.keySet()) {
+            for (Node dest : static_demand.get(src).keySet()) {
+                // We assume num_vehs has unit vehs / Params.dt
+                // This is determined when populating static_demand
+                Double num_vehs = static_demand.get(src).get(dest);
+                src.getEntryLink().addFlow(num_vehs);
             }
-            // }
+        }
     }
 
 //    public void moveVehsToLinks() {
@@ -259,7 +234,7 @@ public class Simulator extends Network {
             System.out.println("\tavg link tt: " + getAvgLinkTravelTime());
             System.out.println("\tavg delay: " + getAvgDelay());
 
-            addVehicleDemand(static_demand, Params.dt);
+            addVehicleDemand(static_demand);
 
 //            // print links
 //            for (Link l : getLinkSet()) {
@@ -360,14 +335,17 @@ public class Simulator extends Network {
     }
 
 
-
+    /*
+    Purpose:
+        reset of the links and time, so I can start a fresh simulation on the same network with the same demand file
+     */
     public void reset() {
-        // TODO: reset all the links
         for (Link l : getLinkSet()) {
             l.reset();
         }
         Params.time = 0;
     }
+
 
     public void findMaximalDemandScaleFactor(double min_scale, double max_scale) {
         // TODO: set up binary search to find the MDSF

@@ -51,6 +51,12 @@ public class vehMPcontroller implements Controller {
             for (TurningMovement turn : intersection.getEntryTurns()) {
                 cplex.addEq(v_signals.get(turn), 1); // no-conflicts
             }
+            // guarantee the entry turning movements are activated
+            for (TurningMovement turn : intersection.getExitTurns()) {
+                cplex.addEq(v_signals.get(turn), 1); // no-conflicts
+            }
+
+
 
             // CREATE FLOW VALS (y_ij)
             Map<TurningMovement, IloNumVar> flow_vals = new HashMap<>();

@@ -72,7 +72,8 @@ public class PointQueue extends Link
     public void reset()
     {
         demand = new LinkedList<Double>();
-        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-1; i++)
+        demand.add(0.0);
+        for(int i = 0; i < Math.ceil(getFFTime()/Params.dt)-2; i++)
         {
             demand.add(0.0);
         }
@@ -115,12 +116,12 @@ public class PointQueue extends Link
 
     public double getSendingFlow()
     {
-        return Math.min(n, getCapacity() * Params.dt/3600.0);
+        return Math.min(n, getCapacity() );
     }
 
     public double getReceivingFlow()
     {
-        return getCapacity() * Params.dt/3600.0;
+        return getCapacity();
     }
 
     public void addFlow(double y)

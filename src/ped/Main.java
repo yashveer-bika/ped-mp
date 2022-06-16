@@ -86,9 +86,10 @@ public class Main
 
         String path = "data/SiouxFalls/";
         Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP");
-        double minDSF = 0.024;
-        double maxDSF = 0.0256875;
+        double minDSF = 0.1;
+        double maxDSF = 0.5;
         Params.demandScaleFactor = (maxDSF + minDSF) / 2;
+//        Params.demandScaleFactor = 0.1;
         siouxFallsVehOnly.runSim();
 
 //        String path = "data/SiouxFalls/";

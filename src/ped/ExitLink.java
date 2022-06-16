@@ -72,9 +72,8 @@ public class ExitLink extends Link
     public double getSendingFlow()
     {
         // fill this in
-        // TODO:
 //        return queue.size();
-        return -1.0;
+        return occupancy;
     }
 
     public double getReceivingFlow()

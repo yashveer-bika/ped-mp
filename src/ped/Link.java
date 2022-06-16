@@ -47,7 +47,7 @@ public abstract class Link implements Comparable<Link>
     // free flow speed in mi/hr
     private double ffspd;
 
-    private double free_flow_time;
+    // private double free_flow_time;
 
     // travel time information
     private double avgTT;
@@ -75,9 +75,9 @@ public abstract class Link implements Comparable<Link>
      * @param id id of this {@Link Link}
      * @param source start {@Link Node} of this {@Link Link}
      * @param dest end {@Link Node} of this {@Link Link}
-     * @param length length in mi
+     * @param length length in ft
      * @param ffspd free flow speed in mi/hr
-     * @param capacityPerLane capacity (per lane) in veh/hr
+     * @param capacityPerLane capacity (per lane) in veh/timestep (veh/Params.dt)
      * @param numLanes number of lanes
      */
     public Link(int id, String type, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
@@ -91,7 +91,7 @@ public abstract class Link implements Comparable<Link>
         this.ffspd = ffspd;
         this.length = length;
         this.numLanes = numLanes;
-        this.free_flow_time = ffspd / length;
+        // this.free_flow_time = ffspd / length;
 //        this.vehs = new ArrayList<>();
 
         // update incoming/outgoing sets of Links in the Node class
@@ -166,7 +166,7 @@ public abstract class Link implements Comparable<Link>
     }
 
     /**
-     * @return the capacity per lane in veh/hr
+     * @return the capacity per lane in veh/timestep
      */
     public double getCapacityPerLane()
     {
@@ -174,7 +174,7 @@ public abstract class Link implements Comparable<Link>
     }
 
     /**
-     * @return the total capacity in veh/hr
+     * @return the total capacity in veh/timestep
      */
     public double getCapacity()
     {
@@ -260,7 +260,6 @@ public abstract class Link implements Comparable<Link>
     }
 
 
-    // TODO: update once I understand the purpose
     /**
      * This method is used to calculate the average travel time.
      * It should be called once per time step by the {@Link dnl.Network} class.

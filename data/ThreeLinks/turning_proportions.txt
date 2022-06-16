@@ -1,0 +1,5 @@
+src	dest	turning proportions
+90011	12	1
+12	23	1
+23	34	1
+34	419004	1
