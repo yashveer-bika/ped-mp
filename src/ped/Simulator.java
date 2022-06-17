@@ -214,7 +214,7 @@ public class Simulator extends Network {
         loadStaticDemand(demand_file);
 
         // TODO: define a k for slope
-        double k = Math.pow(10, -4);
+        double k = Math.pow(10, -6);
 
 
         // keep 50 most recent network-level occupancy
@@ -287,6 +287,7 @@ public class Simulator extends Network {
 
 
         System.setOut(ps_console);
+        newPs.close();
         System.out.println("Console again !!");
         System.out.println("occupancies: " + occupancies);
         return false;
@@ -424,26 +425,27 @@ public class Simulator extends Network {
     public double findMaximalDemandScaleFactor(double min, double max) {
         // TODO: set up binary search to find the MDSF
 
-        // first find a maximum that is unstable
-        boolean stable = true;
-        while (stable) {
-            System.out.println("\t\tmax demand scale: " + max);
-            Params.demandScaleFactor = max;
-            stable = runSim();
-            reset();
-            max *= 2;
-        }
+//        // first find a maximum that is unstable
+//        boolean stable = true;
+//        while (stable) {
+//            System.out.println("\t\tmax demand scale: " + max);
+//            Params.demandScaleFactor = max;
+//            stable = runSim();
+//            reset();
+//            max *= 2;
+//        }
+//
+//        // first find a min that is stable
+//        stable = false;
+//        while (!stable) {
+//            System.out.println("\t\tmin demand scale: " + min);
+//            Params.demandScaleFactor = min;
+//            stable = runSim();
+//            reset();
+//            min /= 2;
+//        }
 
-        // first find a min that is stable
-        stable = false;
-        while (!stable) {
-            System.out.println("\t\tmin demand scale: " + min);
-            Params.demandScaleFactor = min;
-            stable = runSim();
-            reset();
-            min /= 2;
-        }
-
+        boolean stable;
         double mid;
         while (true) {
             System.out.println("\t\tbest demand scale: " + min);
