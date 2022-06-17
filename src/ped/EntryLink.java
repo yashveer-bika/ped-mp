@@ -42,7 +42,8 @@ public class EntryLink extends Link
     {
         // TODO:
         // fill this in
-//        queue.clear();
+//        queue.clear()
+        occupancy = 0;
     }
 
     public double getOccupancy()

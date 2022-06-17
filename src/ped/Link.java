@@ -35,7 +35,7 @@ public abstract class Link implements Comparable<Link>
     //
     private String type;
 
-    // capacity per lane in veh/hr
+    // capacity per lane in veh/timestep
     private double capacityPerLane;
 
     // number of lanes

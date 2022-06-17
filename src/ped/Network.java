@@ -341,7 +341,7 @@ public class Network {
                 int srcId = Integer.parseInt(link_data[2]);
                 int destId = Integer.parseInt(link_data[3]);
 
-                double length = Double.parseDouble(link_data[4]);
+                double length = Double.parseDouble(link_data[4]); // in ft
                 double ffspd = Double.parseDouble(link_data[5]);
 
                 double capacityPerLane = Integer.parseInt(link_data[6]);

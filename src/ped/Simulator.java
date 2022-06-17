@@ -4,6 +4,7 @@ import ilog.cplex.IloCplex;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.DoubleBinaryOperator;
 
 public class Simulator extends Network {
 //    private double simTime; // total network time (time in simulation)
@@ -15,27 +16,6 @@ public class Simulator extends Network {
 //    private Map<Node, Map<Node, Map<Double, Double>>> demand;
 //    entrance node, start time, end time, demand_quantity
     private Map<Node, Map<Node, Double>> static_demand;
-
-    public Simulator(String path, boolean ped, String controllerType, double demandScaleFactor) {
-        this(
-                new File(path + "nodes.txt"),
-                new File(path + "links.txt"),
-                new File(path + "turning_proportions.txt"),
-                ped,
-                controllerType
-        );
-        dataPath = path;
-
-
-        File nodesFile = new File(path + "nodes.txt");
-        File linksFile = new File(path + "links.txt");
-        File demand_file = new File(path + "trips_static_od_demand.txt");
-        File turn_props_file = new File(path + "turning_proportions.txt");
-
-        loadStaticDemand(demand_file, demandScaleFactor);
-
-
-    }
 
     public Simulator(String path, boolean ped, String controllerType) {
         this(
@@ -50,10 +30,9 @@ public class Simulator extends Network {
 
         File nodesFile = new File(path + "nodes.txt");
         File linksFile = new File(path + "links.txt");
-        File demand_file = new File(path + "trips_static_od_demand.txt");
         File turn_props_file = new File(path + "turning_proportions.txt");
-
-        loadStaticDemand(demand_file, Params.demandScaleFactor);
+        File demand_file = new File(path + "trips_static_od_demand.txt");
+        loadStaticDemand(demand_file);
 
 
     }
@@ -71,7 +50,7 @@ public class Simulator extends Network {
     }
 
 
-    public void loadStaticDemand(File demandFile, double demandScaleFactor) {
+    public void loadStaticDemand(File demandFile) {
         try {
             String[] header = {};
             Scanner myReader = new Scanner(demandFile);
@@ -124,7 +103,7 @@ public class Simulator extends Network {
 //                System.out.println(demand_data[0]);
                 int origin_id = Integer.parseInt(demand_data[0]);
                 int dest_id = Integer.parseInt(demand_data[1]);
-                double demand = Double.parseDouble(demand_data[2]) * demandScaleFactor; // assume vehicles / hour
+                double demand = Double.parseDouble(demand_data[2]) ; // assume vehicles / day
                 demand = demand * Params.dt / 24 / 60 / 60; // converts from vehs / day to vehs / timestep
 
                 Node src = getNode(origin_id);
@@ -132,7 +111,7 @@ public class Simulator extends Network {
                 if (src == null || dest == null) {
                     continue;
                 } else {
-                    static_demand.get(src).put(dest, demand);
+                    static_demand.get(src).put(dest, demand * Params.demandScaleFactor);
                 }
             }
 //            System.out.println(static_demand);
@@ -202,15 +181,57 @@ public class Simulator extends Network {
         // goal, l.step(), then l.update()
     }
 
+    public class LimitedSizeQueue<K> extends ArrayList<K> {
+
+        private int maxSize;
+
+        public LimitedSizeQueue(int size){
+            this.maxSize = size;
+        }
+
+        public boolean add(K k){
+            boolean r = super.add(k);
+            if (size() > maxSize){
+                removeRange(0, size() - maxSize);
+            }
+            return r;
+        }
+
+        public K getYoungest() {
+            return get(size() - 1);
+        }
+
+        public K getOldest() {
+            return get(0);
+        }
+    }
+
     // TODO: javadoc
     // true if stable, false if non-stable
     public boolean runSim() {
+
+        File demand_file = new File(dataPath + "trips_static_od_demand.txt");
+        loadStaticDemand(demand_file);
+
         // TODO: define a k for slope
+        double k = Math.pow(10, -4);
+
+
+        // keep 50 most recent network-level occupancy
+        int queue_size = 50;
+        List<Double> timeL = new ArrayList<>();
+        for (double i = 0; Double.compare(i, queue_size) < 0; i++) {
+            timeL.add(i * Params.dt);
+        }
+        LimitedSizeQueue<Double> occupancies = new LimitedSizeQueue<Double>(queue_size);
+
+        double cum_nl_occupancy = 0;
 
         PrintStream ps_console = System.out;
-
+        PrintStream newPs = null;
         try {
-            System.setOut(new PrintStream(new File(Params.getSim_output_filepath())));
+            newPs = new PrintStream(new File(Params.getSim_output_filepath()));
+            System.setOut(newPs);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -228,11 +249,14 @@ public class Simulator extends Network {
 //                myWriter.write("\t avg link tt : " + getAvgLinkTravelTime());
 //                myWriter.write("\t avg delay : " + getAvgDelay());
 
-
             System.out.println("Sim Time: " + Params.time);
             System.out.println("\tnetwork-level occupancy: " + getOccupancy());
             System.out.println("\tavg link tt: " + getAvgLinkTravelTime());
             System.out.println("\tavg delay: " + getAvgDelay());
+
+            cum_nl_occupancy += getOccupancy();
+//            occupancies.add(cum_nl_occupancy / Math.max(1, Params.time));
+            occupancies.add(getOccupancy());
 
             addVehicleDemand(static_demand);
 
@@ -242,6 +266,18 @@ public class Simulator extends Network {
 //            }
             runController();
             updateTime();
+
+            if (Params.time / Params.dt > queue_size + 1) {
+                // check if slope is greater than k
+                double data_slope = approximateSlope(timeL, occupancies);
+//                System.out.println("\tSlope: " + data_slope);
+                if (data_slope < k) {
+//                    System.out.println("occupancies: " + occupancies);
+                    System.setOut(ps_console);
+                    return true;
+                }
+            }
+
         }
         long endTime = System.nanoTime();
         long elapsedTime = (endTime-startTime);
@@ -252,7 +288,7 @@ public class Simulator extends Network {
 
         System.setOut(ps_console);
         System.out.println("Console again !!");
-
+        System.out.println("occupancies: " + occupancies);
         return false;
     }
 
@@ -346,18 +382,87 @@ public class Simulator extends Network {
         Params.time = 0;
     }
 
+    /*
 
-    public void findMaximalDemandScaleFactor(double min_scale, double max_scale) {
+    function binary_search(A, n, T) is
+    L := 0
+    R := n − 1
+    while L ≤ R do
+        m := floor((L + R) / 2)
+        if A[m] < T then
+            L := m + 1
+        else if A[m] > T then
+            R := m − 1
+        else:
+            return m
+    return unsuccessful
+
+     */
+
+    // function to calculate m and c that best fit points
+    // represented by x[] and y[]
+    static double approximateSlope(List<Double> x, List<Double> y)
+    {
+        int n = x.size();
+        double m, c, sum_x = 0, sum_y = 0,
+                sum_xy = 0, sum_x2 = 0;
+        for (int i = 0; i < n; i++) {
+            sum_x += x.get(i);
+            sum_y += y.get(i);
+            sum_xy += x.get(i) * y.get(i);
+            sum_x2 += Math.pow(x.get(i), 2);
+        }
+
+        m = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - Math.pow(sum_x, 2));
+        c = (sum_y - m * sum_x) / n;
+
+//        System.out.println("m = " + m);
+//        System.out.println("c = " + c);
+        return m;
+    }
+
+    public double findMaximalDemandScaleFactor(double min, double max) {
         // TODO: set up binary search to find the MDSF
-        int maxIter = 10;
-        double min = min_scale;
-        double max = max_scale;
-        min = 0.024 ;
-        max = 0.24 ;
 
-        while (true) {
-
+        // first find a maximum that is unstable
+        boolean stable = true;
+        while (stable) {
+            System.out.println("\t\tmax demand scale: " + max);
+            Params.demandScaleFactor = max;
+            stable = runSim();
             reset();
+            max *= 2;
+        }
+
+        // first find a min that is stable
+        stable = false;
+        while (!stable) {
+            System.out.println("\t\tmin demand scale: " + min);
+            Params.demandScaleFactor = min;
+            stable = runSim();
+            reset();
+            min /= 2;
+        }
+
+        double mid;
+        while (true) {
+            System.out.println("\t\tbest demand scale: " + min);
+            mid = (min + max) / 2;
+            Params.demandScaleFactor = mid;
+            System.out.println("\t\t\t\tdsf: " + Params.demandScaleFactor);
+            System.out.println("\t\t\t\tRUNNING SIM.....");
+            stable = runSim();
+            reset();
+            System.out.println("\t\t\t\tFINISHED SIM AND RESET.....");
+            if (stable) {
+                if (Math.abs(mid - min) < Math.pow(10, -3)) {
+                    System.out.println("\t\tbest demand scale: " + mid);
+                    return mid;
+                }
+                min = mid;
+            } else {
+                max = mid;
+            }
         }
     }
 

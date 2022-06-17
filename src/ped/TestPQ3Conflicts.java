@@ -22,7 +22,7 @@ public class TestPQ3Conflicts {
 //        pq3_nodes_f = new File("data/PQ3/nodes.txt");
 //        pq3_links_f = new File("data/PQ3/links.txt");
 //        controllerType = "vehMP";
-        pq3_net_vehs = new Simulator("data/PQ3/", false, "vehMP", 0.02);
+        pq3_net_vehs = new Simulator("data/PQ3/", false, "vehMP");
 
 //        pq3_way2_nodes_f = new File("data/PQ3way2/nodes.txt");
 //        pq3_way2_links_f = new File("data/PQ3way2/links.txt");

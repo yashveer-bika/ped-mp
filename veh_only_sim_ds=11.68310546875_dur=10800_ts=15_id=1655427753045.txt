@@ -1,0 +1,1173 @@
+STARTING NEW SIM
+Sim Time: 0
+	network-level occupancy: 0.0
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 15
+	network-level occupancy: 0.24339803059895831
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 30
+	network-level occupancy: 0.48679606119791663
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 45
+	network-level occupancy: 0.730194091796875
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 60
+	network-level occupancy: 0.9735921223958333
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 75
+	network-level occupancy: 1.2169901529947915
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 90
+	network-level occupancy: 1.4603881835937498
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 105
+	network-level occupancy: 1.703786214192708
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 120
+	network-level occupancy: 1.9471842447916663
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 135
+	network-level occupancy: 2.1905822753906246
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 150
+	network-level occupancy: 2.433980305989583
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 165
+	network-level occupancy: 2.6773783365885415
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 180
+	network-level occupancy: 2.9207763671875
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 195
+	network-level occupancy: 3.1641743977864585
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 210
+	network-level occupancy: 3.407572428385417
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 225
+	network-level occupancy: 3.6509704589843754
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 240
+	network-level occupancy: 3.894368489583334
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 255
+	network-level occupancy: 4.137766520182292
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 270
+	network-level occupancy: 4.38116455078125
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 285
+	network-level occupancy: 4.624562581380208
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 300
+	network-level occupancy: 4.867960611979166
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 315
+	network-level occupancy: 5.111358642578125
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 330
+	network-level occupancy: 5.354756673177082
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 345
+	network-level occupancy: 5.598154703776041
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 360
+	network-level occupancy: 5.841552734375
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 375
+	network-level occupancy: 6.084950764973957
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 390
+	network-level occupancy: 6.328348795572916
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 405
+	network-level occupancy: 6.571746826171873
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 420
+	network-level occupancy: 6.815144856770832
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 435
+	network-level occupancy: 7.058542887369791
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 450
+	network-level occupancy: 7.301940917968748
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 465
+	network-level occupancy: 7.545338948567707
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 480
+	network-level occupancy: 7.788736979166666
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 495
+	network-level occupancy: 8.032135009765625
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 510
+	network-level occupancy: 8.275533040364584
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 525
+	network-level occupancy: 8.518931070963541
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 540
+	network-level occupancy: 8.7623291015625
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 555
+	network-level occupancy: 9.005727132161459
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 570
+	network-level occupancy: 9.249125162760416
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 585
+	network-level occupancy: 9.492523193359373
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 600
+	network-level occupancy: 9.735921223958332
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 615
+	network-level occupancy: 9.979319254557291
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 630
+	network-level occupancy: 10.222717285156248
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 645
+	network-level occupancy: 10.466115315755207
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 660
+	network-level occupancy: 10.709513346354164
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 675
+	network-level occupancy: 10.952911376953121
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 690
+	network-level occupancy: 11.196309407552082
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 705
+	network-level occupancy: 11.43970743815104
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 720
+	network-level occupancy: 11.683105468749996
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 735
+	network-level occupancy: 11.926503499348957
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 750
+	network-level occupancy: 12.169901529947914
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 765
+	network-level occupancy: 12.413299560546871
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 780
+	network-level occupancy: 12.656697591145832
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 795
+	network-level occupancy: 12.90009562174479
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 810
+	network-level occupancy: 13.14349365234375
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 825
+	network-level occupancy: 13.386891682942707
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 840
+	network-level occupancy: 13.630289713541664
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 855
+	network-level occupancy: 13.873687744140625
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 870
+	network-level occupancy: 14.117085774739582
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 885
+	network-level occupancy: 14.36048380533854
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 900
+	network-level occupancy: 14.603881835937496
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 915
+	network-level occupancy: 14.847279866536457
+	avg link tt: 303.75
+	avg delay: 3.75
+Sim Time: 930
+	network-level occupancy: 15.090677897135418
+	avg link tt: 301.875
+	avg delay: 1.875
+Sim Time: 945
+	network-level occupancy: 15.334075927734375
+	avg link tt: 300.54023697078617
+	avg delay: 0.5402369707861396
+Sim Time: 960
+	network-level occupancy: 15.577473958333334
+	avg link tt: 301.2076184853931
+	avg delay: 1.207618485393077
+Sim Time: 975
+	network-level occupancy: 15.820871988932291
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 990
+	network-level occupancy: 16.064270019531254
+	avg link tt: 301.875
+	avg delay: 1.875
+Sim Time: 1005
+	network-level occupancy: 16.30766805013021
+	avg link tt: 300.54023697078617
+	avg delay: 0.5402369707861396
+Sim Time: 1020
+	network-level occupancy: 16.551066080729168
+	avg link tt: 301.2076184853931
+	avg delay: 1.207618485393077
+Sim Time: 1035
+	network-level occupancy: 16.794464111328125
+	avg link tt: 300.0
+	avg delay: 0.0
+Sim Time: 1050
+	network-level occupancy: 17.037862141927082
+	avg link tt: 301.875
+	avg delay: 1.875
+Sim Time: 1065
+	network-level occupancy: 17.281260172526043
+	avg link tt: 302.1451184853931
+	avg delay: 2.145118485393077
+Sim Time: 1080
+	network-level occupancy: 17.524658203124996
+	avg link tt: 300.8103554561792
+	avg delay: 0.8103554561792095
+Sim Time: 1095
+	network-level occupancy: 17.768056233723957
+	avg link tt: 301.3426777280896
+	avg delay: 1.3426777280896118
+Sim Time: 1110
+	network-level occupancy: 18.011454264322918
+	avg link tt: 301.6127962134827
+	avg delay: 1.6127962134826817
+Sim Time: 1125
+	network-level occupancy: 18.254852294921875
+	avg link tt: 300.2780331842688
+	avg delay: 0.2780331842688213
+Sim Time: 1140
+	network-level occupancy: 18.498250325520832
+	avg link tt: 307.7780331842688
+	avg delay: 7.778033184268814
+Sim Time: 1155
+	network-level occupancy: 18.741648356119793
+	avg link tt: 300.81827015505496
+	avg delay: 0.8182701550549609
+Sim Time: 1170
+	network-level occupancy: 18.98504638671875
+	avg link tt: 312.5966350775275
+	avg delay: 12.596635077527473
+Sim Time: 1185
+	network-level occupancy: 19.228444417317707
+	avg link tt: 300.01187204831365
+	avg delay: 0.011872048313612993
+Sim Time: 1200
+	network-level occupancy: 19.471842447916664
+	avg link tt: 318.76187204831365
+	avg delay: 18.76187204831362
+Sim Time: 1215
+	network-level occupancy: 19.715240478515625
+	avg link tt: 302.1569905337067
+	avg delay: 2.156990533706697
+Sim Time: 1230
+	network-level occupancy: 19.958638509114582
+	avg link tt: 300.82222750449284
+	avg delay: 0.8222275044928296
+Sim Time: 1245
+	network-level occupancy: 20.202036539713543
+	avg link tt: 301.3486137522464
+	avg delay: 1.3486137522464219
+Sim Time: 1260
+	network-level occupancy: 20.445434570312496
+	avg link tt: 300.01385072303253
+	avg delay: 0.013850723032561518
+Sim Time: 1275
+	network-level occupancy: 20.688832600911457
+	avg link tt: 301.88885072303253
+	avg delay: 1.8888507230325615
+Sim Time: 1290
+	network-level occupancy: 20.932230631510418
+	avg link tt: 300.5540876938187
+	avg delay: 0.5540876938187012
+Sim Time: 1305
+	network-level occupancy: 21.17562866210937
+	avg link tt: 302.4290876938187
+	avg delay: 2.429087693818701
+Sim Time: 1320
+	network-level occupancy: 21.41902669270833
+	avg link tt: 302.6992061792118
+	avg delay: 2.699206179211771
+Sim Time: 1335
+	network-level occupancy: 21.662424723307293
+	avg link tt: 301.3644431499979
+	avg delay: 1.3644431499979106
+Sim Time: 1350
+	network-level occupancy: 21.90582275390625
+	avg link tt: 300.5516176803646
+	avg delay: 0.5516176803646005
+Sim Time: 1365
+	network-level occupancy: 22.14922078450521
+	avg link tt: 300.95234006039203
+	avg delay: 0.9523400603920251
+Sim Time: 1380
+	network-level occupancy: 22.392618815104164
+	avg link tt: 302.82734006039203
+	avg delay: 2.827340060392018
+Sim Time: 1395
+	network-level occupancy: 22.636016845703125
+	avg link tt: 301.49257703117814
+	avg delay: 1.4925770311781719
+Sim Time: 1410
+	network-level occupancy: 22.87941487630208
+	avg link tt: 301.7626955165712
+	avg delay: 1.7626955165712417
+Sim Time: 1425
+	network-level occupancy: 23.12281290690104
+	avg link tt: 300.4279324873574
+	avg delay: 0.4279324873573813
+Sim Time: 1440
+	network-level occupancy: 23.3662109375
+	avg link tt: 307.10065925695375
+	avg delay: 7.100659256953726
+Sim Time: 1455
+	network-level occupancy: 23.609608968098957
+	avg link tt: 303.02646624367867
+	avg delay: 3.0264662436786907
+Sim Time: 1470
+	network-level occupancy: 23.853006998697914
+	avg link tt: 312.94170321446484
+	avg delay: 12.941703214464823
+Sim Time: 1485
+	network-level occupancy: 24.09640502929687
+	avg link tt: 300.356940185251
+	avg delay: 0.35694018525096993
+Sim Time: 1500
+	network-level occupancy: 24.339803059895832
+	avg link tt: 319.106940185251
+	avg delay: 19.106940185250977
+Sim Time: 1515
+	network-level occupancy: 24.46150207519531
+	avg link tt: 300.8971771560371
+	avg delay: 0.8971771560371096
+Sim Time: 1530
+	network-level occupancy: 24.58320109049479
+	avg link tt: 302.7721771560371
+	avg delay: 2.7721771560371167
+Sim Time: 1545
+	network-level occupancy: 24.58320109049479
+	avg link tt: 301.4374141268232
+	avg delay: 1.4374141268232492
+Sim Time: 1560
+	network-level occupancy: 24.70490010579427
+	avg link tt: 300.1026510976094
+	avg delay: 0.10265109760939595
+Sim Time: 1575
+	network-level occupancy: 24.70490010579427
+	avg link tt: 301.021966146292
+	avg delay: 1.0219661462919873
+Sim Time: 1590
+	network-level occupancy: 24.82659912109375
+	avg link tt: 301.43191277440235
+	avg delay: 1.431912774402349
+Sim Time: 1605
+	network-level occupancy: 24.82659912109375
+	avg link tt: 323.8708142196758
+	avg delay: 23.870814219675808
+Sim Time: 1620
+	network-level occupancy: 24.94829813639323
+	avg link tt: 300.98607487259426
+	avg delay: 0.9860748725942514
+Sim Time: 1635
+	network-level occupancy: 24.948298136393227
+	avg link tt: 302.86107487259426
+	avg delay: 2.8610748725942514
+Sim Time: 1650
+	network-level occupancy: 25.069997151692707
+	avg link tt: 304.73607487259426
+	avg delay: 4.736074872594244
+Sim Time: 1665
+	network-level occupancy: 25.069997151692704
+	avg link tt: 303.4013118433804
+	avg delay: 3.401311843380391
+Sim Time: 1680
+	network-level occupancy: 25.191696166992188
+	avg link tt: 302.06654881416654
+	avg delay: 2.0665488141665307
+Sim Time: 1695
+	network-level occupancy: 25.191696166992188
+	avg link tt: 302.3366672995596
+	avg delay: 2.3366672995596005
+Sim Time: 1710
+	network-level occupancy: 25.31339518229166
+	avg link tt: 301.00190427034573
+	avg delay: 1.001904270345733
+Sim Time: 1725
+	network-level occupancy: 25.313395182291664
+	avg link tt: 302.87690427034573
+	avg delay: 2.87690427034574
+Sim Time: 1740
+	network-level occupancy: 25.435094197591145
+	avg link tt: 303.1470227557388
+	avg delay: 3.14702275573881
+Sim Time: 1755
+	network-level occupancy: 25.435094197591145
+	avg link tt: 303.4171412411319
+	avg delay: 3.417141241131887
+Sim Time: 1770
+	network-level occupancy: 25.55679321289062
+	avg link tt: 305.2921412411319
+	avg delay: 5.292141241131887
+Sim Time: 1785
+	network-level occupancy: 25.55679321289062
+	avg link tt: 307.16714124113184
+	avg delay: 7.16714124113188
+Sim Time: 1800
+	network-level occupancy: 25.678492228190102
+	avg link tt: 307.437259726525
+	avg delay: 7.43725972652495
+Sim Time: 1815
+	network-level occupancy: 25.921890258789062
+	avg link tt: 306.1024966973111
+	avg delay: 6.102496697311096
+Sim Time: 1830
+	network-level occupancy: 25.80019124348958
+	avg link tt: 304.7677336680972
+	avg delay: 4.767733668097236
+Sim Time: 1845
+	network-level occupancy: 26.04358927408854
+	avg link tt: 305.0378521534903
+	avg delay: 5.037852153490306
+Sim Time: 1860
+	network-level occupancy: 26.04358927408854
+	avg link tt: 306.12689341561236
+	avg delay: 6.126893415612393
+Sim Time: 1875
+	network-level occupancy: 25.982739766438804
+	avg link tt: 305.57808912427646
+	avg delay: 5.578089124276445
+Sim Time: 1890
+	network-level occupancy: 25.809471130371094
+	avg link tt: 304.24332609506257
+	avg delay: 4.243326095062585
+Sim Time: 1905
+	network-level occupancy: 26.05286916097005
+	avg link tt: 304.51344458045565
+	avg delay: 4.513444580455655
+Sim Time: 1920
+	network-level occupancy: 25.921890258789062
+	avg link tt: 309.1061413677061
+	avg delay: 9.106141367706073
+Sim Time: 1935
+	network-level occupancy: 26.16528828938802
+	avg link tt: 327.5912413744158
+	avg delay: 27.5912413744158
+Sim Time: 1950
+	network-level occupancy: 26.10443878173828
+	avg link tt: 340.12731734396607
+	avg delay: 40.12731734396608
+Sim Time: 1965
+	network-level occupancy: 25.931170145670574
+	avg link tt: 301.19207774640705
+	avg delay: 1.192077746407044
+Sim Time: 1980
+	network-level occupancy: 25.80947113037109
+	avg link tt: 301.5335388732035
+	avg delay: 1.5335388732035184
+Sim Time: 1995
+	network-level occupancy: 26.052869160970054
+	avg link tt: 301.8036573585966
+	avg delay: 1.8036573585965883
+Sim Time: 2010
+	network-level occupancy: 25.931170145670567
+	avg link tt: 336.7444585976102
+	avg delay: 36.74445859761026
+Sim Time: 2025
+	network-level occupancy: 25.86104075113932
+	avg link tt: 303.94877584398967
+	avg delay: 3.948775843989665
+Sim Time: 2040
+	network-level occupancy: 25.687772115071613
+	avg link tt: 372.1332702393574
+	avg delay: 72.13327023935739
+Sim Time: 2055
+	network-level occupancy: 25.93117014567057
+	avg link tt: 304.48901281477583
+	avg delay: 4.489012814775805
+Sim Time: 2070
+	network-level occupancy: 25.800191243489586
+	avg link tt: 303.15424978556194
+	avg delay: 3.1542497855619374
+Sim Time: 2085
+	network-level occupancy: 25.708916982014973
+	avg link tt: 301.88719930174295
+	avg delay: 1.8871993017429887
+Sim Time: 2100
+	network-level occupancy: 25.64806747436523
+	avg link tt: 300.4847237271342
+	avg delay: 0.48472372713423084
+Sim Time: 2115
+	network-level occupancy: 25.526368459065754
+	avg link tt: 302.3597237271342
+	avg delay: 2.359723727134231
+Sim Time: 2130
+	network-level occupancy: 25.76976648966471
+	avg link tt: 302.6298422125273
+	avg delay: 2.6298422125273007
+Sim Time: 2145
+	network-level occupancy: 25.72412935892741
+	avg link tt: 301.2950791833134
+	avg delay: 1.2950791833134403
+Sim Time: 2160
+	network-level occupancy: 25.967527389526367
+	avg link tt: 304.00884388299266
+	avg delay: 4.008843882992679
+Sim Time: 2175
+	network-level occupancy: 26.21092542012532
+	avg link tt: 300.2502765624429
+	avg delay: 0.25027656244285623
+Sim Time: 2190
+	network-level occupancy: 26.45432345072429
+	avg link tt: 302.1252765624429
+	avg delay: 2.1252765624428633
+Sim Time: 2205
+	network-level occupancy: 26.281054814656574
+	avg link tt: 302.3953950478359
+	avg delay: 2.395395047835933
+Sim Time: 2220
+	network-level occupancy: 26.107786178588867
+	avg link tt: 304.2703950478359
+	avg delay: 4.270395047835933
+Sim Time: 2235
+	network-level occupancy: 25.934517542521156
+	avg link tt: 306.1453950478359
+	avg delay: 6.145395047835926
+Sim Time: 2250
+	network-level occupancy: 25.777753829956055
+	avg link tt: 308.0203950478359
+	avg delay: 8.020395047835933
+Sim Time: 2265
+	network-level occupancy: 26.02115186055501
+	avg link tt: 309.8953950478359
+	avg delay: 9.895395047835933
+Sim Time: 2280
+	network-level occupancy: 26.264549891153962
+	avg link tt: 311.7703950478359
+	avg delay: 11.770395047835926
+Sim Time: 2295
+	network-level occupancy: 26.169410387674965
+	avg link tt: 313.6453950478359
+	avg delay: 13.645395047835933
+Sim Time: 2310
+	network-level occupancy: 26.412808418273922
+	avg link tt: 348.5861962868496
+	avg delay: 48.5861962868496
+Sim Time: 2325
+	network-level occupancy: 26.65620644887288
+	avg link tt: 317.3953950478359
+	avg delay: 17.395395047835926
+Sim Time: 2340
+	network-level occupancy: 26.89960447947184
+	avg link tt: 387.18477095781054
+	avg delay: 87.18477095781058
+Sim Time: 2355
+	network-level occupancy: 26.726335843404136
+	avg link tt: 321.1453950478359
+	avg delay: 21.14539504783594
+Sim Time: 2370
+	network-level occupancy: 26.553067207336422
+	avg link tt: 323.0203950478359
+	avg delay: 23.020395047835933
+Sim Time: 2385
+	network-level occupancy: 26.37979857126872
+	avg link tt: 324.8953950478359
+	avg delay: 24.895395047835933
+Sim Time: 2400
+	network-level occupancy: 26.219685395558674
+	avg link tt: 326.77039504783596
+	avg delay: 26.770395047835947
+Sim Time: 2415
+	network-level occupancy: 26.46308342615763
+	avg link tt: 328.64539504783596
+	avg delay: 28.645395047835947
+Sim Time: 2430
+	network-level occupancy: 26.28981479008992
+	avg link tt: 330.5203950478359
+	avg delay: 30.520395047835933
+Sim Time: 2445
+	network-level occupancy: 26.53321282068888
+	avg link tt: 332.3953950478359
+	avg delay: 32.39539504783593
+Sim Time: 2460
+	network-level occupancy: 26.576594193776447
+	avg link tt: 334.27039504783596
+	avg delay: 34.27039504783595
+Sim Time: 2475
+	network-level occupancy: 26.40332555770874
+	avg link tt: 336.1453950478359
+	avg delay: 36.14539504783593
+Sim Time: 2490
+	network-level occupancy: 26.23005692164103
+	avg link tt: 338.0203950478359
+	avg delay: 38.02039504783592
+Sim Time: 2505
+	network-level occupancy: 26.47345495223999
+	avg link tt: 339.8953950478359
+	avg delay: 39.89539504783593
+Sim Time: 2520
+	network-level occupancy: 26.71685298283895
+	avg link tt: 341.7703950478359
+	avg delay: 41.77039504783593
+Sim Time: 2535
+	network-level occupancy: 26.960251013437905
+	avg link tt: 342.040513533229
+	avg delay: 42.040513533229
+Sim Time: 2550
+	network-level occupancy: 26.786982377370197
+	avg link tt: 342.3106320186221
+	avg delay: 42.31063201862207
+Sim Time: 2565
+	network-level occupancy: 26.61371374130249
+	avg link tt: 342.58075050401516
+	avg delay: 42.58075050401514
+Sim Time: 2580
+	network-level occupancy: 26.440445105234776
+	avg link tt: 342.85086898940824
+	avg delay: 42.85086898940821
+Sim Time: 2595
+	network-level occupancy: 26.267176469167076
+	avg link tt: 1419.275559331261
+	avg delay: 1119.275559331261
+Sim Time: 2610
+	network-level occupancy: 26.380366166432697
+	avg link tt: 374.9711268773505
+	avg delay: 74.9711268773505
+Sim Time: 2625
+	network-level occupancy: 26.207097530364987
+	avg link tt: 344.5040301794917
+	avg delay: 44.50403017949168
+Sim Time: 2640
+	network-level occupancy: 26.35420846939087
+	avg link tt: 342.32646141637355
+	avg delay: 42.32646141637356
+Sim Time: 2655
+	network-level occupancy: 26.597606499989826
+	avg link tt: 340.9916983871597
+	avg delay: 40.9916983871597
+Sim Time: 2670
+	network-level occupancy: 26.84100453058878
+	avg link tt: 339.6569353579458
+	avg delay: 39.65693535794583
+Sim Time: 2685
+	network-level occupancy: 27.084402561187744
+	avg link tt: 338.322172328732
+	avg delay: 38.32217232873198
+Sim Time: 2700
+	network-level occupancy: 26.91113392512003
+	avg link tt: 336.9874092995181
+	avg delay: 36.987409299518106
+Sim Time: 2715
+	network-level occupancy: 26.737865289052323
+	avg link tt: 335.6526462703042
+	avg delay: 35.652646270304245
+Sim Time: 2730
+	network-level occupancy: 26.981263319651276
+	avg link tt: 334.3178832410904
+	avg delay: 34.31788324109037
+Sim Time: 2745
+	network-level occupancy: 26.807994683583573
+	avg link tt: 332.98312021187655
+	avg delay: 32.983120211876525
+Sim Time: 2760
+	network-level occupancy: 26.634726047515866
+	avg link tt: 352.2733571826626
+	avg delay: 52.27335718266263
+Sim Time: 2775
+	network-level occupancy: 26.87812407811482
+	avg link tt: 410.9385941534488
+	avg delay: 110.93859415344879
+Sim Time: 2790
+	network-level occupancy: 27.12152210871378
+	avg link tt: 529.603831124235
+	avg delay: 229.60383112423494
+Sim Time: 2805
+	network-level occupancy: 26.948253472646073
+	avg link tt: 768.2690680950211
+	avg delay: 468.269068095021
+Sim Time: 2820
+	network-level occupancy: 26.774984836578362
+	avg link tt: 1246.9358200029974
+	avg delay: 946.9358200029974
+Sim Time: 2835
+	network-level occupancy: 26.601716200510655
+	avg link tt: 325.9127995051885
+	avg delay: 25.912799505188495
+Sim Time: 2850
+	network-level occupancy: 26.845114231109612
+	avg link tt: 323.6397790073795
+	avg delay: 23.639779007379524
+Sim Time: 2865
+	network-level occupancy: 27.088512261708576
+	avg link tt: 322.30501597816567
+	avg delay: 22.30501597816567
+Sim Time: 2880
+	network-level occupancy: 27.331910292307537
+	avg link tt: 320.97025294895184
+	avg delay: 20.970252948951817
+Sim Time: 2895
+	network-level occupancy: 27.575308322906494
+	avg link tt: 1396.7275617761977
+	avg delay: 1096.7275617761977
+Sim Time: 2910
+	network-level occupancy: 27.402039686838783
+	avg link tt: 319.7069768905241
+	avg delay: 19.706976890524103
+Sim Time: 2925
+	network-level occupancy: 27.64543771743774
+	avg link tt: 319.44939459521447
+	avg delay: 19.4493945952145
+Sim Time: 2940
+	network-level occupancy: 27.472169081370033
+	avg link tt: 319.2640133320964
+	avg delay: 19.264013332096397
+Sim Time: 2955
+	network-level occupancy: 27.298900445302326
+	avg link tt: 317.7177255674895
+	avg delay: 17.71772556748946
+Sim Time: 2970
+	network-level occupancy: 27.12563180923462
+	avg link tt: 318.0171409278825
+	avg delay: 18.01714092788253
+Sim Time: 2985
+	network-level occupancy: 26.952363173166916
+	avg link tt: 318.3019078507756
+	avg delay: 18.3019078507756
+Sim Time: 3000
+	network-level occupancy: 27.19576120376587
+	avg link tt: 318.5793505549187
+	avg delay: 18.57935055491867
+Sim Time: 3015
+	network-level occupancy: 27.439159234364826
+	avg link tt: 318.85313114968676
+	avg delay: 18.85313114968674
+Sim Time: 3030
+	network-level occupancy: 27.26589059829712
+	avg link tt: 320.75150771099754
+	avg delay: 20.751507710997544
+Sim Time: 3045
+	network-level occupancy: 27.509288628896073
+	avg link tt: 317.52203022984787
+	avg delay: 17.52203022984788
+Sim Time: 3060
+	network-level occupancy: 27.752686659495033
+	avg link tt: 329.65701798412124
+	avg delay: 29.657017984121225
+Sim Time: 3075
+	network-level occupancy: 27.579418023427326
+	avg link tt: 337.2344623262744
+	avg delay: 37.23446232627444
+Sim Time: 3090
+	network-level occupancy: 27.406149387359616
+	avg link tt: 333.94725495490735
+	avg delay: 33.947254954907365
+Sim Time: 3105
+	network-level occupancy: 27.649547417958573
+	avg link tt: 334.4874919256935
+	avg delay: 34.48749192569351
+Sim Time: 3120
+	network-level occupancy: 27.892945448557533
+	avg link tt: 335.0277288964797
+	avg delay: 35.02772889647965
+Sim Time: 3135
+	network-level occupancy: 28.136343479156487
+	avg link tt: 315.2655965983855
+	avg delay: 15.265596598385521
+Sim Time: 3150
+	network-level occupancy: 27.96307484308879
+	avg link tt: 324.91188764709534
+	avg delay: 24.911887647095327
+Sim Time: 3165
+	network-level occupancy: 27.789806207021076
+	avg link tt: 349.1712427512871
+	avg delay: 49.171242751287046
+Sim Time: 3180
+	network-level occupancy: 27.738749438896775
+	avg link tt: 313.5335705399578
+	avg delay: 13.533570539957793
+Sim Time: 3195
+	network-level occupancy: 27.974623853340745
+	avg link tt: 312.1988075107439
+	avg delay: 12.19880751074394
+Sim Time: 3210
+	network-level occupancy: 28.218021883939706
+	avg link tt: 312.46892599613705
+	avg delay: 12.46892599613701
+Sim Time: 3225
+	network-level occupancy: 28.25308658120533
+	avg link tt: 311.13416296692316
+	avg delay: 11.134162966923157
+Sim Time: 3240
+	network-level occupancy: 28.496484611804288
+	avg link tt: 313.00916296692316
+	avg delay: 13.00916296692315
+Sim Time: 3255
+	network-level occupancy: 28.73988264240325
+	avg link tt: 311.67439993770927
+	avg delay: 11.674399937709282
+Sim Time: 3270
+	network-level occupancy: 28.9832806730022
+	avg link tt: 329.0713791033273
+	avg delay: 29.071379103327274
+Sim Time: 3285
+	network-level occupancy: 29.22667870360116
+	avg link tt: 310.60975539388846
+	avg delay: 10.609755393888499
+Sim Time: 3300
+	network-level occupancy: 29.053410067533452
+	avg link tt: 310.8798738792816
+	avg delay: 10.879873879281568
+Sim Time: 3315
+	network-level occupancy: 28.88014143146574
+	avg link tt: 311.14999236467463
+	avg delay: 11.149992364674638
+Sim Time: 3330
+	network-level occupancy: 29.123539462064702
+	avg link tt: 313.0465378712979
+	avg delay: 13.046537871297943
+Sim Time: 3345
+	network-level occupancy: 28.950270825996995
+	avg link tt: 311.6902293354608
+	avg delay: 11.690229335460778
+Sim Time: 3360
+	network-level occupancy: 28.777002189929284
+	avg link tt: 311.9603478208538
+	avg delay: 11.960347820853848
+Sim Time: 3375
+	network-level occupancy: 29.020400220528245
+	avg link tt: 317.66279216300705
+	avg delay: 17.66279216300707
+Sim Time: 3390
+	network-level occupancy: 29.2637982511272
+	avg link tt: 312.50058479164
+	avg delay: 12.500584791639987
+Sim Time: 3405
+	network-level occupancy: 29.09052961505949
+	avg link tt: 314.37558479164
+	avg delay: 14.375584791639987
+Sim Time: 3420
+	network-level occupancy: 28.917260978991788
+	avg link tt: 316.25058479164
+	avg delay: 16.25058479164
+Sim Time: 3435
+	network-level occupancy: 28.952325676257406
+	avg link tt: 318.12558479164
+	avg delay: 18.125584791639994
+Sim Time: 3450
+	network-level occupancy: 29.195723706856363
+	avg link tt: 329.10663886956365
+	avg delay: 29.10663886956366
+Sim Time: 3465
+	network-level occupancy: 29.439121737455324
+	avg link tt: 356.1784939737554
+	avg delay: 56.1784939737554
+Sim Time: 3480
+	network-level occupancy: 29.265853101387613
+	avg link tt: 323.75058479164
+	avg delay: 23.75058479164
+Sim Time: 3495
+	network-level occupancy: 29.09258446531991
+	avg link tt: 325.62558479164
+	avg delay: 25.62558479164001
+Sim Time: 3510
+	network-level occupancy: 28.9193158292522
+	avg link tt: 327.50058479164
+	avg delay: 27.500584791639994
+Sim Time: 3525
+	network-level occupancy: 28.746047193184495
+	avg link tt: 329.37558479164
+	avg delay: 29.37558479164001
+Sim Time: 3540
+	network-level occupancy: 28.572778557116784
+	avg link tt: 331.25058479164
+	avg delay: 31.25058479164001
+Sim Time: 3555
+	network-level occupancy: 28.399509921049077
+	avg link tt: 333.12558479164
+	avg delay: 33.125584791639994
+Sim Time: 3570
+	network-level occupancy: 28.226241284981366
+	avg link tt: 335.00058479164
+	avg delay: 35.000584791639994
+Sim Time: 3585
+	network-level occupancy: 28.124596834182736
+	avg link tt: 336.87558479164
+	avg delay: 36.875584791639994
+Sim Time: 3600
+	network-level occupancy: 28.367994864781693
+	avg link tt: 338.75058479164
+	avg delay: 38.750584791639994
+Sim Time: 3615
+	network-level occupancy: 28.611392895380654
+	avg link tt: 340.62558479164
+	avg delay: 40.625584791639994
+Sim Time: 3630
+	network-level occupancy: 28.596241645514958
+	avg link tt: 342.50058479164
+	avg delay: 42.50058479163998
+Sim Time: 3645
+	network-level occupancy: 28.83963967611392
+	avg link tt: 344.37558479164
+	avg delay: 44.37558479163998
+Sim Time: 3660
+	network-level occupancy: 29.083037706712876
+	avg link tt: 346.25058479164
+	avg delay: 46.250584791639994
+Sim Time: 3675
+	network-level occupancy: 29.1181024039785
+	avg link tt: 348.12558479164
+	avg delay: 48.12558479163998
+Sim Time: 3690
+	network-level occupancy: 29.36150043457746
+	avg link tt: 350.00058479164
+	avg delay: 50.00058479163998
+Sim Time: 3705
+	network-level occupancy: 29.60489846517642
+	avg link tt: 351.87558479164
+	avg delay: 51.87558479163998
+Sim Time: 3720
+	network-level occupancy: 29.84829649577538
+	avg link tt: 353.75058479164
+	avg delay: 53.75058479163998
+Sim Time: 3735
+	network-level occupancy: 30.091694526374333
+	avg link tt: 355.62558479164
+	avg delay: 55.62558479163998
+Sim Time: 3750
+	network-level occupancy: 30.178800475384673
+	avg link tt: 357.50058479164
+	avg delay: 57.500584791639966
+Sim Time: 3765
+	network-level occupancy: 30.318031839316966
+	avg link tt: 359.37558479164
+	avg delay: 59.375584791639966
+Sim Time: 3780
+	network-level occupancy: 30.561429869915923
+	avg link tt: 361.25058479164
+	avg delay: 61.25058479163998
+Sim Time: 3795
+	network-level occupancy: 30.80482790051488
+	avg link tt: 363.12558479164
+	avg delay: 63.125584791639966
+Sim Time: 3810
+	network-level occupancy: 31.04822593111384
+	avg link tt: 365.00058479164
+	avg delay: 65.00058479163998
+Sim Time: 3825
+	network-level occupancy: 31.2916239617128
+	avg link tt: 366.87558479164
+	avg delay: 66.87558479163998
+Sim Time: 3840
+	network-level occupancy: 31.53502199231176
+	avg link tt: 368.75058479164
+	avg delay: 68.75058479164
+Sim Time: 3855
+	network-level occupancy: 31.778420022910716
+	avg link tt: 370.62558479164
+	avg delay: 70.62558479163998
+Sim Time: 3870
+	network-level occupancy: 32.021818053509676
+	avg link tt: 372.50058479164
+	avg delay: 72.50058479164
+Sim Time: 3885
+	network-level occupancy: 31.848549417441966
+	avg link tt: 374.37558479164
+	avg delay: 74.37558479164
+Sim Time: 3900
+	network-level occupancy: 31.675280781374266
+	avg link tt: 376.25058479164
+	avg delay: 76.25058479164001
+Sim Time: 3915
+	network-level occupancy: 31.502012145306555
+	avg link tt: 378.12558479164
+	avg delay: 78.12558479164
+Sim Time: 3930
+	network-level occupancy: 31.745410175905512
+	avg link tt: 380.00058479164
+	avg delay: 80.00058479164002
+Sim Time: 3945
+	network-level occupancy: 31.572141539837805
+	avg link tt: 381.87558479164
+	avg delay: 81.87558479164001
+Sim Time: 3960
+	network-level occupancy: 31.398974629030516
+	avg link tt: 383.75058479164
+	avg delay: 83.75058479164002
+Sim Time: 3975
+	network-level occupancy: 31.22570599296281
+	avg link tt: 385.62558479164
+	avg delay: 85.62558479164002
+Sim Time: 3990
+	network-level occupancy: 31.260770690228433
+	avg link tt: 387.50058479164005
+	avg delay: 87.50058479164004
+Sim Time: 4005
+	network-level occupancy: 31.191668720827394
+	avg link tt: 389.37558479164
+	avg delay: 89.37558479164002
+Sim Time: 4020
+	network-level occupancy: 31.018400084759683
+	avg link tt: 391.25058479164005
+	avg delay: 91.25058479164005
+Sim Time: 4035
+	network-level occupancy: 31.05346478202531
+	avg link tt: 393.12558479164005
+	avg delay: 93.12558479164005
+Sim Time: 4050
+	network-level occupancy: 30.8801961459576
+	avg link tt: 395.0005847916401
+	avg delay: 95.00058479164008
+Sim Time: 4065
+	network-level occupancy: 30.70692750988989
+	avg link tt: 396.87558479164005
+	avg delay: 96.87558479164005
+Sim Time: 4080
+	network-level occupancy: 30.58574220715552
+	avg link tt: 398.7505847916401
+	avg delay: 98.75058479164008
+Sim Time: 4095
+	network-level occupancy: 30.41247357108781
+	avg link tt: 400.6255847916401
+	avg delay: 100.62558479164008
+Sim Time: 4110
+	network-level occupancy: 30.239204935020105
+	avg link tt: 402.5005847916401
+	avg delay: 102.50058479164008
+Sim Time: 4125
+	network-level occupancy: 30.065936298952394
+	avg link tt: 404.3755847916401
+	avg delay: 104.37558479164008
+Sim Time: 4140
+	network-level occupancy: 29.892667662884683
+	avg link tt: 426.73168593599286
+	avg delay: 126.73168593599283
+Sim Time: 4155
+	network-level occupancy: 29.71939902681698
+	avg link tt: 403.3109402478193
+	avg delay: 103.31094024781927
+Sim Time: 4170
+	network-level occupancy: 29.546130390749276
+	avg link tt: 401.9761772186054
+	avg delay: 101.97617721860541
+Sim Time: 4185
+	network-level occupancy: 29.789528421348233
+	avg link tt: 400.6414141893916
+	avg delay: 100.64141418939158
+Sim Time: 4200
+	network-level occupancy: 30.03292645194719
+	avg link tt: 399.3066511601777
+	avg delay: 99.30665116017772
+Sim Time: 4215
+	network-level occupancy: 30.276324482546155
+	avg link tt: 397.97188813096386
+	avg delay: 97.97188813096386
+Sim Time: 4230
+	network-level occupancy: 30.103055846478444
+	avg link tt: 396.63712510175003
+	avg delay: 96.63712510175006
+Sim Time: 4245
+	network-level occupancy: 30.346453877077405
+	avg link tt: 395.3023620725362
+	avg delay: 95.3023620725362
+Sim Time: 4260
+	network-level occupancy: 30.173185241009698
+	avg link tt: 393.96759904332237
+	avg delay: 93.96759904332234
+Sim Time: 4275
+	network-level occupancy: 30.416583271608655
+	avg link tt: 392.6328360141085
+	avg delay: 92.63283601410848
+Sim Time: 4290
+	network-level occupancy: 30.243314635540948
+	avg link tt: 391.29807298489465
+	avg delay: 91.29807298489465
+Sim Time: 4305
+	network-level occupancy: 30.070045999473244
+	avg link tt: 389.9633099556808
+	avg delay: 89.9633099556808
+Sim Time: 4320
+	network-level occupancy: 30.3134440300722
+	avg link tt: 388.6285469264669
+	avg delay: 88.62854692646694
+Sim Time: 4335
+	network-level occupancy: 30.140175394004494
+	avg link tt: 387.2937838972531
+	avg delay: 87.29378389725309
+Sim Time: 4350
+	network-level occupancy: 30.383573424603455
+	avg link tt: 385.95902086803926
+	avg delay: 85.95902086803923
+Sim Time: 4365
+	network-level occupancy: 30.626971455202415
+	avg link tt: 384.6242578388254
+	avg delay: 84.62425783882539
+Sim Time: 4380
+	network-level occupancy: 30.453702819134712
+	avg link tt: 383.28949480961154
+	avg delay: 83.28949480961154

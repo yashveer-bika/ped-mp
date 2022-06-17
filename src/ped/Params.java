@@ -42,7 +42,7 @@ public class Params
      * this is the end time of the simulation, in s. The maximum number of time steps is {@link #DURATION}/{@link #dt}.
      */
     public final static int DURATION = 60*60*3;
-
+//    public final static int DURATION = dt * 40;
 
 
     public final static int n_steps = DURATION / dt;
