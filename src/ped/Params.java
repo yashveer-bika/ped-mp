@@ -58,7 +58,10 @@ public class Params
         return String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, System.currentTimeMillis());
     }
 
-    public final static String cplex_out_filepath = "cplex_out.txt";
+    public static String getCplexOutPath() {
+        return String.format("cplex_out/cplex_out_ts=%s.txt", time);
+    }
+
 
     // public final static String avg_occupancy_out_filepath = String.format("avg_occupancy_ts=%s.txt");
 

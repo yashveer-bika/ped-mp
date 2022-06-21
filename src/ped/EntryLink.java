@@ -54,6 +54,10 @@ public class EntryLink extends Link
         return occupancy;
     }
 
+    @Override
+    public double getN() {
+        return occupancy;
+    }
 
     public void step()
     {

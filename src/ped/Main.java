@@ -42,17 +42,17 @@ public class Main
 //        TestTurningMovement ttm = new TestTurningMovement();
 //        ttm.testGetVehicles();
 
-//        TestPointQueue tpq = new TestPointQueue();
+        TestPointQueue tpq = new TestPointQueue();
 //        tpq.testGetVehicles();
 //
 
 //        TestCPLEX testCPLEX = new TestCPLEX();
 
-//        TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
+        TestPQ3Conflicts tpq3 = new TestPQ3Conflicts();
 ////        tpq3.testControllerWPeds();
 //        // TODO: later, make my phase generation logic less expensive so I can test on larger networks or ped networks
 //        tpq3.testVehFeasiblePhases();
-//        tpq3.testV2VConflicts();
+        tpq3.testV2VConflicts();
 
 //        tpq3.testController();
 
@@ -84,17 +84,17 @@ public class Main
 //        pq3_net.loadStaticDemand(new File("data/PQ3/trips_static_od_demand.txt"));
 //        pq3_net.runSim(60*60, 60*60*2, Params.tolerance_time);
 
-        String path = "data/SiouxFalls/";
+        String path = "data/PQ3/";
         Simulator siouxFallsVehOnly = new Simulator(path, false, "vehMP");
-
-//        Params.demandScaleFactor = 10.5;
+//
+//        Params.demandScaleFactor = 0.5;
 //        siouxFallsVehOnly.runSim();
 
 //        double minDSF = 0.1;
 //        double maxDSF = 0.5;
 //        Params.demandScaleFactor = (maxDSF + minDSF) / 2;
 //        Params.demandScaleFactor = 0.1;
-        double mdsf = siouxFallsVehOnly.findMaximalDemandScaleFactor(10, 11);
+        double mdsf = siouxFallsVehOnly.findMaximalDemandScaleFactor(0, 20);
 
 
 //        String path = "data/SiouxFalls/";

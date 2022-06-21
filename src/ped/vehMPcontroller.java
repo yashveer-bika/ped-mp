@@ -8,6 +8,7 @@ import util.Tuple;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,29 +18,27 @@ import java.util.Set;
 public class vehMPcontroller implements Controller {
     // variables
     Intersection intersection;
-    private double network_time;
 
     public vehMPcontroller(Intersection intersection) {
         this.intersection = intersection;
     }
 
-    public void updateTime(double newTime) {
-        network_time = newTime;
-    }
 
     public Tuple<Phase, Map<TurningMovement, Double>> run() {
         // iterate over every phase
         Phase bestPhase = null;
         Map<TurningMovement, Double> flowVals = new HashMap<>();
-        double max_value = Double.NEGATIVE_INFINITY;
 
 //        System.out.println("INTERSECTION " + intersection.getId());
 //        System.out.println("\t\t" + intersection.getInternalVehicleTurns());
 
+        PrintStream ps = null;
         // TODO: write the CPLEX
         try {
             IloCplex cplex = new IloCplex();
-            cplex.setOut(null);
+
+            ps = new PrintStream(Params.getCplexOutPath());
+            cplex.setOut(ps);
 
             // CREATE VEHICLE SIGNALS (s_ij)
             Map<TurningMovement, IloIntVar> v_signals = new HashMap<>();
@@ -51,10 +50,12 @@ public class vehMPcontroller implements Controller {
             for (TurningMovement turn : intersection.getEntryTurns()) {
                 cplex.addEq(v_signals.get(turn), 1); // no-conflicts
             }
-            // guarantee the entry turning movements are activated
-            for (TurningMovement turn : intersection.getExitTurns()) {
-                cplex.addEq(v_signals.get(turn), 1); // no-conflicts
-            }
+
+            // TODO: see if I need this
+//            // guarantee the exit turning movements are activated
+//            for (TurningMovement turn : intersection.getExitTurns()) {
+//                cplex.addEq(v_signals.get(turn), 1); // no-conflicts
+//            }
 
 
 
@@ -71,12 +72,19 @@ public class vehMPcontroller implements Controller {
                 double v_turn_mov_cap = turn.getCapacity();
                 double v_weight_ij = turn.getWeight();
 //                System.out.println("weight of " + turn + " --> " + v_weight_ij);
+//                System.out.println("\tcapacity " + turn.getCapacity());
                 // if weight == 0 and the turn doesn't add additional conflict, then add into turns???
                 objExpr.addTerm(v_turn_mov_cap * v_weight_ij, v_signals.get(turn));
             }
             cplex.addMaximize(objExpr);
 
             // turning movement conflict constraint
+//            System.out.println("CONFLICTS");
+//            for ( TurningMovement tm1 : intersection.getV2vConflicts().keySet() ) {
+//                for ( TurningMovement tm2 : intersection.getV2vConflicts().get(tm1).keySet() ) {
+//                    System.out.println("\t" + tm1 + " --- " + tm2 + " --> " + intersection.getV2vConflicts().get(tm1).get(tm2) );
+//                }
+//            }
             for (TurningMovement tm1 : v_signals.keySet()) {
 //                System.out.println("tm1: " + tm1);
 
@@ -88,17 +96,6 @@ public class vehMPcontroller implements Controller {
                 for (TurningMovement tm2 : conflictMap.keySet()) {
                     // if tm1 and tm2 conflict
                     if (conflictMap.get(tm2) == 0 && !tm1.equals(tm2)) {
-//                        System.out.println("tm1: " + tm1);
-//                        System.out.println("tm2: " + tm2);
-                        // don't allow tm2 to be activated if tm1 is activated
-//                        IloConstraint r1 = cplex.eq(1, v_signals.get(tm1));
-//                        IloConstraint r2 = cplex.eq(0, v_signals.get(tm2));
-//                        cplex.ifThen(r1, r2);
-
-//                        IloConstraint r3 = cplex.eq(1, v_signals.get(tm2));
-//                        IloConstraint r4 = cplex.eq(0, v_signals.get(tm1));
-//                        cplex.ifThen(r3, r4);
-
                         IloLinearNumExpr e = cplex.linearNumExpr();
                         e.addTerm(1, v_signals.get(tm1));
                         e.addTerm(1, v_signals.get(tm2));
@@ -174,8 +171,11 @@ public class vehMPcontroller implements Controller {
 
         } catch (IloException e) {
             e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
+        ps.close();
 
         return new Tuple(bestPhase, flowVals);
     }

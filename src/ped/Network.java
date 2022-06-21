@@ -29,9 +29,6 @@ public class Network {
     private String controllerType;
     private File turnPropsFile;
 
-    public double networkTime; // total network time (time in simulation)
-    public double cycleTime; // time within a cycle of the simulation
-    public double toleranceTime; // pedestrian tolerance time
     private boolean ped; // says whether we load the network with pedestrians
 
 
@@ -342,9 +339,9 @@ public class Network {
                 int destId = Integer.parseInt(link_data[3]);
 
                 double length = Double.parseDouble(link_data[4]); // in ft
-                double ffspd = Double.parseDouble(link_data[5]);
+                double ffspd = Double.parseDouble(link_data[5]); // in mi/hr
 
-                double capacityPerLane = Integer.parseInt(link_data[6]);
+                double capacityPerLane = Double.parseDouble(link_data[6]) / 3600.0 * Params.dt; // in vehicles / Params.dt
 
                 int numLanes = Integer.parseInt(link_data[7]);
 
@@ -355,23 +352,23 @@ public class Network {
 
 //                System.out.println("type: " + type);
                 if (type.equals("1000")) {
-                    capacityPerLane = Integer.MAX_VALUE;
+                    capacityPerLane = Double.MAX_VALUE;
                     numLanes = 1;
                     link = new EntryLink(id, startNode, endNode);
 //                    endNode.setEntryLink(link);
                 }
                 else if (type.equals("2000")) {
-                    capacityPerLane = Integer.MAX_VALUE;
+                    capacityPerLane = Double.MAX_VALUE;
                     numLanes = 1;
                     link = new ExitLink(id, startNode, endNode);
 //                    startNode.setExitLink(link);
                 }
                 else if (type.equals("point-queue") || type.equals("201")) {
-                    link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
+                    link = new PointQueue(id, startNode, endNode, length, ffspd, capacityPerLane, numLanes);
                 }
 
                 else if (type.equals("LTM")) {
-                    link = new LTM(id, startNode, endNode, length, ffspd, capacityPerLane / 3600 * Params.dt, numLanes);
+                    link = new LTM(id, startNode, endNode, length, ffspd, capacityPerLane, numLanes);
                 }
 
 

@@ -1,2 +1,0 @@
-node	start time (s)	end time (s)	rate (vph)
-1	0	1200	4800

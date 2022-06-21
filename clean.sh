@@ -1,0 +1,1 @@
+rm *.txt && rm cplex_out/*

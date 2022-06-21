@@ -160,9 +160,12 @@ public class PointQueue extends Link
 //        vehs.remove(v);
 //    }
 
+    public double getN() {
+        return n;
+    }
 
     public double getQueueLength(double turningProportion) {
-        return getSendingFlow() * turningProportion;
+        return n * turningProportion;
     }
 
     @Override

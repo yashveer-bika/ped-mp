@@ -30,6 +30,7 @@ public class TurningMovement {
 //
 //    }
 
+    // TODO: test that this constructor works
     public TurningMovement(Link i, Link j)  {
         // need connectivity
 //        System.out.println("link i: " + i);
@@ -40,15 +41,25 @@ public class TurningMovement {
         // setCapacity();
         conflictRegions = new HashSet<>();
         queueLength = 0;
+        setTurning_proportion(readTurningProps(this.i.getId(), this.j.getId()));
         // queue = new LinkedList<>();
         // vehicleQueue = new ArrayList<>();
         // turning_proportion = 0;
     }
 
-    public TurningMovement(Link i, Link j, Network engine)  {
-        this(i,j);
+    public TurningMovement(Link i, Link j, Network engine) {
+        assert i.getDest() == j.getSource();
+        this.i = i;
+        this.j = j;
+        // setCapacity();
+        conflictRegions = new HashSet<>();
+        queueLength = 0;
         this.engine = engine;
+        setTurning_proportion(readTurningProps(this.i.getId(), this.j.getId()));
     }
+
+
+
 
     public Set<ConflictRegion> getConflictRegions() {
         return conflictRegions;
@@ -358,7 +369,7 @@ public class TurningMovement {
     }
 
     public double getQueueLength() {
-        return i.getSendingFlow() * getRandomTurningProportion();
+        return i.getN() * getRandomTurningProportion();
     }
 
 //    public void addToQueue(Vehicle v) {
@@ -410,8 +421,11 @@ public class TurningMovement {
 
     public double getRandomTurningProportion() {
         // TODO: ask Michael if we add some sophistication here
-        double tp = readTurningProps(this.i.getId(), this.j.getId());
-        return tp;
+        return turning_proportion;
+    }
+
+    public void setTurning_proportion(double turning_proportion) {
+        this.turning_proportion = turning_proportion;
     }
 
     public double getTurningProportion() {
@@ -419,11 +433,11 @@ public class TurningMovement {
         // make the file loading more modular
         // allow for time-dependent data loading
 
-        double tp = readTurningProps(this.i.getId(), this.j.getId());
+//        double tp = readTurningProps(this.i.getId(), this.j.getId());
 //        System.out.println(this);
 //        System.out.println("\t: turningProportion: " + tp);
 
-        return tp;
+        return turning_proportion;
     }
 
     private double readTurningProps(int upstreamId, int downstreamId) {

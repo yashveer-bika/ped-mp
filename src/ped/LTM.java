@@ -161,12 +161,14 @@ public class LTM extends Link
         // fill this in
 
 
-        return  Math.min(N_up.getFirst()- N_down.getLast(), getCapacity() * Params.dt/3600.0);
+        return  Math.min(N_up.getFirst()- N_down.getLast(), getCapacity());
 
     }
 
-
-
+    @Override
+    public double getN() {
+        return N_up.getFirst()- N_down.getLast();
+    }
 
     public double getReceivingFlow() // min{ N(t+dt-l/w, l), Q*dt }  // 注意这个和计算 shockwave位置的function是不一样的，因为这个是考虑了整个路段长度length的
     {                                //  N_up(t - x_s/uf) = N_down(t - (L-x_s)/wb) + Kj * (L - x_s)

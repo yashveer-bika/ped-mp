@@ -24,10 +24,16 @@ public class ExitLink extends Link
         super(id, "exit", src, dummyDest, 0, 0, Integer.MAX_VALUE, 1);
         src.setExitLink(this);
 //        queue = new LinkedList<Vehicle>();
-
     }
 
-//    public ExitLink()
+
+    // there is no downstream so
+    @Override
+    public double getN() {
+        return 0;
+    }
+
+    //    public ExitLink()
 //    {
 //        super(0, null, null, 0, 0, 0, 1);
 //

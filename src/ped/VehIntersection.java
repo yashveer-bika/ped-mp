@@ -97,12 +97,6 @@ public class VehIntersection extends VehNode {
         return vehicleTurns;
     }
 
-    public void updateTime(double newTime) {
-        for (TurningMovement t : vehicleTurns) {
-            t.updateTime(newTime);
-        }
-    }
-
     public Set<TurningMovement> getEntryTurns() {
         return entryTurns;
     }

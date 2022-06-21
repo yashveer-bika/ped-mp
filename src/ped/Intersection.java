@@ -837,19 +837,6 @@ public class Intersection {
 //                '}';
 //    }
 
-    public void updateTime(double newTime) {
-        controller.updateTime(newTime);
-        vehInt.updateTime(newTime);
-        if (ped) {
-            for (PedIntersection pedInt : pedInts) {
-                pedInt.updateTime(newTime);
-            }
-        }
-    }
-
-    public void iterateTimeStep() {
-
-    }
 
     public void runController() {
         Tuple<Phase, Map<TurningMovement, Double>> out = controller.run();
@@ -940,7 +927,7 @@ public class Intersection {
             Link entryLink = tm.getIncomingLink();
             Link l = tm.getOutgoingLink();
             // move turn_prop * occupancy to next link
-            double out_flow = tm.getRandomTurningProportion() * entryLink.getSendingFlow();
+            double out_flow = tm.getRandomTurningProportion() * entryLink.getN();
 //            System.out.println("Entry turn: " + tm);
 //            System.out.println("\tturn_prop: " + tm.getTurningProportion() );
 //            System.out.println("\td_i: " + entryLink.getOccupancy() );

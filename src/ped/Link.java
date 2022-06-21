@@ -41,7 +41,7 @@ public abstract class Link implements Comparable<Link>
     // number of lanes
     private int numLanes;
 
-    // Link length in miles
+    // Link length in ft
     private double length;
 
     // free flow speed in mi/hr
@@ -461,4 +461,6 @@ public abstract class Link implements Comparable<Link>
     public String getType() {
         return type;
     }
+
+    public abstract double getN();
 }

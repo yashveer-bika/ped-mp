@@ -7,9 +7,6 @@ import java.util.*;
 import java.util.function.DoubleBinaryOperator;
 
 public class Simulator extends Network {
-//    private double simTime; // total network time (time in simulation)
-    private double timeStepSize;
-    private double toleranceTime; // pedestrian tolerance time
     private boolean ped;
     private String dataPath;
 //    entrance node, destination node, time, demand_quantity
@@ -39,8 +36,6 @@ public class Simulator extends Network {
 
     public Simulator(File nodesFile, File linksFile, File turnPropsFile, boolean ped, String controllerType) {
         super(nodesFile, linksFile, turnPropsFile, ped, controllerType);
-        timeStepSize = 0;
-        toleranceTime = 0;
         this.ped = ped;
         this.static_demand = new HashMap<>();
     }
@@ -217,8 +212,8 @@ public class Simulator extends Network {
         double k = Math.pow(10, -6);
 
 
-        // keep 50 most recent network-level occupancy
-        int queue_size = 50;
+        // keep 300 most recent network-level occupancy
+        int queue_size = 300;
         List<Double> timeL = new ArrayList<>();
         for (double i = 0; Double.compare(i, queue_size) < 0; i++) {
             timeL.add(i * Params.dt);
@@ -267,6 +262,12 @@ public class Simulator extends Network {
             runController();
             updateTime();
 
+            // TODO: print occupancy
+
+//            printOccupancy();
+
+
+//             STABILITY CONDITION
             if (Params.time / Params.dt > queue_size + 1) {
                 // check if slope is greater than k
                 double data_slope = approximateSlope(timeL, occupancies);
@@ -352,12 +353,17 @@ public class Simulator extends Network {
 //        simTime += Params.dt;
         Params.time += Params.dt;
 
-        for (Intersection intersection : this.getIntersectionSet()) {
-            intersection.updateTime(Params.time);
-        }
-
     }
 
+
+    public void printOccupancy() {
+        for (Link l : getLinkSet()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            System.out.println("\t\tLink " + l + "  :  " + l.getOccupancy());
+        }
+    }
 
 
     public double getOccupancy() {
@@ -457,7 +463,7 @@ public class Simulator extends Network {
             reset();
             System.out.println("\t\t\t\tFINISHED SIM AND RESET.....");
             if (stable) {
-                if (Math.abs(mid - min) < Math.pow(10, -3)) {
+                if (Math.abs(mid - min) < Math.pow(10, -2)) {
                     System.out.println("\t\tbest demand scale: " + mid);
                     return mid;
                 }

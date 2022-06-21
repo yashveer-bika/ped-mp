@@ -9,6 +9,4 @@ import java.util.Set;
 
 interface Controller {
     Tuple<Phase, Map<TurningMovement, Double>> run();
-
-    void updateTime(double newTime);
 }
