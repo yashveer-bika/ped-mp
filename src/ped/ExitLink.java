@@ -79,7 +79,7 @@ public class ExitLink extends Link
     {
         // fill this in
 //        return queue.size();
-        return occupancy;
+        return 0;
     }
 
     public double getReceivingFlow()
