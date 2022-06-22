@@ -9,7 +9,7 @@ public class TestINT4 {
 
     public void testController() {
         System.out.println("\nTESTING CONTROLLER ON INT4\n");
-        int4_net.runSim();
+        int4_net.runSim(false);
 
         System.out.println("\nFINISHED TESTING CONTROLLER ON INT4\n");
 

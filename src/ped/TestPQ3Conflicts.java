@@ -330,7 +330,7 @@ public class TestPQ3Conflicts {
 
     public void testController() {
         System.out.println("\nTESTING CONTROLLER\n");
-        pq3_net_vehs.runSim();
+        pq3_net_vehs.runSim(false);
 
         System.out.println("\nFINISHED TESTING CONTROLLER\n");
 
@@ -338,7 +338,7 @@ public class TestPQ3Conflicts {
 
     public void testVehMPControllerWPeds() {
         System.out.println("\nTESTING CONTROLLER\n");
-        pq3_net_peds.runSim();
+        pq3_net_peds.runSim(false);
 
         System.out.println("\nFINISHED TESTING CONTROLLER\n");
 

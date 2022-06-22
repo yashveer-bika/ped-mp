@@ -203,7 +203,7 @@ public class Simulator extends Network {
 
     // TODO: javadoc
     // true if stable, false if non-stable
-    public boolean runSim() {
+    public boolean runSim(boolean kill) {
 
         File demand_file = new File(dataPath + "trips_static_od_demand.txt");
         loadStaticDemand(demand_file);
@@ -235,6 +235,9 @@ public class Simulator extends Network {
 
 
         long startTime = System.nanoTime();
+
+
+        boolean stable = false;
 
         while (Params.time <= Params.DURATION) {
             calculateTT();
@@ -274,24 +277,26 @@ public class Simulator extends Network {
 //                System.out.println("\tSlope: " + data_slope);
                 if (data_slope < k) {
 //                    System.out.println("occupancies: " + occupancies);
-                    System.setOut(ps_console);
-                    return true;
+                    if (kill) {
+                        System.setOut(ps_console);
+                        newPs.close();
+                        return true;
+                    } else {
+                        stable = true;
+                    }
                 }
             }
-
         }
         long endTime = System.nanoTime();
         long elapsedTime = (endTime-startTime);
 
         System.out.println("\truntime: " + elapsedTime);
         System.out.println("\truntime / iteration: " + (elapsedTime / Params.n_steps * Math.pow(10, -9)));
-
-
         System.setOut(ps_console);
         newPs.close();
         System.out.println("Console again !!");
         System.out.println("occupancies: " + occupancies);
-        return false;
+        return stable;
     }
 
 
@@ -459,11 +464,11 @@ public class Simulator extends Network {
             Params.demandScaleFactor = mid;
             System.out.println("\t\t\t\tdsf: " + Params.demandScaleFactor);
             System.out.println("\t\t\t\tRUNNING SIM.....");
-            stable = runSim();
+            stable = runSim(false);
             reset();
             System.out.println("\t\t\t\tFINISHED SIM AND RESET.....");
             if (stable) {
-                if (Math.abs(mid - min) < Math.pow(10, -2)) {
+                if (Math.abs(mid - min) < Math.pow(10, -3)) {
                     System.out.println("\t\tbest demand scale: " + mid);
                     return mid;
                 }
