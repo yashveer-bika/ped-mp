@@ -1,0 +1,12 @@
+Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
+Row 'c71' infeasible, all entries at implied bounds.
+Presolve time = 0.00 sec. (0.20 ticks)
+
+Root node processing (before b&c):
+  Real time             =    0.00 sec. (0.21 ticks)
+Parallel b&c, 10 threads:
+  Real time             =    0.00 sec. (0.00 ticks)
+  Sync time (average)   =    0.00 sec.
+  Wait time (average)   =    0.00 sec.
+                          ------------
+Total (root+branch&cut) =    0.00 sec. (0.21 ticks)

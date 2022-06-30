@@ -1,25 +1,17 @@
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-Found incumbent of value 0.000000 after 0.00 sec. (0.00 ticks)
 Tried aggregator 2 times.
-MIP Presolve eliminated 107 rows and 44 columns.
-Aggregator did 8 substitutions.
-Reduced MIP has 37 rows, 40 columns, and 82 nonzeros.
-Reduced MIP has 24 binaries, 0 generals, 0 SOSs, and 9 indicators.
-Presolve time = 0.00 sec. (0.19 ticks)
-Probing fixed 0 vars, tightened 8 bounds.
-Probing changed sense of 8 constraints.
-Probing time = 0.00 sec. (0.04 ticks)
-Tried aggregator 2 times.
-MIP Presolve eliminated 35 rows and 38 columns.
+MIP Presolve eliminated 257 rows and 230 columns.
 Aggregator did 2 substitutions.
-All rows and columns eliminated.
-Presolve time = 0.00 sec. (0.04 ticks)
+Reduced MIP has 8 rows, 10 columns, and 18 nonzeros.
+Reduced MIP has 6 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.26 ticks)
+Found incumbent of value 0.238490 after 0.00 sec. (0.29 ticks)
 
 Root node processing (before b&c):
-  Real time             =    0.00 sec. (3.18 ticks)
+  Real time             =    0.00 sec. (0.30 ticks)
 Parallel b&c, 10 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.00 sec. (3.18 ticks)
+Total (root+branch&cut) =    0.00 sec. (0.30 ticks)

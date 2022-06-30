@@ -10,6 +10,10 @@ import java.io.FileNotFoundException;
 public class Network {
     private Set<Intersection> intersectionSet;
     private Set<Link> linkSet;
+
+    private Set<Link> vehicleLinks;
+    private Set<Link> pedLinks;
+
     private HashMap<Integer, Node> nodes;
     private Intersection[][] intersectionGrid;
 
@@ -23,13 +27,7 @@ public class Network {
     private HashMap<PedNode, Set<Double>> pedNodesRoadAngles;
     private HashMap<PedNode, Set<Link>> pedNodeRoads;
 
-    private Map<Node, Map<Node, List<ArrayList<Node>>>> vehiclePaths;
-//    private Set<Vehicle> vehicles;
-
-    private String controllerType;
     private File turnPropsFile;
-
-    private boolean ped; // says whether we load the network with pedestrians
 
 
     public File getTurnPropsFile() {
@@ -37,12 +35,12 @@ public class Network {
     }
 
     public Network(File nodesFile, File linksFile, File turnPropsFile, boolean ped, String controllerType) {
+        vehicleLinks = new HashSet<>();
+        pedLinks = new HashSet<>();
         this.nodes = new HashMap<>();
         this.turnPropsFile = turnPropsFile;
 //        this.vehicles = new HashSet<>();
-        this.vehiclePaths = new HashMap<>();
-        this.controllerType = controllerType;
-//        this.turningMovements = new HashMap<>();
+        //        this.turningMovements = new HashMap<>();
         this.pedNodeRoads = new HashMap<>();
         this.pedNodesRoadAngles = new HashMap<>();
         this.intersectionSet = new HashSet<>();
@@ -52,7 +50,7 @@ public class Network {
         this.entryLinks = new HashMap<>();
         this.intersectionGraph = new HashMap<>();
         this.pedNodes = new HashSet<>();
-        this.ped = ped;
+        // says whether we load the network with pedestrians
         this.vehNodes = new HashSet<>();
 
         // load vehicle intersections
@@ -91,16 +89,25 @@ public class Network {
             System.out.println("FINISHED LOADING SIDEWALKS");
         }
 
-//        setVehiclePaths();
-
-//        printVehiclePaths();
-
         this.finishLoading();
+    }
+
+    public Set<Link> getPedLinks() {
+        return pedLinks;
+    }
+
+    public Set<Link> getVehicleLinks() {
+        return vehicleLinks;
     }
 
     /** CONSTRUCTOR HELPERS **/
 
+
+
     public void finishLoading() {
+        linkSet.addAll(vehicleLinks);
+        linkSet.addAll(pedLinks);
+
         for (Intersection i : this.getIntersectionSet()) {
             i.finishLoading();
         }
@@ -337,13 +344,21 @@ public class Network {
                 String type = link_data[1];
                 int srcId = Integer.parseInt(link_data[2]);
                 int destId = Integer.parseInt(link_data[3]);
-
                 double length = Double.parseDouble(link_data[4]); // in ft
                 double ffspd = Double.parseDouble(link_data[5]); // in mi/hr
+                double backward_speed = Double.parseDouble(link_data[6]);
+                double capacityPerLane = Double.parseDouble(link_data[7]) / 3600.0 * Params.dt; // in vehicles / Params.dt
+                int numLanes = Integer.parseInt(link_data[8]);
 
-                double capacityPerLane = Double.parseDouble(link_data[6]) / 3600.0 * Params.dt; // in vehicles / Params.dt
-
-                int numLanes = Integer.parseInt(link_data[7]);
+//                System.out.println("Id: " + id);
+//                System.out.println("type: " + type);
+//                System.out.println("src: " + srcId);
+//                System.out.println("dest: " + destId);
+//                System.out.println("length: " + length);
+//                System.out.println("ffspd: " + ffspd);
+//                System.out.println("backwardSpeed: " + backward_speed);
+//                System.out.println("capacityPerLane: " + capacityPerLane);
+//                System.out.println("numLanes: " + numLanes);
 
                 startNode = nodes.get(srcId);
                 endNode = nodes.get(destId);
@@ -352,14 +367,10 @@ public class Network {
 
 //                System.out.println("type: " + type);
                 if (type.equals("1000")) {
-                    capacityPerLane = Double.MAX_VALUE;
-                    numLanes = 1;
                     link = new EntryLink(id, startNode, endNode);
 //                    endNode.setEntryLink(link);
                 }
                 else if (type.equals("2000")) {
-                    capacityPerLane = Double.MAX_VALUE;
-                    numLanes = 1;
                     link = new ExitLink(id, startNode, endNode);
 //                    startNode.setExitLink(link);
                 }
@@ -371,11 +382,9 @@ public class Network {
                     link = new LTM(id, startNode, endNode, length, ffspd, capacityPerLane, numLanes);
                 }
 
-
                 // vehicleGraph.get(startNode).add((VehIntersection) endNode);T
 //                Location src = startNode.getLocation();
 //                Location dest = endNode.getLocation();
-
 
                 // Link(int id, Node source, Node dest, double length, double ffspd, double capacityPerLane, int numLanes)
 
@@ -385,7 +394,7 @@ public class Network {
                 assert link.getSource() == startNode;
                 assert link.getDest() == endNode;
 
-                this.linkSet.add(link);
+                vehicleLinks.add(link);
                 // set incoming, outgoing links
                 endNode.addLink(link);
                 startNode.addLink(link);
@@ -664,8 +673,9 @@ public class Network {
                     sidewalk_.setSidewalk(true);
                     // TODO: tell the code this is a sidewalk
 
-                    this.linkSet.add(sidewalk);
-                    this.linkSet.add(sidewalk_);
+                    pedLinks.add(sidewalk);
+                    pedLinks.add(sidewalk_);
+
                     System.out.println("\tCurrent node: " + vehInt.getId());
                     System.out.println("\tPed Int list: " + pedIntList);
 
@@ -692,10 +702,10 @@ public class Network {
                         Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                         cross1.setCrosswalk(true);
                         cross2.setCrosswalk(true);
-                        crosswalks.add(new Crosswalk(cross1, cross2));
+//                        crosswalks.add(new Crosswalk(cross1, cross2));
                         crosswalk_count += 1;
-                        this.linkSet.add(cross1);
-                        this.linkSet.add(cross2);
+                        pedLinks.add(cross1);
+                        pedLinks.add(cross2);
                     }
                     ped1 = pedIntList.get(0);
                     ped2 = pedIntList.get(pedIntList.size() - 1);
@@ -716,10 +726,11 @@ public class Network {
                     Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                     cross1.setCrosswalk(true);
                     cross2.setCrosswalk(true);
-                    crosswalks.add(new Crosswalk(cross1, cross2));
+//                    crosswalks.add(new Crosswalk(cross1, cross2));
                     crosswalk_count += 1;
-                    this.linkSet.add(cross1);
-                    this.linkSet.add(cross2);
+
+                    pedLinks.add(cross1);
+                    pedLinks.add(cross2);
 
                 }
                 // standard case
@@ -784,10 +795,10 @@ public class Network {
                         Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                         cross1.setCrosswalk(true);
                         cross2.setCrosswalk(true);
-                        crosswalks.add(new Crosswalk(cross1, cross2));
+//                        crosswalks.add(new Crosswalk(cross1, cross2));
                         crosswalk_count += 1;
-                        this.linkSet.add(cross1);
-                        this.linkSet.add(cross2);
+                        pedLinks.add(cross1);
+                        pedLinks.add(cross2);
                     }
                     ped1 = pedIntList.get(0);
                     ped2 = pedIntList.get(pedIntList.size() - 1);
@@ -796,12 +807,12 @@ public class Network {
                     numLanes = 1;
                     length = 0;
 
-                    if (vehInt.getId() == 2) {
-                        System.out.println("Intersection 2 crosswalk");
-                        System.out.println("\tneighboring ped ints: " + pedIntList);
-                        System.out.println("\t" + ped1);
-                        System.out.println("\t" + ped2);
-                    }
+//                    if (vehInt.getId() == 2) {
+//                        System.out.println("Intersection 2 crosswalk");
+//                        System.out.println("\tneighboring ped ints: " + pedIntList);
+//                        System.out.println("\t" + ped1);
+//                        System.out.println("\t" + ped2);
+//                    }
 
                     id = Integer.parseInt(ped1.getId() + "777" + ped2.getId());
                     Link cross1 = new PointQueue(id, "crosswalk", ped1, ped2, length, ffspd, capacityPerLane, numLanes);
@@ -809,10 +820,10 @@ public class Network {
                     Link cross2 = new PointQueue(id, "crosswalk", ped2, ped1, length, ffspd, capacityPerLane, numLanes);
                     cross1.setCrosswalk(true);
                     cross2.setCrosswalk(true);
-                    crosswalks.add(new Crosswalk(cross1, cross2));
+//                    crosswalks.add(new Crosswalk(cross1, cross2));
                     crosswalk_count += 1;
-                    this.linkSet.add(cross1);
-                    this.linkSet.add(cross2);
+                    pedLinks.add(cross1);
+                    pedLinks.add(cross2);
 
 
                 }
@@ -831,7 +842,7 @@ public class Network {
 //            for (Crosswalk c : crosswalks) {
 //                System.out.println(c);
 //            }
-            Intersection int_sec = new Intersection(vehInt, pedInts, pedNodes, crosswalks, controllerType);
+            Intersection int_sec = new Intersection(vehInt, pedInts, pedNodes, controllerType);
             intersectionGrid[rowPos][colPos] = int_sec;
             intersectionSet.add(int_sec);
             // crosswalk_count += crosswalks.size();
@@ -850,9 +861,11 @@ public class Network {
             dummyPeds.add(dummySrc);
             // TODO: do I need to add dummySrc to pedNodes??
             id = Integer.parseInt(dummySrc.getId() + "" + dest.getId());
-            linkSet.add(new EntryLink(id, dummySrc, dest));
+            Link entry = new EntryLink(id, dummySrc, dest);
+            pedLinks.add(entry);
             id = Integer.parseInt( dest.getId() + "" + dummySrc.getId());
-            linkSet.add(new ExitLink(id, dest, dummySrc));
+            Link exit = new ExitLink(id, dest, dummySrc);
+            pedLinks.add(exit);
         }
 
         this.pedNodes.addAll(dummyPeds);
@@ -1170,9 +1183,23 @@ public class Network {
 
 //                    double length = srcPed.euclideanDist(nearestDest);
                     // NOTE: we want the length of the road from Intersection inter to Intersection nei
-                    double road_length = inter.getVehInt().getOutgoingLink(nei.getVehInt()).getLength();
-                    double road_ll_length = inter.getVehInt().distance(nei.getVehInt());
-                    double sidewalk_ll_length = srcPed.distance(nearestDest);
+                    System.out.println("current int: " + inter.getVehInt() );
+                    System.out.println("neighbor int: " + nei.getVehInt() );
+                    System.out.println("connected link: " + inter.getVehInt().getOutgoingLink(nei.getVehInt()));
+
+
+                    // sidewalks are 2-way but the road isn't necessarily
+                    Link l = inter.getVehInt().getOutgoingLink(nei.getVehInt());
+                    Link l_ = nei.getVehInt().getOutgoingLink(inter.getVehInt());
+                    double road_length;
+                    if (l != null) {
+                        road_length = l.getLength();
+                    } else {
+                        road_length = l_.getLength();
+                    }
+
+//                    double road_ll_length = inter.getVehInt().distance(nei.getVehInt());
+//                    double sidewalk_ll_length = srcPed.distance(nearestDest);
 //                    double length = sidewalk_ll_length / road_ll_length * road_length;
                     double length = road_length;
                     // NOTE: we approximate sidewalk length to be the same as road length
@@ -1186,7 +1213,7 @@ public class Network {
                     Link side_walk = new PointQueue(id, "sidewalk", srcPed, nearestDest, length, ffspd, capacityPerLane, numLanes);
                     side_walk.setSidewalk(true);
                     System.out.println("\t\tNEW SIDEWALK MADE: " + side_walk);
-                    this.linkSet.add(side_walk);
+                    pedLinks.add(side_walk);
                 }
             }
         }

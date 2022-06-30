@@ -1,47 +1,11 @@
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-Found incumbent of value 0.000000 after 0.00 sec. (0.00 ticks)
-Tried aggregator 2 times.
-MIP Presolve eliminated 88 rows and 15 columns.
-MIP Presolve modified 8 coefficients.
-Aggregator did 31 substitutions.
-Reduced MIP has 64 rows, 67 columns, and 184 nonzeros.
-Reduced MIP has 41 binaries, 0 generals, 0 SOSs, and 26 indicators.
-Presolve time = 0.00 sec. (0.38 ticks)
-Probing fixed 0 vars, tightened 13 bounds.
-Probing changed sense of 13 constraints.
-Probing time = 0.00 sec. (0.19 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 54 rows and 55 columns.
-MIP Presolve modified 39 coefficients.
-Reduced MIP has 10 rows, 12 columns, and 53 nonzeros.
-Reduced MIP has 12 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.14 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 10 rows, 12 columns, and 53 nonzeros.
-Reduced MIP has 12 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.03 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Clique table members: 5.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 10 threads.
-Root relaxation solution time = 0.00 sec. (0.02 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                            0.0000    24771.8256              --- 
-*     0+    0                         7863.5357    24771.8256           215.02%
-      0     0     8659.2101     2     7863.5357     8659.2101        5   10.12%
-      0     0        cutoff           7863.5357                      7     --- 
-Elapsed time = 0.01 sec. (0.93 ticks, tree = 0.01 MB, solutions = 2)
+Presolve time = 0.00 sec. (0.02 ticks)
 
 Root node processing (before b&c):
-  Real time             =    0.01 sec. (0.94 ticks)
+  Real time             =    0.00 sec. (0.04 ticks)
 Parallel b&c, 10 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.01 sec. (0.94 ticks)
+Total (root+branch&cut) =    0.00 sec. (0.04 ticks)

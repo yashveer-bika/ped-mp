@@ -10,25 +10,11 @@ import java.util.*;
 public class TurningMovement {
     private Network engine;
     private Link i,j;
-    private int capacity; // Q_{ij}
     private double turning_proportion;
     private Set<ConflictRegion> conflictRegions;
-    private double queueLength;
+    private LinkedList<Double> queueLengths;
 
-    // [
-    //  [number of vehicles that entered at time t, entrance time t]
-    //  [number of vehicles that entered at time t, entrance time t]
-    //  [number of vehicles that entered at time t, entrance time t]
-    //  [number of vehicles that entered at time t, entrance time t]
-    // ]
-    // private LinkedList<double[]> queue;
-    private double network_time;
 
-    // private List<Vehicle> vehicleQueue;
-
-//    public TurningMovement() {
-//
-//    }
 
     // TODO: test that this constructor works
     public TurningMovement(Link i, Link j)  {
@@ -40,26 +26,59 @@ public class TurningMovement {
         this.j = j;
         // setCapacity();
         conflictRegions = new HashSet<>();
-        queueLength = 0;
         setTurning_proportion(readTurningProps(this.i.getId(), this.j.getId()));
+        queueLengths = new LinkedList<>();
+        for (double idx = 0 ; idx < Math.floor(Params.tolerance_time / Params.dt) ; idx++) {
+            queueLengths.add( 0.0 );
+        }
         // queue = new LinkedList<>();
         // vehicleQueue = new ArrayList<>();
         // turning_proportion = 0;
     }
 
-    public TurningMovement(Link i, Link j, Network engine) {
+    public TurningMovement(Link i, Link j, Network engine, double turning_proportion) {
         assert i.getDest() == j.getSource();
         this.i = i;
         this.j = j;
         // setCapacity();
         conflictRegions = new HashSet<>();
-        queueLength = 0;
         this.engine = engine;
-        setTurning_proportion(readTurningProps(this.i.getId(), this.j.getId()));
+        if (turning_proportion >= 0) {
+            this.turning_proportion = turning_proportion;
+        } else {
+            setTurning_proportion(readTurningProps(this.i.getId(), this.j.getId()));
+        }
+        queueLengths = new LinkedList<>();
+        for (double idx = 0 ; idx < Math.floor(Params.tolerance_time / Params.dt) ; idx++) {
+            queueLengths.add( 0.0 );
+        }
     }
 
+    public void reset() {
+        resetQueueLengths();
+    }
 
+    public void update() {
+        queueLengths.removeFirst();
+        queueLengths.addLast(getQueueLength());
+    }
 
+    public boolean forceOn() {
+        for (Double d : queueLengths) {
+            if (d.equals(0.0)) {
+                return false;
+            }
+        }
+        resetQueueLengths();
+        return true;
+    }
+
+    private void resetQueueLengths() {
+        queueLengths = new LinkedList<>();
+        for (double idx = 0 ; idx < Math.floor(Params.tolerance_time / Params.dt) ; idx++) {
+            queueLengths.add( 0.0 );
+        }
+    }
 
     public Set<ConflictRegion> getConflictRegions() {
         return conflictRegions;
@@ -364,10 +383,6 @@ public class TurningMovement {
 //    }
 
 
-    public void setQueueLength(double queueLength) {
-        this.queueLength = queueLength;
-    }
-
     public double getQueueLength() {
         return i.getN() * getRandomTurningProportion();
     }
@@ -394,10 +409,6 @@ public class TurningMovement {
 //            throw new EmptyQueueException("empty queue, so there is no waiting time");
 //        }
 //    }
-
-    public void updateTime(double newTime) {
-        network_time = newTime;
-    }
 
 //    public String toString() {
 //        return "Turn : [" + i + ", " + j +

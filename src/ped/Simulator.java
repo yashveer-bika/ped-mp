@@ -128,6 +128,13 @@ public class Simulator extends Network {
         }
     }
 
+
+    public void addPedestrianDemand() {
+        for (PedNode pi : getPedNodes()) {
+            pi.getEntryLink().addFlow(1);
+        }
+    }
+
 //    public void moveVehsToLinks() {
 //        System.out.println("calling moveVehsToLinks");
 //
@@ -173,6 +180,12 @@ public class Simulator extends Network {
             // in point queue, we move the entering flow into n, and the exiting flow out of n at each link
             l.update();
         }
+        for (Intersection i : getIntersectionSet()) {
+//            System.out.println("Running controller on intersection " + i.getId());
+            for (TurningMovement tm : i.getPedestrianTurningMovements()) {
+                tm.update();
+            }
+        }
         // goal, l.step(), then l.update()
     }
 
@@ -209,7 +222,7 @@ public class Simulator extends Network {
         loadStaticDemand(demand_file);
 
         // TODO: define a k for slope
-        double k = Math.pow(10, -6);
+        double k = Math.pow(10, -4);
 
 
         // keep 300 most recent network-level occupancy
@@ -219,8 +232,6 @@ public class Simulator extends Network {
             timeL.add(i * Params.dt);
         }
         LimitedSizeQueue<Double> occupancies = new LimitedSizeQueue<Double>(queue_size);
-
-        double cum_nl_occupancy = 0;
 
         PrintStream ps_console = System.out;
         PrintStream newPs = null;
@@ -248,47 +259,50 @@ public class Simulator extends Network {
 //                myWriter.write("\t avg delay : " + getAvgDelay());
 
             System.out.println("Sim Time: " + Params.time);
-            System.out.println("\tnetwork-level occupancy: " + getOccupancy());
-            System.out.println("\tavg link tt: " + getAvgLinkTravelTime());
-            System.out.println("\tavg delay: " + getAvgDelay());
+            System.out.println("\tnetwork-level occupancy: " + getVehicleOccupancy());
+            System.out.println("\tnetwork-level ped occupancy: " + getPedOccupancy());
+            System.out.println("\tavg link tt: " + getAvgVehicleLinkTravelTime());
+            System.out.println("\tavg delay: " + getAvgVehicleDelay());
 
-            cum_nl_occupancy += getOccupancy();
-//            occupancies.add(cum_nl_occupancy / Math.max(1, Params.time));
-            occupancies.add(getOccupancy());
+            occupancies.add(getVehicleOccupancy());
 
             addVehicleDemand(static_demand);
-
-//            // print links
-//            for (Link l : getLinkSet()) {
-//                System.out.println("Link ID: " + l.getId() + ", vehsOnLink: " + l.getOccupancy());
-//            }
+            addPedestrianDemand();
             runController();
             updateTime();
 
             // TODO: print occupancy
-
 //            printOccupancy();
 
-
-//             STABILITY CONDITION
-            if (Params.time / Params.dt > queue_size + 1) {
-                // check if slope is greater than k
-                double data_slope = approximateSlope(timeL, occupancies);
+            // STABILITY CONDITION
+            if (kill) {
+                if (Params.time / Params.dt > queue_size + 1) {
+                    // check if slope is greater than k
+                    double data_slope = approximateSlope(timeL, occupancies);
 //                System.out.println("\tSlope: " + data_slope);
-                if (data_slope < k) {
+                    if (data_slope < k) {
 //                    System.out.println("occupancies: " + occupancies);
-                    if (kill) {
                         System.setOut(ps_console);
                         newPs.close();
                         return true;
-                    } else {
-                        stable = true;
                     }
                 }
             }
         }
+
         long endTime = System.nanoTime();
         long elapsedTime = (endTime-startTime);
+
+        // STABILITY CONDITION
+        if (Params.time / Params.dt > queue_size + 1) {
+            // check if slope is greater than k
+            double data_slope = approximateSlope(timeL, occupancies);
+//                System.out.println("\tSlope: " + data_slope);
+            if (data_slope < k) {
+//                    System.out.println("occupancies: " + occupancies);
+                stable = true;
+            }
+        }
 
         System.out.println("\truntime: " + elapsedTime);
         System.out.println("\truntime / iteration: " + (elapsedTime / Params.n_steps * Math.pow(10, -9)));
@@ -300,11 +314,11 @@ public class Simulator extends Network {
     }
 
 
-    public double getAvgDelay() {
+    public double getAvgVehicleDelay() {
 
         double sumOfAvgDelay = 0.0;
         int count = 0;
-        for (Link l : getLinkSet()) {
+        for (Link l : getVehicleLinks()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;
             }
@@ -334,11 +348,11 @@ public class Simulator extends Network {
         }
     }
 
-    public double getAvgLinkTravelTime() {
+    public double getAvgVehicleLinkTravelTime() {
 
         double sumOfAvgLinkTTs = 0.0;
         int count = 0;
-        for (Link l : getLinkSet()) {
+        for (Link l : getVehicleLinks()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;
             }
@@ -362,7 +376,7 @@ public class Simulator extends Network {
 
 
     public void printOccupancy() {
-        for (Link l : getLinkSet()) {
+        for (Link l : getVehicleLinks()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;
             }
@@ -371,9 +385,10 @@ public class Simulator extends Network {
     }
 
 
-    public double getOccupancy() {
+    public double getVehicleOccupancy() {
         double totalOccupancy = 0;
-        for (Link l : getLinkSet()) {
+        // TODO: get vehicle link set
+        for (Link l : getVehicleLinks()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;
             }
@@ -383,6 +398,18 @@ public class Simulator extends Network {
     }
 
 
+    public double getPedOccupancy() {
+        double totalOccupancy = 0;
+        // TODO: get ped linkset
+        for (Link l : getPedLinks()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            totalOccupancy += l.getOccupancy();
+        }
+        return totalOccupancy;
+    }
+
     /*
     Purpose:
         reset of the links and time, so I can start a fresh simulation on the same network with the same demand file
@@ -390,6 +417,11 @@ public class Simulator extends Network {
     public void reset() {
         for (Link l : getLinkSet()) {
             l.reset();
+        }
+        for (Intersection i : getIntersectionSet()) {
+            for (TurningMovement tm : i.getAllTurningMovements()) {
+                tm.reset();
+            }
         }
         Params.time = 0;
     }
@@ -441,17 +473,17 @@ public class Simulator extends Network {
 //        while (stable) {
 //            System.out.println("\t\tmax demand scale: " + max);
 //            Params.demandScaleFactor = max;
-//            stable = runSim();
+//            stable = runSim(false);
 //            reset();
 //            max *= 2;
 //        }
-//
+
 //        // first find a min that is stable
 //        stable = false;
 //        while (!stable) {
 //            System.out.println("\t\tmin demand scale: " + min);
 //            Params.demandScaleFactor = min;
-//            stable = runSim();
+//            stable = runSim(false);
 //            reset();
 //            min /= 2;
 //        }

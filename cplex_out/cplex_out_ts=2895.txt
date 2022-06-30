@@ -1,49 +1,20 @@
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-Found incumbent of value 0.000000 after 0.00 sec. (0.00 ticks)
 Tried aggregator 2 times.
-MIP Presolve eliminated 89 rows and 20 columns.
-MIP Presolve modified 10 coefficients.
-Aggregator did 34 substitutions.
-Reduced MIP has 56 rows, 59 columns, and 166 nonzeros.
-Reduced MIP has 37 binaries, 0 generals, 0 SOSs, and 22 indicators.
-Presolve time = 0.00 sec. (0.32 ticks)
-Probing fixed 0 vars, tightened 11 bounds.
-Probing changed sense of 11 constraints.
-Probing time = 0.00 sec. (0.16 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 49 rows and 50 columns.
-MIP Presolve modified 40 coefficients.
-Reduced MIP has 7 rows, 9 columns, and 29 nonzeros.
-Reduced MIP has 9 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.14 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 1 rows and 1 columns.
-MIP Presolve modified 3 coefficients.
-Reduced MIP has 6 rows, 8 columns, and 25 nonzeros.
-Reduced MIP has 8 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.03 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Clique table members: 3.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 10 threads.
-Root relaxation solution time = 0.00 sec. (0.01 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                            0.0000    24138.7815              --- 
-*     0+    0                        10043.9022    24138.7815           140.33%
-      0     0    10531.9482     2    10043.9022    10531.9482        3    4.86%
-      0     0        cutoff          10043.9022                      4     --- 
-Elapsed time = 0.03 sec. (0.80 ticks, tree = 0.01 MB, solutions = 2)
+MIP Presolve eliminated 263 rows and 224 columns.
+Aggregator did 6 substitutions.
+Reduced MIP has 24 rows, 30 columns, and 54 nonzeros.
+Reduced MIP has 18 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.31 ticks)
+Found incumbent of value 1.679674 after 0.00 sec. (0.34 ticks)
+Probing fixed 0 vars, tightened 6 bounds.
+Probing changed sense of 6 constraints.
+Probing time = 0.00 sec. (0.02 ticks)
 
 Root node processing (before b&c):
-  Real time             =    0.03 sec. (0.80 ticks)
+  Real time             =    0.01 sec. (5.25 ticks)
 Parallel b&c, 10 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.03 sec. (0.80 ticks)
+Total (root+branch&cut) =    0.01 sec. (5.25 ticks)

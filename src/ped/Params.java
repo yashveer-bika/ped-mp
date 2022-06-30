@@ -14,11 +14,21 @@ package ped;
  */
 public class Params
 {
+    public static String path = "data/SiouxFalls/";
+    private static String getDataName() {
+        String[] splits = path.split("/");
+        return splits[splits.length - 1];
+    }
+
+    public static String controllerType = "pedMP";
 
     /**
      * uniform demand scale
      */
-    public static double demandScaleFactor = 0.1;
+    public static double demandScaleFactor = 15;
+
+
+    public static boolean ped = false;
 
     /**
      * This is the time step, in seconds
@@ -34,14 +44,14 @@ public class Params
     /**
      * This is the pedestrian tolerance time in the simulation, in seconds
      */
-    public final static int tolerance_time = 60;
+    public static int tolerance_time = 15*4;
 
 
 
     /**
      * this is the end time of the simulation, in s. The maximum number of time steps is {@link #DURATION}/{@link #dt}.
      */
-    public final static int DURATION = 60*60*3;
+    public static int DURATION = 60*60*3;
 //    public final static int DURATION = dt * 40;
 
 
@@ -55,7 +65,18 @@ public class Params
 //    public final static String sim_output_filepath = String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, t);
 
     public static String getSim_output_filepath() {
-        return String.format("veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt", demandScaleFactor, DURATION, dt, System.currentTimeMillis());
+        if (ped) {
+            return String.format(
+                    "data=%s_control=%s_tol_time=%s_veh_ped_sim_ds=%s_dur=%s_ts=%s_id=%s.txt",
+                    getDataName(), controllerType, tolerance_time, demandScaleFactor,
+                    DURATION, dt, System.currentTimeMillis());
+        } else {
+            return String.format(
+                    "data=%s_control=%s_veh_only_sim_ds=%s_dur=%s_ts=%s_id=%s.txt",
+                    getDataName(), controllerType, demandScaleFactor,
+                    DURATION, dt, System.currentTimeMillis());
+        }
+
     }
 
     public static String getCplexOutPath() {

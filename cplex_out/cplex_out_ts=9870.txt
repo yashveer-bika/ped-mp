@@ -1,55 +1,26 @@
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-Found incumbent of value 0.000000 after 0.00 sec. (0.00 ticks)
 Tried aggregator 2 times.
-MIP Presolve eliminated 98 rows and 44 columns.
+MIP Presolve eliminated 269 rows and 232 columns.
+Aggregator did 12 substitutions.
+Reduced MIP has 26 rows, 30 columns, and 64 nonzeros.
+Reduced MIP has 18 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.33 ticks)
+Found incumbent of value 3.366373 after 0.00 sec. (0.39 ticks)
+Probing fixed 0 vars, tightened 6 bounds.
+Probing changed sense of 6 constraints.
+Probing time = 0.00 sec. (0.02 ticks)
+Tried aggregator 1 time.
+MIP Presolve eliminated 28 rows and 29 columns.
+MIP Presolve added 2 rows and 0 columns.
 MIP Presolve modified 20 coefficients.
-Aggregator did 40 substitutions.
-Reduced MIP has 27 rows, 29 columns, and 92 nonzeros.
-Reduced MIP has 21 binaries, 0 generals, 0 SOSs, and 8 indicators.
-Presolve time = 0.00 sec. (0.37 ticks)
-Probing fixed 0 vars, tightened 4 bounds.
-Probing changed sense of 4 constraints.
-Probing time = 0.00 sec. (0.04 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 20 rows and 21 columns.
-MIP Presolve modified 41 coefficients.
-Reduced MIP has 7 rows, 8 columns, and 25 nonzeros.
-Reduced MIP has 8 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.08 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 2 rows and 2 columns.
-MIP Presolve modified 10 coefficients.
-Reduced MIP has 5 rows, 6 columns, and 15 nonzeros.
-Reduced MIP has 6 binaries, 0 generals, 0 SOSs, and 0 indicators.
+All rows and columns eliminated.
 Presolve time = 0.00 sec. (0.03 ticks)
-Probing time = 0.00 sec. (0.00 ticks)
-Tried aggregator 1 time.
-Reduced MIP has 5 rows, 6 columns, and 15 nonzeros.
-Reduced MIP has 6 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.01 ticks)
-Probing time = 0.00 sec. (0.00 ticks)
-Clique table members: 4.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 10 threads.
-Root relaxation solution time = 0.00 sec. (0.01 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                            0.0000    39686.5475              --- 
-*     0+    0                        15225.5647    39686.5475           160.66%
-      0     0    18404.4835     3    15225.5647    18404.4835        2   20.88%
-*     0+    0                        15928.4956    18404.4835            15.54%
-      0     0        cutoff          15928.4956                      2     --- 
-Elapsed time = 0.01 sec. (0.64 ticks, tree = 0.01 MB, solutions = 3)
 
 Root node processing (before b&c):
-  Real time             =    0.01 sec. (0.64 ticks)
+  Real time             =    0.00 sec. (0.46 ticks)
 Parallel b&c, 10 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.01 sec. (0.64 ticks)
+Total (root+branch&cut) =    0.00 sec. (0.46 ticks)

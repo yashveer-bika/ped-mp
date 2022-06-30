@@ -10,6 +10,8 @@ public class PedIntersection extends PedNode {
 //    private Set<PedLink> outgoingLinks;
 
     private Set<TurningMovement> pedestrianTurns;
+    private Set<TurningMovement> entryTurns;
+    private Set<TurningMovement> exitTurns;
 
 //    private Map<Link, List<Pedestrian>> pedestrians;
 
@@ -17,10 +19,46 @@ public class PedIntersection extends PedNode {
         super("pedInt", x, y);
         this.id = curr_id++;
         pedestrianTurns = new HashSet<>();
+        entryTurns = new HashSet<>();
+        exitTurns = new HashSet<>();
     }
 
     public PedIntersection(Location lcn) {
         this(lcn.getX(), lcn.getY());
+    }
+
+    public void generateEntryTurns() {
+        Link in = getEntryLink();
+        double count = 0;
+        for (Link out : this.getOutgoingLinks()) {
+            // prevent u-turns
+            // NOTE: adding u-turn logic will require a change of feasible states
+            if (in.getSource() == out.getDest()) {
+                continue;
+            }
+            count += 1;
+        }
+        double tp = 1.0 / count;
+
+        for (Link out : this.getOutgoingLinks()) {
+            // prevent u-turns
+            // NOTE: adding u-turn logic will require a change of feasible states
+            if (in.getSource() == out.getDest()) {
+                continue;
+            }
+            entryTurns.add(new TurningMovement(in, out, engine, tp));
+        }
+        //       }
+    }
+
+    public void generateExitTurns() {
+        Link out = getExitLink();
+        double count = getIncomingLinks().size();
+        double tp = 1.0 / count;
+
+        for (Link in : getIncomingLinks()) {
+            exitTurns.add(new TurningMovement(in, out, engine, tp));
+        }
     }
 
     public void generatePedestrianTurns() {
@@ -33,6 +71,21 @@ public class PedIntersection extends PedNode {
         // Get the product between incoming sidewalks and outgoing crosswalks
         for (Link in : this.getIncomingLinks()) {
             if (in.isSidewalk()) {
+                double count = 0;
+                for (Link out : this.getOutgoingLinks()) {
+                    if (!out.isCrosswalk()) {
+                        continue;
+                    }
+                    // prevent u-turns
+                    // NOTE: adding u-turn logic will require a change of feasible states
+                    if (in.getSource() == out.getDest()) {
+                        continue;
+                    }
+                    count += 1;
+                }
+
+                double tp = 1.0 / count;
+
                 for (Link out : this.getOutgoingLinks()) {
                     if (!out.isCrosswalk()) {
                         continue;
@@ -43,7 +96,7 @@ public class PedIntersection extends PedNode {
                         continue;
                     }
 
-                    pedestrianTurns.add(new TurningMovement(in, out, engine));
+                    pedestrianTurns.add(new TurningMovement(in, out, engine, tp));
                 }
             }
         }
@@ -53,117 +106,13 @@ public class PedIntersection extends PedNode {
         return pedestrianTurns;
     }
 
-    public void updateTime(double newTime) {
-        for (TurningMovement t : pedestrianTurns) {
-            t.updateTime(newTime);
-        }
+    public Set<TurningMovement> getEntryTurns() {
+        return entryTurns;
     }
 
-    //    public PedIntersection(int id) {
-//        super(id);
-//    }
-
-//    public void setPedLinks() {
-//        pedLinks = new HashSet<PedLink>();
-//        pedLinks.addAll(incomingLinks);
-//        pedLinks.addAll(outgoingLinks);
-//    }
-
-//    public void setPedLinks(Set<PedLink> newLinks) {
-//        pedLinks = newLinks;
-//    }
-
-//    public Set<PedLink> getPedLinks() {
-//        return pedLinks;
-//    }
-
-//    public void setIncomingLinks(Set<PedLink> incomingLinks) {
-//        this.incomingLinks = incomingLinks;
-//    }
-//
-//    public Set<PedLink> getIncomingLinks() {
-//        return incomingLinks;
-//    }
-
-//    public void setOutgoingLinks(Set<PedLink> outgoingLinks) {
-//        this.outgoingLinks = outgoingLinks;
-//    }
-
-//    public Set<PedLink> getOutgoingLinks() {
-//        return outgoingLinks;
-//    }
-
-
-
-    /*
-    public void setControl(IntersectionControl c)
-    {
-        control = c;
-
-        control.setNode(this);
+    public Set<TurningMovement> getExitTurns() {
+        return exitTurns;
     }
-
-    public void addTurns() {
-        for (PedLink incoming : getPedIncoming()) {
-            if (incoming.getLaneType() == "iS1") {
-                addTurn(incoming, "iS1", "iE1");
-            }
-
-            if (incoming.getLaneType() == "iS2") {
-                addTurn(incoming, "iS2", "iW2");
-            }
-
-            if (incoming.getLaneType() == "iW1") {
-                addTurn(incoming, "iW1", "iS1");
-            }
-
-            if (incoming.getLaneType() == "iW2") {
-                addTurn(incoming, "iW2", "iN2");
-            }
-
-            if (incoming.getLaneType() == "iE1") {
-                addTurn(incoming, "iE1", "iN1");
-            }
-
-            if (incoming.getLaneType() == "iE2") {
-                addTurn(incoming, "iE2", "iS2");
-            }
-
-            if (incoming.getLaneType() == "iN1") {
-                addTurn(incoming, "iN1", "iW1");
-            }
-
-            if (incoming.getLaneType() == "iN2") {
-                addTurn(incoming, "iN2", "iE2");
-            }
-        }
-    }
-
-    //given an incoming lane, scans outgoing lanes for lanes that the incoming lane can turn into.
-    public void addTurn(PedLink incoming, String incomingType, String outgoingType) {
-        ArrayList<PedLink> outgoingTurns = new ArrayList<PedLink>();
-        for (PedLink outgoing: getPedOutgoing()) {
-            //a lane can either turn into its own incomingType or the specified outgoingType
-            if (outgoing.getLaneType() == incomingType || outgoing.getLaneType() == outgoingType) {
-                outgoingTurns.add(outgoing);
-            }
-        }
-
-        if (outgoingTurns.size() > 0) {
-            //adds the turns to the Intersection's PedTurns variable
-            getPedTurns().put(incoming, outgoingTurns);
-            //updates incoming lanes PedTurns variable
-            for (PedLink outgoing : outgoingTurns) {
-                incoming.getTurningDirections().add(outgoing.getDirection());
-            }
-        }
-    }
-
-    public Map<PedLink, List<PedLink>> getPedTurns() {
-        return this.PedTurns;
-    }
-
-     */
 
     @Override
     public String toString() {

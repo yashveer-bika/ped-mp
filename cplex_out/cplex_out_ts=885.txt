@@ -1,49 +1,24 @@
 Version identifier: 20.1.0.0 | 2020-11-10 | 9bedb6d68
-Found incumbent of value 0.000000 after 0.00 sec. (0.00 ticks)
 Tried aggregator 2 times.
-MIP Presolve eliminated 87 rows and 14 columns.
-MIP Presolve modified 9 coefficients.
-Aggregator did 32 substitutions.
-Reduced MIP has 64 rows, 67 columns, and 184 nonzeros.
-Reduced MIP has 41 binaries, 0 generals, 0 SOSs, and 26 indicators.
-Presolve time = 0.00 sec. (0.32 ticks)
-Probing fixed 0 vars, tightened 13 bounds.
-Probing changed sense of 13 constraints.
-Probing time = 0.00 sec. (0.18 ticks)
+MIP Presolve eliminated 257 rows and 218 columns.
+Aggregator did 6 substitutions.
+Reduced MIP has 24 rows, 30 columns, and 54 nonzeros.
+Reduced MIP has 18 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.30 ticks)
+Found incumbent of value 0.886088 after 0.00 sec. (0.34 ticks)
+Probing fixed 0 vars, tightened 6 bounds.
+Probing changed sense of 6 constraints.
+Probing time = 0.00 sec. (0.02 ticks)
 Tried aggregator 1 time.
-MIP Presolve eliminated 54 rows and 55 columns.
-MIP Presolve modified 34 coefficients.
-Reduced MIP has 10 rows, 12 columns, and 46 nonzeros.
-Reduced MIP has 12 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.14 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Tried aggregator 1 time.
-MIP Presolve eliminated 2 rows and 0 columns.
-MIP Presolve modified 1 coefficients.
-Reduced MIP has 8 rows, 12 columns, and 42 nonzeros.
-Reduced MIP has 12 binaries, 0 generals, 0 SOSs, and 0 indicators.
-Presolve time = 0.00 sec. (0.04 ticks)
-Probing time = 0.00 sec. (0.01 ticks)
-Clique table members: 5.
-MIP emphasis: balance optimality and feasibility.
-MIP search method: dynamic search.
-Parallel mode: deterministic, using up to 10 threads.
-Root relaxation solution time = 0.00 sec. (0.01 ticks)
-
-        Nodes                                         Cuts/
-   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
-
-*     0+    0                            0.0000    26468.3843              --- 
-*     0+    0                         8322.5455    26468.3843           218.03%
-      0     0        cutoff           8322.5455     8322.5455        4    0.00%
-      0     0        cutoff           8322.5455     8322.5455        4    0.00%
-Elapsed time = 0.01 sec. (0.86 ticks, tree = 0.01 MB, solutions = 2)
+MIP Presolve eliminated 24 rows and 30 columns.
+All rows and columns eliminated.
+Presolve time = 0.00 sec. (0.01 ticks)
 
 Root node processing (before b&c):
-  Real time             =    0.01 sec. (0.86 ticks)
+  Real time             =    0.01 sec. (5.26 ticks)
 Parallel b&c, 10 threads:
   Real time             =    0.00 sec. (0.00 ticks)
   Sync time (average)   =    0.00 sec.
   Wait time (average)   =    0.00 sec.
                           ------------
-Total (root+branch&cut) =    0.01 sec. (0.86 ticks)
+Total (root+branch&cut) =    0.01 sec. (5.26 ticks)
