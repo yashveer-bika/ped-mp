@@ -5,7 +5,7 @@ Aggregator did 2 substitutions.
 Reduced MIP has 8 rows, 10 columns, and 18 nonzeros.
 Reduced MIP has 6 binaries, 0 generals, 0 SOSs, and 0 indicators.
 Presolve time = 0.00 sec. (0.26 ticks)
-Found incumbent of value 0.238490 after 0.00 sec. (0.29 ticks)
+Found incumbent of value 0.242959 after 0.00 sec. (0.29 ticks)
 
 Root node processing (before b&c):
   Real time             =    0.00 sec. (0.30 ticks)

@@ -8,6 +8,11 @@ def main(filepath):
     table = []
     f = open(filepath, "r")
 
+    # convert filepath to csv
+    csv_filepath = filepath.split(".")[0] + filepath.split(".")[1] + ".csv"
+    print(f"csv filepath: {csv_filepath}")
+
+
     sim_time = 0
     network_level_occupancy = 0
     ped_network_level_occupancy = 0
@@ -49,17 +54,18 @@ def main(filepath):
             end_of_time = False
 
     df = pd.DataFrame(table, columns=["sim time", "network-level occupancy", "ped_network_level_occupancy", "avg link tt", "avg delay", "stable-def-region"])
-    df.to_csv("oonga.csv")
+    
+    df.to_csv(csv_filepath)
 
     # make a graph
-    # fig= plt.figure() 
+    fig= plt.figure() 
 
     # plt.plot(df["sim time"], df["stable-def-region"], 'bo', markersize=0.05)
     plt.plot(df["sim time"], df["network-level occupancy"], 'bo', markersize=0.175)
     # plt.plot(df["sim time"], df["ped_network_level_occupancy"], 'bo', markersize=0.175)
     # plt.plot(df["sim time"], df["avg link tt"], 'bo', markersize=0.175)
 
-    plt.xlabel("sim time")
+    # plt.xlabel("sim time")
     # plt.ylabel("stable-def-region")
     plt.ylabel("network-level-occupancy")
     # plt.ylabel("avg link tt")

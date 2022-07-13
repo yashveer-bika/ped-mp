@@ -155,7 +155,7 @@ public class Intersection {
 //        this.crosswalks = crosswalks;
 //        this.allLinks = new HashSet<>();
         if (controllerType.equals("vehMP")) {
-            controller = new vehMPcontroller(this);
+            controller = new vehMPcontroller_w_peds(this);
         } else if (controllerType.equals("pedMP"))
         {
             controller = new pedMPcontroller(this);

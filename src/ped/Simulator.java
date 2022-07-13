@@ -263,6 +263,8 @@ public class Simulator extends Network {
             System.out.println("\tnetwork-level ped occupancy: " + getPedOccupancy());
             System.out.println("\tavg link tt: " + getAvgVehicleLinkTravelTime());
             System.out.println("\tavg delay: " + getAvgVehicleDelay());
+            System.out.println("\tavg ped link tt: " + getAvgPedLinkTravelTime());
+            System.out.println("\tavg ped delay: " + getAvgPedDelay());
 
             occupancies.add(getVehicleOccupancy());
 
@@ -330,6 +332,22 @@ public class Simulator extends Network {
         return sumOfAvgDelay / count;
     }
 
+    public double getAvgPedDelay() {
+
+        double sumOfAvgDelay = 0.0;
+        int count = 0;
+        for (Link l : getPedLinks()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            else {
+                count++;
+                sumOfAvgDelay += l.getAvgDelay();
+            }
+        }
+        return sumOfAvgDelay / count;
+    }
+
     public void calculateTT() {
         for (Link l : getLinkSet()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
@@ -363,6 +381,24 @@ public class Simulator extends Network {
         }
         return sumOfAvgLinkTTs / count;
     }
+
+    public double getAvgPedLinkTravelTime() {
+
+        double sumOfAvgLinkTTs = 0.0;
+        int count = 0;
+        for (Link l : getPedLinks()) {
+            if (l instanceof EntryLink || l instanceof ExitLink) {
+                continue;
+            }
+            else {
+                count++;
+                sumOfAvgLinkTTs += l.getAvgTT();
+            }
+        }
+        return sumOfAvgLinkTTs / count;
+    }
+
+
 
     public void updateTime() {
         // send the time update to the Network components
@@ -401,6 +437,7 @@ public class Simulator extends Network {
     public double getPedOccupancy() {
         double totalOccupancy = 0;
         // TODO: get ped linkset
+        System.out.println("Pedestrian links: " + getPedLinks());
         for (Link l : getPedLinks()) {
             if (l instanceof EntryLink || l instanceof ExitLink) {
                 continue;

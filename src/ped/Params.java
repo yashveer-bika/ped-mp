@@ -25,7 +25,7 @@ public class Params
     /**
      * uniform demand scale
      */
-    public static double demandScaleFactor = 15;
+    public static double demandScaleFactor = 0.39935 / 6 * 2.0;
 
 
     public static boolean ped = false;
@@ -44,7 +44,7 @@ public class Params
     /**
      * This is the pedestrian tolerance time in the simulation, in seconds
      */
-    public static int tolerance_time = 15*4;
+    public static int tolerance_time = 15*2;
 
 
 

@@ -18,8 +18,7 @@ import util.*;
  *
  * @author bikax003, micha
  */
-public class Main 
-{
+public class Main {
     public static void main(String[] args) throws IloException {
 //        System.out.println(path);
 //        File nodesFile = new File(path + "nodes.txt");
@@ -31,9 +30,6 @@ public class Main
 //        System.out.println(test_net.getNodes().keySet());
 //
 //        System.out.println(test_net.getLinkSet());
-
-
-
 
 
 //        TestVehicle tv = new TestVehicle();
@@ -111,7 +107,9 @@ public class Main
 ////        Params.demandScaleFactor = 5.517578125;
 //        siouxFallsPeds.runSim(false);
 
-        // PEDESTRIAN SIMULATION
+
+        /*
+        // PEDESTRIAN SIMULATION w/ pedMP
 
         String path = "data/SiouxFalls/";
         Params.path = path;
@@ -121,12 +119,13 @@ public class Main
         Simulator siouxFallsPeds = new Simulator(Params.path, Params.ped, Params.controllerType);
         Params.DURATION = (int) (60*60 * 5.5)  ;
 
-        Params.tolerance_time = 30*4;
-        double minDSF = 0.17176580697500002;
-        double maxDSF = 0.1723544093;
+        double minDSF = 0.1640519104039063;
+        double maxDSF = 0.17176580697500002;
 //        Params.demandScaleFactor = (double) Math.round( (minDSF + maxDSF) / 2 * 100 ) / 100;
-        Params.demandScaleFactor = (minDSF + maxDSF) / 2;
-        Params.demandScaleFactor = 0.2;
+//        Params.demandScaleFactor = (minDSF + maxDSF) / 2;
+//        Params.demandScaleFactor = 0.2;
+        Params.tolerance_time = 30*2;
+        Params.demandScaleFactor = 0.39935 / 6 * 3.5;
 
         System.out.println("DSF: " + Params.demandScaleFactor);
         boolean stable = siouxFallsPeds.runSim(false);
@@ -139,34 +138,79 @@ public class Main
 
 //        double mdsf = siouxFallsPeds.findMaximalDemandScaleFactor(minDSF, maxDSF);
 //        System.out.println("BEST Demand scale factor: " + mdsf);
+         */
 
+
+
+
+//        /*
+        // PEDESTRIAN SIMULATION w/ vehMP
+
+        Params.demandScaleFactor = 0.39935 / 6 * 1.5;
+        String path = "data/SiouxFalls/";
+        Params.path = path;
+        Params.ped = true;
+        Params.controllerType = "pedMP";
+        Params.tolerance_time = 30*1;
+
+        Simulator siouxFallsPeds = new Simulator(Params.path, Params.ped, Params.controllerType);
+        Params.DURATION = (int) (60*60 * 5.5)  ;
+
+//        double minDSF = 0.1640519104039063;
+//        double maxDSF = 0.17176580697500002;
+//        Params.demandScaleFactor = (double) Math.round( (minDSF + maxDSF) / 2 * 100 ) / 100;
+//        Params.demandScaleFactor = (minDSF + maxDSF) / 2;
+//        Params.demandScaleFactor = 0.2;
+
+        System.out.println("DSF: " + Params.demandScaleFactor);
+        boolean stable = siouxFallsPeds.runSim(false);
+        if (stable) {
+            System.out.println("Stable");
+        } else {
+            System.out.println("Not Stable");
+        }
+        System.out.println("Servable hourly demand: " + Params.demandScaleFactor * 360600.0 / 24.0);
+
+//        double mdsf = siouxFallsPeds.findMaximalDemandScaleFactor(minDSF, maxDSF);
+//        System.out.println("BEST Demand scale factor: " + mdsf);
+//         */
+
+
+
+
+        /*
         // VEHICLE SIMULATION
 
-//        String path = "data/SiouxFalls/";
-//        Params.path = path;
-//        Params.controllerType = "vehMP";
-//        Params.ped = false;
-//
-//        Simulator siouxFallsVeh = new Simulator(Params.path, Params.ped, Params.controllerType);
-//        Params.DURATION = (int) (60*60 * 5.5)  ;
-//
-//        double minDSF = 0.52276611328125;
-//        double maxDSF = 0.52294921875;
-////        Params.demandScaleFactor = (double) Math.round( (minDSF + maxDSF) / 2 * 100 ) / 100;
+        String path = "data/SiouxFalls/";
+        Params.path = path;
+        Params.controllerType = "vehMP";
+        Params.ped = false;
+
+        Simulator siouxFallsVeh = new Simulator(Params.path, Params.ped, Params.controllerType);
+        Params.DURATION = (int) (60*60 * 5.5)  ;
+
+        double minDSF = 0.52276611328125;
+        double maxDSF = 0.52294921875;
+//        Params.demandScaleFactor = (double) Math.round( (minDSF + maxDSF) / 2 * 100 ) / 100;
 //        Params.demandScaleFactor = (minDSF + maxDSF) / 2;
-//
-////        Params.demandScaleFactor = 50.0;
-//
-//        System.out.println("DSF: " + Params.demandScaleFactor);
-//        boolean stable = siouxFallsVeh.runSim(false);
-//        if (stable) {
-//            System.out.println("Stable");
-//        } else {
-//            System.out.println("Not Stable");
-//        }
-//        System.out.println("Servable hourly demand: " + Params.demandScaleFactor * 360600.0 / 24.0);
+//        Params.demandScaleFactor = 0.39935 / 6 * 10;
+
+        System.out.println("DSF: " + Params.demandScaleFactor);
+        boolean stable = siouxFallsVeh.runSim(false);
+        if (stable) {
+            System.out.println("Stable");
+        } else {
+            System.out.println("Not Stable");
+        }
+        System.out.println("Servable hourly demand: " + Params.demandScaleFactor * 360600.0 / 24.0);
 
 //        double mdsf = siouxFallsVeh.findMaximalDemandScaleFactor(0.00001, 20);
 //        System.out.println("BEST Demand scale factor: " + mdsf);
+         */
     }
+
+
+
+
+
 }
